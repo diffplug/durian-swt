@@ -1,12 +1,12 @@
 Manifest-Version: 1.0
-Bundle-Description: Durian.swt - Reactive utilties and fluent builders f
- or SWT.
-Bundle-DocURL: https://github.com/diffplug/durian.swt
+Bundle-Description: Durian SWT - Reactive utilties and fluent builders f
+ or SWT
+Bundle-DocURL: https://github.com/diffplug/durian-swt
 Bundle-License: http://www.apache.org/licenses/LICENSE-2.0.txt
 Bundle-ManifestVersion: 2
-Bundle-Name: com.diffplug.durian.swt.durian.swt
+Bundle-Name: com.diffplug.durian-swt
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-SymbolicName: com.diffplug.durian.swt.durian.swt
+Bundle-SymbolicName: com.diffplug.durian-swt
 Bundle-Vendor: DiffPlug
 Bundle-Version: 1.0.0.SNAPSHOT
 Created-By: 1.8.0_40 (Oracle Corporation)
