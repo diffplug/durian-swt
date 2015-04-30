@@ -19,7 +19,7 @@ buildscript {
 repositories {
 	jcenter()
 	mavenLocal()
-} 
+}
 
 ////////////
 // GRADLE //
@@ -44,7 +44,7 @@ sourceCompatibility = VER_JAVA
 targetCompatibility = VER_JAVA
 
 dependencies {
-	compile "com.diffplug.durian.rx:durian.rx:${VER_DURIAN_RX}"
+	compile "com.diffplug.durian-rx:durian-rx:${VER_DURIAN_RX}"
 	compile "com.diffplug.durian:durian:${VER_DURIAN}"
 	compile "com.google.guava:guava:${VER_GUAVA}"
 	compile "io.reactivex:rxjava:${VER_RXJAVA}"
@@ -61,7 +61,7 @@ bundle {
 	instruction 'Bundle-DocURL', "https://github.com/${org}/${name}"
 	instruction 'Bundle-License', 'http://www.apache.org/licenses/LICENSE-2.0.txt'
 	instruction 'Bundle-RequiredExecutionEnvironment', 'JavaSE-1.8'
-	instruction 'Export-Package', 'com.diffplug.common.*'
+	instruction 'Export-Package', 'com.diffplug.common.swt'
 	instruction '-removeheaders', 'VER_*'
 }
 
@@ -85,20 +85,6 @@ eclipse {
 		buildCommand 'org.eclipse.jdt.core.javabuilder'
 		buildCommand 'org.eclipse.pde.ManifestBuilder'
 		buildCommand 'org.eclipse.pde.SchemaBuilder'
-
-		// filter out the build folder
-		file {
-			withXml { xmlProvider ->
-				Node project = xmlProvider.asNode()
-				Node filter = project.appendNode('filteredResources').appendNode('filter')
-				filter.appendNode('id', project.name.hashCode()) 	// use the project name's hash as the filter ID
-				filter.appendNode('name', '')
-				filter.appendNode('type', 10)
-				Node matcher = filter.appendNode('matcher')
-				matcher.appendNode('id', 'org.eclipse.ui.ide.multiFilter')
-				matcher.appendNode('arguments', '1.0-name-matches-false-false-build')
-			}
-		}
 	}
 	classpath {
 		downloadSources true

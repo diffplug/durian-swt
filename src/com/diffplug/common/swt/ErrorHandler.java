@@ -63,7 +63,7 @@ public abstract class ErrorHandler {
 		return suppress;
 	}
 
-	private static final Handling suppress = createHandling(obj -> {} );
+	private static final Handling suppress = createHandling(obj -> {});
 
 	/** Rethrows any exceptions as runtime exceptions. */
 	public static Rethrowing rethrow() {
@@ -202,7 +202,7 @@ public abstract class ErrorHandler {
 		protected Rethrowing(Function<Throwable, RuntimeException> transform) {
 			super(error -> {
 				throw transform.apply(error);
-			} );
+			});
 			this.transform = transform;
 		}
 
