@@ -4,8 +4,6 @@ buildscript {
 		mavenLocal()
 	}
 	dependencies {
-		// builds canonical OSGI bundles
-		classpath "org.dm.gradle:gradle-bundle-plugin:${VER_BUNDLE}"
 		// applies the Eclipse java formatter
 		classpath "com.diffplug.gradle.spotless:spotless:${VER_SPOTLESS}"
 		// uploads artifacts to jcenter
@@ -50,28 +48,6 @@ dependencies {
 	compile "io.reactivex:rxjava:${VER_RXJAVA}"
 	testCompile "junit:junit:${VER_JUNIT}"
 }
-
-//////////
-// OSGI //
-//////////
-apply plugin: 'org.dm.bundle'
-bundle {
-	instruction 'Bundle-Vendor', 'DiffPlug'
-	instruction 'Bundle-Description', "${description}"
-	instruction 'Bundle-DocURL', "https://github.com/${org}/${name}"
-	instruction 'Bundle-License', 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-	instruction 'Bundle-RequiredExecutionEnvironment', 'JavaSE-1.8'
-	instruction 'Export-Package', 'com.diffplug.common.swt'
-	instruction '-removeheaders', 'VER_*'
-}
-
-// make sure we know what's going on with our OSGI manifest
-task copyManifest(type: Sync, dependsOn: jar) {
-	from 'build/tmp/jar'
-	into 'META-INF'
-	include 'MANIFEST.MF'
-}
-build.dependsOn(copyManifest)
 
 /////////////
 // ECLIPSE //
