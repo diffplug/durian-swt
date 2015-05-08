@@ -1,7 +1,7 @@
 buildscript {
 	repositories {
-		jcenter()
 		mavenLocal()
+		jcenter()
 	}
 	dependencies {
 		// applies the Eclipse java formatter
@@ -15,8 +15,8 @@ buildscript {
 }
 
 repositories {
-	jcenter()
 	mavenLocal()
+	jcenter()
 }
 
 ////////////
