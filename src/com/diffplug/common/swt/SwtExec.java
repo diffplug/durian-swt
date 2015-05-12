@@ -16,6 +16,7 @@
 package com.diffplug.common.swt;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Delayed;
@@ -49,6 +50,7 @@ import com.diffplug.common.base.Unhandled;
 import com.diffplug.common.rx.IObservable;
 import com.diffplug.common.rx.Rx;
 import com.diffplug.common.swt.ControlWrapper;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public class SwtExec extends AbstractExecutorService implements ScheduledExecutorService, Rx.HasRxExecutor {
 	private static Blocking blocking;
@@ -59,7 +61,15 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 * When "execute" is called on this executor, "execute" will not return until the
 	 * runnable has been executed.
 	 */
+	@SuppressFBWarnings(value = "LI_LAZY_INIT_STATIC", justification = "This race condition is fine, as explained in the comment below.")
 	public static Blocking blocking() {
+		// There is an acceptable race condition here - blocking might get set multiple times.
+		// This would happen if multiple threads called blocking() at the same time
+		// during initialization, and this is likely to actually happen in practice.
+		//
+		// It is important for this method to be fast, so it's better to accept
+		// that blocking() might return different instances (which each have the
+		// same behavior), rather than to incur the cost of some type of synchronization.
 		if (blocking == null) {
 			blocking = new Blocking();
 		}
@@ -129,8 +139,10 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 * When execute() is called, the runnable will be passed
 	 * to Display.asyncExec().
 	 */
+	@SuppressFBWarnings(value = "LI_LAZY_INIT_STATIC", justification = "This race condition is fine, as explained in the comment below.")
 	public static SwtExec async() {
 		if (async == null) {
+			// There is an acceptable race condition here.  See SwtExec.blocking() for details.
 			async = new SwtExec(Display.getDefault());
 		}
 		return async;
@@ -146,8 +158,10 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 * the runnable will be executed immediately. Else, it
 	 * falls back to async.
 	 */
+	@SuppressFBWarnings(value = "LI_LAZY_INIT_STATIC", justification = "This race condition is fine, as explained in the comment below.")
 	public static SwtExec immediate() {
 		if (immediate == null) {
+			// There is an acceptable race condition here.  See SwtExec.blocking() for details.
 			immediate = new SwtExec(Display.getDefault()) {
 				@Override
 				public void execute(Runnable runnable) {
@@ -564,13 +578,27 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 			return unit.convert(delayMs, TimeUnit.MILLISECONDS);
 		}
 
-		// Comparanble<Delayed>, implemented
+		// Comparable<Delayed>, implemented
 		@Override
 		public int compareTo(Delayed other) {
 			return Ints.saturatedCast(delayMs - other.getDelay(TimeUnit.MILLISECONDS));
 		}
 
-		// ScheuledFuture, delegated
+		@Override
+		public boolean equals(Object other) {
+			if (other instanceof Delayed) {
+				return compareTo((Delayed) other) == 0;
+			} else {
+				return false;
+			}
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(delayMs);
+		}
+
+		// ScheduledFuture, delegated
 		@Override
 		public boolean cancel(boolean mayInterruptIfRunning) {
 			return runnableFuture.cancel(mayInterruptIfRunning);
