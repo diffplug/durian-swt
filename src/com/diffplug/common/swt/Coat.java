@@ -24,7 +24,6 @@ import org.eclipse.swt.widgets.Composite;
 public interface Coat {
 	/**
 	 * Populates the given composite.
-	 * 
 	 * Caller promises that the composite has no layout and contains no children.
 	 */
 	void putOn(Composite cmp);
@@ -39,9 +38,7 @@ public interface Coat {
 	public static interface Returning<T> {
 		/**
 		 * Populates the given composite, and returns a handle for communicating with the created GUI.
-		 * 
 		 * Caller promises that the composite has no layout, and contains no children.
-		 * Caller also promises isActive will be kept up-to-date.
 		 */
 		T putOn(Composite cmp);
 
