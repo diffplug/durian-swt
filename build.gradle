@@ -17,13 +17,14 @@ buildscript {
 repositories {
 	mavenLocal()
 	jcenter()
-}
-
-////////////
-// GRADLE //
-////////////
-task wrapper(type: Wrapper) {
-	gradleVersion VER_GRADLE
+	ivy {
+		// There isn't a reliable way to get eclipse artifacts except through p2 repositories,
+		// which gradle does not yet support.  For now we're forcing it with ivy.
+		url UPDATE_SITE
+		layout "pattern", {
+			artifact "plugins/[artifact]_[revision].[ext]"
+		}
+	}
 }
 
 //////////
@@ -46,6 +47,10 @@ dependencies {
 	compile "com.diffplug.durian:durian:${VER_DURIAN}"
 	compile "com.google.guava:guava:${VER_GUAVA}"
 	compile "io.reactivex:rxjava:${VER_RXJAVA}"
+
+	compile "p2:org.eclipse.swt:${VER_SWT}"
+	compile "p2:org.eclipse.swt.win32.win32.x86_64:${VER_SWT_WIN_x64}"
+
 	testCompile "junit:junit:${VER_JUNIT}"
 }
 
@@ -153,6 +158,14 @@ publishing {
 			from components.java
 			artifact sourcesJar
 			artifact javadocJar
+			// don't force our weird p2 ivy/p2 solution on our users
+			pom.withXml {
+				asNode().dependencies.'*'.each() {
+					if (it.groupId.text() == 'p2') {
+						it.parent().remove(it)
+					}
+				}
+			}
 		}
 	}
 	if (project.hasProperty('dp_maven')) {

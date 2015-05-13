@@ -112,5 +112,4 @@ public class GridLayoutUtil {
 		gridLayout.marginRight = marginRight;
 		return this;
 	}
-
 }
