@@ -1,6 +1,12 @@
 buildscript {
 	repositories {
-		mavenLocal()
+		maven {
+			url "${dp_maven}/repo"
+			credentials {
+				username "${dp_maven_user}"
+				password "${dp_maven_pass}"
+			}
+		}
 		jcenter()
 	}
 	dependencies {
@@ -15,7 +21,13 @@ buildscript {
 }
 
 repositories {
-	mavenLocal()
+	maven {
+		url "${dp_maven}/repo"
+		credentials {
+			username "${dp_maven_user}"
+			password "${dp_maven_pass}"
+		}
+	}
 	jcenter()
 	ivy {
 		// There isn't a reliable way to get eclipse artifacts except through p2 repositories,
