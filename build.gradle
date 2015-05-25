@@ -61,7 +61,8 @@ dependencies {
 	compile "io.reactivex:rxjava:${VER_RXJAVA}"
 
 	compile "p2:org.eclipse.swt:${VER_SWT}"
-	compile "p2:org.eclipse.swt.win32.win32.x86_64:${VER_SWT_WIN_x64}"
+	compile "p2:org.eclipse.jface:${VER_JFACE}"
+	compile "p2:org.eclipse.swt.${com.diffplug.common.swt.os.EclipsePlatform.getRunning()}:${VER_SWT_PLATFORM}"
 
 	testCompile "junit:junit:${VER_JUNIT}"
 }
