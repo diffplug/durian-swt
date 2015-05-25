@@ -52,14 +52,83 @@ import com.diffplug.common.rx.Rx;
 import com.diffplug.common.swt.ControlWrapper;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+/**
+ * A ScheduledExecutorService and Rx.HasRxExecutor which delegates calls to Display.asyncExec() and syncExec().
+ * 
+ * There are three entry points:
+ * async() -> performs actions using asyncExec()
+ * immediate() -> performs actions immediately if called from a UI thread, otherwise delegates to asyncExec().
+ * blocking() -> performs actions immediately if called from a UI thread, else delegates to syncExec().
+ * 
+ * In addition to the standard executor methods, each SwtExec also has a method guardOn(Widget), which
+ * returns a Guarded instance - the cure for "Widget is disposed" errors.  Guarded has methods like
+ * wrap(Runnable) and exec(Runnable), whose contents are ONLY executed if the guarded widget is not disposed.
+ * 
+ * Guarded also contains the full API of Rx, which allows subscribing to Observables and ListenableFutures while
+ * guarding on a given widget.
+ */
 public class SwtExec extends AbstractExecutorService implements ScheduledExecutorService, Rx.HasRxExecutor {
+	/** Global executor for async. */
+	private static SwtExec async;
+
+	/**
+	 * Returns an "async" SwtExecutor.
+	 * 
+	 * When execute() is called, the runnable will be passed
+	 * to Display.asyncExec().
+	 */
+	@SuppressFBWarnings(value = "LI_LAZY_INIT_STATIC", justification = "This race condition is fine, as explained in the comment below.")
+	public static SwtExec async() {
+		if (async == null) {
+			// There is an acceptable race condition here.  See SwtExec.blocking() for details.
+			async = new SwtExec(Display.getDefault());
+		}
+		return async;
+	}
+
+	/** Global executor for immediate. */
+	private static SwtExec immediate;
+
+	/**
+	 * Returns an "immediate" SwtExecutor.
+	 * 
+	 * When execute() is called from within the SWT thread,
+	 * the runnable will be executed immediately. Else, it
+	 * falls back to async.
+	 */
+	@SuppressFBWarnings(value = "LI_LAZY_INIT_STATIC", justification = "This race condition is fine, as explained in the comment below.")
+	public static SwtExec immediate() {
+		if (immediate == null) {
+			// There is an acceptable race condition here.  See SwtExec.blocking() for details.
+			immediate = new SwtExec(Display.getDefault()) {
+				@Override
+				public void execute(Runnable runnable) {
+					Preconditions.checkNotNull(runnable);
+					if (!display.isDisposed()) {
+						if (Thread.currentThread() == display.getThread()) {
+							runnable.run();
+						} else {
+							display.asyncExec(runnable);
+						}
+					} else {
+						throw new RejectedExecutionException();
+					}
+				}
+			};
+		}
+		return immediate;
+	}
+
+	/** Global executor for blocking. */
 	private static Blocking blocking;
 
 	/**
 	 * Returns a "blocking" SwtExecutor.
 	 * 
-	 * When "execute" is called on this executor, "execute" will not return until the
-	 * runnable has been executed.
+	 * When execute() is called on this executor, "execute" will not return until the
+	 * runnable has been executed in the SWT thread. This is accomplished by:
+	 * - if called on SWT thread -> execute immediately
+	 * - else Display.syncExec()
 	 */
 	@SuppressFBWarnings(value = "LI_LAZY_INIT_STATIC", justification = "This race condition is fine, as explained in the comment below.")
 	public static Blocking blocking() {
@@ -130,57 +199,6 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 		}
 	}
 
-	/** Global executor for async. */
-	private static SwtExec async;
-
-	/**
-	 * Returns an "async" SwtExecutor.
-	 * 
-	 * When execute() is called, the runnable will be passed
-	 * to Display.asyncExec().
-	 */
-	@SuppressFBWarnings(value = "LI_LAZY_INIT_STATIC", justification = "This race condition is fine, as explained in the comment below.")
-	public static SwtExec async() {
-		if (async == null) {
-			// There is an acceptable race condition here.  See SwtExec.blocking() for details.
-			async = new SwtExec(Display.getDefault());
-		}
-		return async;
-	}
-
-	/** Global executor for immediate. */
-	private static SwtExec immediate;
-
-	/**
-	 * Returns an "immediate" SwtExecutor.
-	 * 
-	 * When execute() is called from within the SWT thread,
-	 * the runnable will be executed immediately. Else, it
-	 * falls back to async.
-	 */
-	@SuppressFBWarnings(value = "LI_LAZY_INIT_STATIC", justification = "This race condition is fine, as explained in the comment below.")
-	public static SwtExec immediate() {
-		if (immediate == null) {
-			// There is an acceptable race condition here.  See SwtExec.blocking() for details.
-			immediate = new SwtExec(Display.getDefault()) {
-				@Override
-				public void execute(Runnable runnable) {
-					Preconditions.checkNotNull(runnable);
-					if (!display.isDisposed()) {
-						if (Thread.currentThread() == display.getThread()) {
-							runnable.run();
-						} else {
-							display.asyncExec(runnable);
-						}
-					} else {
-						throw new RejectedExecutionException();
-					}
-				}
-			};
-		}
-		return immediate;
-	}
-
 	/** Execs the given runnable after the given delay. */
 	public static void timerExec(int ms, Runnable runnable) {
 		async().display.timerExec(ms, runnable);
@@ -204,10 +222,12 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 			this.guard = guard;
 		}
 
+		/** Creates a runnable which runs iff the guard widget is not disposed. */
 		public Runnable wrap(Runnable runnable) {
 			return () -> exec(runnable);
 		}
 
+		/** Runs the given runnable iff the guard widget is not disposed. */
 		public void exec(Runnable runnable) {
 			execute(() -> {
 				if (!guard.isDisposed()) {
@@ -216,13 +236,14 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 			});
 		}
 
+		/** Runs the given runnable after the given delay iff the guard widget is not disposed. */
 		public void timerExec(int delayMs, Runnable runnable) {
 			display.timerExec(delayMs, wrap(runnable));
 		}
 
-		// /////////////
+		////////////////
 		// Observable //
-		// /////////////
+		////////////////
 		public <T> Subscription subscribe(Observable<? extends T> observable, Rx<T> listener) {
 			if (!guard.isDisposed()) {
 				Subscription subscription = rxExecutor.subscribe(observable, listener);
@@ -245,9 +266,9 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 			return subscribe(observable, Rx.onValue(listener));
 		}
 
-		// ///////////////////
+		//////////////////////
 		// ListenableFuture //
-		// ///////////////////
+		//////////////////////
 		public <T> Subscription subscribe(ListenableFuture<? extends T> future, Rx<T> listener) {
 			if (!guard.isDisposed()) {
 				Subscription subscription = rxExecutor.subscribe(future, listener);
@@ -262,10 +283,6 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 			return subscribe(observable, Rx.onValue(listener));
 		}
 	}
-
-	// ////////////////////////////////
-	// SWT-Specific utility methods //
-	// ////////////////////////////////
 
 	protected final Display display;
 	protected final Rx.RxExecutor rxExecutor;
@@ -332,9 +349,9 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 		});
 	}
 
-	// ///////////
+	//////////////
 	// Executor //
-	// ///////////
+	//////////////
 	/**
 	 * Executes the given command at some time in the future. The command
 	 * may execute in a new thread, in a pooled thread, or in the calling
@@ -358,9 +375,9 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 		}
 	}
 
-	// //////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////
 	// ExecutorService shutdown stuff (all unimplemented) //
-	// //////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////
 	/**
 	 * Initiates an orderly shutdown in which previously submitted
 	 * tasks are executed, but no new tasks will be accepted.
@@ -436,9 +453,9 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 		throw Unhandled.operationException();
 	}
 
-	// ////////////////////////////
+	//////////////////////////////
 	// ScheduledExecutorService //
-	// ////////////////////////////
+	//////////////////////////////
 	/**
 	 * Creates and executes a one-shot action that becomes enabled
 	 * after the given delay.
