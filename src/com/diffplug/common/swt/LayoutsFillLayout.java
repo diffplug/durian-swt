@@ -17,42 +17,17 @@ package com.diffplug.common.swt;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Layout;
-
-import com.google.common.base.Preconditions;
 
 /**
- * A fluent api for setting and modifying a FillLayout.
+ * A fluent api for setting and modifying a FillLayout.  Created by static methods in Layouts.
  * 
  * Inspired by Moritz Post: http://eclipsesource.com/blogs/2013/07/25/efficiently-dealing-with-swt-gridlayout-and-griddata/
  */
-public class FillLayoutUtil {
+public class LayoutsFillLayout {
 	private final FillLayout fillLayout;
 
-	FillLayoutUtil(FillLayout fillLayout) {
+	LayoutsFillLayout(FillLayout fillLayout) {
 		this.fillLayout = fillLayout;
-	}
-
-	/** Sets the composite to have a standard FillLayout, and returns an API for modifying it. */
-	public static FillLayoutUtil set(Composite composite) {
-		FillLayout fillLayout = new FillLayout();
-		fillLayout.marginHeight = Layouts.DEFAULT_MARGIN;
-		fillLayout.marginWidth = Layouts.DEFAULT_MARGIN;
-		composite.setLayout(fillLayout);
-		return new FillLayoutUtil(fillLayout);
-	}
-
-	/** Returns an API for modifying the already-existing FillLayout on the given Composite. */
-	public static FillLayoutUtil modify(Composite composite) {
-		Layout layout = composite.getLayout();
-		Preconditions.checkArgument(layout instanceof FillLayout, "Composite must have FillLayout, but has %s.", layout);
-		return new FillLayoutUtil((FillLayout) layout);
-	}
-
-	/** Returns an API for modifying the given FillLayout. */
-	public static FillLayoutUtil wrap(FillLayout fillLayout) {
-		return new FillLayoutUtil(fillLayout);
 	}
 
 	/** Returns the raw FillLayout. */
@@ -61,39 +36,39 @@ public class FillLayoutUtil {
 	}
 
 	/** Sets the margins to zero. */
-	public FillLayoutUtil noBorder() {
+	public LayoutsFillLayout noBorder() {
 		fillLayout.marginWidth = 0;
 		fillLayout.marginHeight = 0;
 		return this;
 	}
 
 	/** Sets the spacing to zero. */
-	public FillLayoutUtil tight() {
+	public LayoutsFillLayout noSpacing() {
 		fillLayout.spacing = 0;
 		return this;
 	}
 
-	public FillLayoutUtil vertical() {
+	public LayoutsFillLayout vertical() {
 		fillLayout.type = SWT.VERTICAL;
 		return this;
 	}
 
-	public FillLayoutUtil horizontal() {
+	public LayoutsFillLayout horizontal() {
 		fillLayout.type = SWT.HORIZONTAL;
 		return this;
 	}
 
-	public FillLayoutUtil marginWidth(int marginWidth) {
+	public LayoutsFillLayout marginWidth(int marginWidth) {
 		fillLayout.marginWidth = marginWidth;
 		return this;
 	}
 
-	public FillLayoutUtil marginHeight(int marginHeight) {
+	public LayoutsFillLayout marginHeight(int marginHeight) {
 		fillLayout.marginHeight = marginHeight;
 		return this;
 	}
 
-	public FillLayoutUtil spacing(int spacing) {
+	public LayoutsFillLayout spacing(int spacing) {
 		fillLayout.spacing = spacing;
 		return this;
 	}
