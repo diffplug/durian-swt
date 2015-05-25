@@ -35,7 +35,7 @@ public class LayoutsGridLayout {
 	}
 
 	/** Sets the margins to zero. */
-	public LayoutsGridLayout noBorder() {
+	public LayoutsGridLayout noMargin() {
 		gridLayout.marginWidth = 0;
 		gridLayout.marginHeight = 0;
 		gridLayout.marginLeft = 0;

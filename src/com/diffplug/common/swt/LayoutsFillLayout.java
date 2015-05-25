@@ -36,7 +36,7 @@ public class LayoutsFillLayout {
 	}
 
 	/** Sets the margins to zero. */
-	public LayoutsFillLayout noBorder() {
+	public LayoutsFillLayout noMargin() {
 		fillLayout.marginWidth = 0;
 		fillLayout.marginHeight = 0;
 		return this;
