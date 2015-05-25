@@ -50,7 +50,7 @@ public class LayoutsGridData {
 		return this;
 	}
 
-	/** The GridData will grab space veritcally. */
+	/** The GridData will grab space vertically. */
 	public LayoutsGridData grabVertical() {
 		gridData.verticalAlignment = SWT.FILL;
 		gridData.grabExcessVerticalSpace = true;
