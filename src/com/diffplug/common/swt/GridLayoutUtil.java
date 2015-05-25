@@ -22,41 +22,51 @@ import org.eclipse.swt.widgets.Layout;
 import com.google.common.base.Preconditions;
 
 /**
- * Code from: https://gist.github.com/mpost/6077907
- * Post from: http://eclipsesource.com/blogs/2013/07/25/efficiently-dealing-with-swt-gridlayout-and-griddata/
- * Many thanks to the author, Moritz Post.
+ * A fluent api for setting and modifying a GridLayout.
  * 
- * Modified for our purposes.
+ * Inspired by Moritz Post: http://eclipsesource.com/blogs/2013/07/25/efficiently-dealing-with-swt-gridlayout-and-griddata/
  */
 public class GridLayoutUtil {
 	private final GridLayout gridLayout;
 
-	private GridLayoutUtil(GridLayout gridLayout) {
+	GridLayoutUtil(GridLayout gridLayout) {
 		this.gridLayout = gridLayout;
 	}
 
-	private static final int DEFAULT_MARGIN = 5;
-
+	/** Sets the composite to have a standard GridLayout, and returns an API for modifying it. */
 	public static GridLayoutUtil set(Composite composite) {
 		GridLayout gridLayout = new GridLayout();
-		gridLayout.marginHeight = DEFAULT_MARGIN;
-		gridLayout.marginWidth = DEFAULT_MARGIN;
+		gridLayout.marginHeight = Layouts.DEFAULT_MARGIN;
+		gridLayout.marginWidth = Layouts.DEFAULT_MARGIN;
 		composite.setLayout(gridLayout);
 		return new GridLayoutUtil(gridLayout);
 	}
 
+	/** Returns an API for modifying the already-existing GridLayout on the given Composite. */
 	public static GridLayoutUtil modify(Composite composite) {
 		Layout layout = composite.getLayout();
 		Preconditions.checkArgument(layout instanceof GridLayout, "Composite must have GridLayout, but has %s.", layout);
 		return new GridLayoutUtil((GridLayout) layout);
 	}
 
+	/** Returns an API for modifying the given GridLayout. */
+	public static GridLayoutUtil wrap(GridLayout gridLayout) {
+		return new GridLayoutUtil(gridLayout);
+	}
+
+	/** Returns the raw GridLayout. */
+	public GridLayout getRaw() {
+		return gridLayout;
+	}
+
+	/** Sets the margins to zero. */
 	public GridLayoutUtil noBorder() {
 		gridLayout.marginWidth = 0;
 		gridLayout.marginHeight = 0;
 		return this;
 	}
 
+	/** Sets the spacing to zero. */
 	public GridLayoutUtil tight() {
 		gridLayout.verticalSpacing = 0;
 		gridLayout.horizontalSpacing = 0;

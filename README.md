@@ -23,6 +23,7 @@ Durian's only requirement is Java 8 or greater, no other libraries needed (not e
 
 ## Acknowledgements
 
+* Thanks to Moritz Post for his [fluent layout idea](http://eclipsesource.com/blogs/2013/07/25/efficiently-dealing-with-swt-gridlayout-and-griddata/).
 * Built by [gradle](http://gradle.org/).
 * Tested by [junit](http://junit.org/).
 * Bugs found by [findbugs](http://findbugs.sourceforge.net/).

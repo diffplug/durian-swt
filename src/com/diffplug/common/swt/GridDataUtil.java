@@ -25,74 +25,81 @@ import org.eclipse.swt.widgets.Label;
 import com.google.common.base.Preconditions;
 
 /**
- * Code from: https://gist.github.com/mpost/6077907
- * Post from: http://eclipsesource.com/blogs/2013/07/25/efficiently-dealing-with-swt-gridlayout-and-griddata/
- * Many thanks to the author, Moritz Post
+ * A fluent api for setting and modifying a GridData.
  * 
- * Modified for our purposes.
+ * Inspired by Moritz Post: http://eclipsesource.com/blogs/2013/07/25/efficiently-dealing-with-swt-gridlayout-and-griddata/
  */
 public class GridDataUtil {
 	private final GridData gridData;
 
-	private GridDataUtil(GridData gridData) {
+	GridDataUtil(GridData gridData) {
 		this.gridData = gridData;
 	}
 
-	/** Creates a new Label and sets its GridData as a placeholder. */
+	/** Creates an invisible Label, and returns an API for setting its GridData. Useful for filling spots in a GridLayout. */
 	public static GridDataUtil newPlaceholder(Composite parent) {
 		Label placeholder = new Label(parent, SWT.NONE);
 		return set(placeholder);
 	}
 
+	/** Sets the layout data on the Control be a new GridData, and returns an API for modifying it. */
 	public static GridDataUtil set(Control control) {
 		GridData gridData = new GridData();
 		control.setLayoutData(gridData);
 		return new GridDataUtil(gridData);
 	}
 
-	public static GridDataUtil modify(Control control) {
-		Object layoutData = control.getLayoutData();
-		Preconditions.checkArgument(layoutData instanceof GridData, "Control must have GridData, but has %s.",
-				layoutData);
-		return new GridDataUtil((GridData) layoutData);
-	}
-
-	public static GridDataUtil modify(GridData gd) {
-		return new GridDataUtil(gd);
-	}
-
+	/** Sets the layout data on the ControlWrapper be a new GridData, and returns an API for modifying it. */
 	public static GridDataUtil set(ControlWrapper<?> wrapper) {
 		return set(wrapper.getControl());
 	}
 
+	/** Returns an API for modifying the already-existing GridData which has been set on the given Control. */
+	public static GridDataUtil modify(Control control) {
+		Object layoutData = control.getLayoutData();
+		Preconditions.checkArgument(layoutData instanceof GridData, "Control must have GridData, but has %s.", layoutData);
+		return new GridDataUtil((GridData) layoutData);
+	}
+
+	/** Returns an API for modifying the already-existing GridData which has been set on the given ControlWrapper. */
 	public static GridDataUtil modify(ControlWrapper<?> wrapper) {
 		return set(wrapper.getControl());
 	}
 
-	public GridDataUtil fillHorizontal() {
-		gridData.horizontalAlignment = SWT.FILL;
-		gridData.verticalAlignment = SWT.CENTER;
-		gridData.grabExcessHorizontalSpace = true;
-		gridData.grabExcessVerticalSpace = false;
+	/** Returns an API for modifying the given GridData. */
+	public static GridDataUtil wrap(GridData gridData) {
+		return new GridDataUtil(gridData);
+	}
+
+	/** Returns the raw GridData. */
+	public GridData getRaw() {
+		return gridData;
+	}
+
+	/** The GridData will grab space in all directions. */
+	public GridDataUtil grabAll() {
+		grabHorizontal();
+		grabVertical();
 		return this;
 	}
 
-	public GridDataUtil fillVertical() {
-		gridData.horizontalAlignment = SWT.TOP;
+	/** The GridData will grab space horizontally. */
+	public GridDataUtil grabHorizontal() {
+		gridData.horizontalAlignment = SWT.FILL;
+		gridData.grabExcessHorizontalSpace = true;
+		return this;
+	}
+
+	/** The GridData will grab space veritcally. */
+	public GridDataUtil grabVertical() {
 		gridData.verticalAlignment = SWT.FILL;
-		gridData.grabExcessHorizontalSpace = false;
 		gridData.grabExcessVerticalSpace = true;
 		return this;
 	}
 
-	public GridDataUtil fillAll() {
-		gridData.horizontalAlignment = SWT.FILL;
-		gridData.verticalAlignment = SWT.FILL;
-		gridData.grabExcessHorizontalSpace = true;
-		gridData.grabExcessVerticalSpace = true;
-		return this;
-	}
-
+	////////////////////////////
+	// Setters for all fields //
+	////////////////////////////
 	public GridDataUtil grabExcessHorizontalSpace(boolean grabExcessHorizontalSpace) {
 		gridData.grabExcessHorizontalSpace = grabExcessHorizontalSpace;
 		return this;
@@ -167,28 +174,6 @@ public class GridDataUtil {
 
 	public GridDataUtil exclude(boolean exclude) {
 		gridData.exclude = exclude;
-		return this;
-	}
-
-	public int getHeightHint() {
-		return gridData.heightHint;
-	}
-
-	public GridDataUtil grabAll() {
-		grabHorizontal();
-		grabVertical();
-		return this;
-	}
-
-	public GridDataUtil grabHorizontal() {
-		gridData.horizontalAlignment = SWT.FILL;
-		gridData.grabExcessHorizontalSpace = true;
-		return this;
-	}
-
-	public GridDataUtil grabVertical() {
-		gridData.verticalAlignment = SWT.FILL;
-		gridData.grabExcessVerticalSpace = true;
 		return this;
 	}
 }
