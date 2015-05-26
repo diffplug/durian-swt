@@ -65,6 +65,10 @@ dependencies {
 	compile "p2:org.eclipse.swt.${com.diffplug.common.swt.os.EclipsePlatform.getRunning()}:${VER_SWT_PLATFORM}"
 
 	testCompile "junit:junit:${VER_JUNIT}"
+
+	configurations.all {
+		resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+	}
 }
 
 jar.manifest {
