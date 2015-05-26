@@ -129,8 +129,8 @@ public class SwtMisc {
 
 	/** Runs the display loop until the given future has returned. */
 	public static <T> T loopUntilGet(ListenableFuture<T> future) throws Throwable {
-		Box<T> result = Box.empty();
-		Box<Throwable> error = Box.empty();
+		Box<T> result = Box.ofNull();
+		Box<Throwable> error = Box.ofNull();
 		Rx.subscribe(future, Rx.onValueOrFailure(result::set, error::set));
 
 		loopUntil(() -> future.isDone());

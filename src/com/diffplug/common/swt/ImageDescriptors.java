@@ -26,8 +26,8 @@ import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Widget;
 
+import com.diffplug.common.base.Box;
 import com.diffplug.common.base.Errors;
-import com.diffplug.common.base.GetterSetter;
 import com.diffplug.common.base.Unhandled;
 
 /** Utilities for using ImageDescriptors correctly. */
@@ -45,8 +45,8 @@ public class ImageDescriptors {
 	 * @param imageSetter Function which sets the image being set.
 	 * @return
 	 */
-	public static GetterSetter<ImageDescriptor> createSetter(Widget lifecycle, Supplier<Image> imageGetter, Consumer<Image> imageSetter) {
-		return new GetterSetter<ImageDescriptor>() {
+	public static Box<ImageDescriptor> createSetter(Widget lifecycle, Supplier<Image> imageGetter, Consumer<Image> imageSetter) {
+		return new Box<ImageDescriptor>() {
 			private ImageDescriptor lastDesc;
 			private Image lastImg;
 
@@ -95,7 +95,7 @@ public class ImageDescriptors {
 	}
 
 	/** Global cache of widget -> image descriptor setters. */
-	private static final OnePerWidget<Widget, GetterSetter<ImageDescriptor>> map = OnePerWidget.from((Widget widget) -> {
+	private static final OnePerWidget<Widget, Box<ImageDescriptor>> map = OnePerWidget.from((Widget widget) -> {
 		if (widget instanceof Item) {
 			Item cast = (Item) widget;
 			return createSetter(cast, cast::getImage, cast::setImage);

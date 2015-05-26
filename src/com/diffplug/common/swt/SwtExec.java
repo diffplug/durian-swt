@@ -49,7 +49,7 @@ import com.diffplug.common.base.Box;
 import com.diffplug.common.base.Unhandled;
 import com.diffplug.common.rx.IObservable;
 import com.diffplug.common.rx.Rx;
-import com.diffplug.common.swt.ControlWrapper;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -170,7 +170,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 			if (current != null) {
 				return supplier.get();
 			} else {
-				Box<T> holder = Box.empty();
+				Box<T> holder = Box.ofNull();
 				execute(() -> holder.set(supplier.get()));
 				return holder.get();
 			}
