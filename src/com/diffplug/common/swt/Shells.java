@@ -32,13 +32,14 @@ import com.google.common.base.Preconditions;
 /** A fluent builder for creating SWT shells. */
 public class Shells {
 	private final Coat coat;
-	private final int style = SWT.DIALOG_TRIM;
+	private final int style;
 	private String title = "";
 	private Image image;
 	private Point size;
 	private Point openPosition;
 
 	private Shells(int style, Coat coat) {
+		this.style = style;
 		this.coat = coat;
 	}
 
