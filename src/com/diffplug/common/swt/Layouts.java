@@ -45,7 +45,7 @@ public class Layouts {
 		fillLayout.spacing = SWT.HORIZONTAL;
 		fillLayout.marginHeight = DEFAULT_MARGIN;
 		fillLayout.marginWidth = DEFAULT_MARGIN;
-		fillLayout.spacing = DEFAULT_MARGIN;		
+		fillLayout.spacing = DEFAULT_MARGIN;
 		composite.setLayout(fillLayout);
 		return new LayoutsFillLayout(fillLayout);
 	}
