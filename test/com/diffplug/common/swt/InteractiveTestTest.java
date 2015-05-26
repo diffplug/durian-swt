@@ -28,6 +28,7 @@ import com.google.common.collect.Range;
 import com.google.common.util.concurrent.Uninterruptibles;
 
 import com.diffplug.common.swt.InteractiveTest;
+import com.diffplug.common.swt.InteractiveTest.FailsWithoutUser;
 import com.diffplug.common.swt.Layouts;
 import com.diffplug.common.swt.Shells;
 import com.diffplug.common.swt.SwtExec;
@@ -35,19 +36,21 @@ import com.diffplug.common.swt.SwtMisc;
 
 @Category(InteractiveTest.class)
 public class InteractiveTestTest {
-	@Test
-	public void testPass() {
-		InteractiveTest.testCoat("A blank dialog should be open to the left, press Pass.", 30, 0, this::dummyCoat);
-	}
-
+	@Category(FailsWithoutUser.class)
 	@Test(expected = AssertionError.class)
 	public void testFail() {
 		InteractiveTest.testCoat("A blank dialog should be open to the left, press Fail.", 30, 0, this::dummyCoat);
 	}
 
+	@Category(FailsWithoutUser.class)
 	@Test(expected = AssertionError.class)
 	public void testClose() {
 		InteractiveTest.testCoat("A blank dialog should be open to the left, close it (which counts as Fail).", 30, 0, this::dummyCoat);
+	}
+
+	@Test
+	public void testPass() {
+		InteractiveTest.testCoat("A blank dialog should be open to the left, press Pass.", 30, 0, this::dummyCoat);
 	}
 
 	@Test

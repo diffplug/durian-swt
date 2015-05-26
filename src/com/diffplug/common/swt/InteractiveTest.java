@@ -28,6 +28,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
 
+import com.google.common.base.Preconditions;
+
 import com.diffplug.common.base.Box;
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.Unhandled;
@@ -48,29 +50,37 @@ import com.diffplug.common.base.Unhandled;
 public class InteractiveTest {
 	private InteractiveTest() {}
 
-	/** Returns true iff the test should be run in "autoclose" mode. */
+	/** Returns an optional of the proper autoclose delay. */
 	private static Optional<Integer> autoCloseMs() {
 		String value = System.getProperty(AUTOCLOSE_KEY);
 		if (value == null) {
 			return Optional.empty();
 		} else {
-			return Errors.log().getWithDefault(
-					() -> Optional.of(Integer.parseInt(value)),
-					Optional.<Integer> empty());
+			return Errors.log().getWithDefault(() -> {
+				int intValue = Integer.parseInt(value);
+				Preconditions.checkArgument(intValue > 0, "%s should be positive or non-existent, this was %s", AUTOCLOSE_KEY, intValue);
+				return Optional.of(intValue);
+			}, Optional.<Integer> empty());
 		}
 	}
 
+	/** Key for specifying that autoclose should be used. */
 	public static final String AUTOCLOSE_KEY = "com.diffplug.test.autoclose.milliseconds";
 
-	public static final int CMP_COLS = 60;
-	public static final int CMP_ROWS = 40;
+	/** Marker interface for interactive tests that aren't compatible with auto-close. */
+	public static interface FailsWithoutUser {}
+
+	/** Default width of testCoat(). */
+	public static final int DEFAULT_COLS = 60;
+	/** Default height of testCoat(). */
+	public static final int DEFAULT_ROWS = 40;
 
 	/**
 	 * @param instructions Instructions for the user to follow.
 	 * @param coat A function to populate the test composite.
 	 */
 	public static void testCoat(String instructions, Coat coat) {
-		testCoat(instructions, CMP_COLS, CMP_ROWS, coat);
+		testCoat(instructions, DEFAULT_COLS, DEFAULT_ROWS, coat);
 	}
 
 	/**
@@ -229,5 +239,6 @@ public class InteractiveTest {
 		return instructionsShell;
 	}
 
+	/** Spacing between the Shell under test and the instructions shell. */
 	private static final int HORIZONTAL_SEP = 15;
 }

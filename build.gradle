@@ -75,6 +75,27 @@ jar.manifest {
 	from 'META-INF/MANIFEST.MF'
 }
 
+/////////////////////////
+// INTERACTIVE TESTING //
+/////////////////////////
+
+// standard test uses autoclose
+test {
+	systemProperty 'com.diffplug.test.autoclose.milliseconds', '500'
+	useJUnit {
+		// there are some tests that can't pass without a user, so we'll exclude them
+		excludeCategories 'com.diffplug.common.swt.InteractiveTest$FailsWithoutUser'
+	}
+}
+
+// only run the interactive tests
+task interactiveTest(type: Test) {
+	systemProperty 'com.diffplug.test.autoclose.milliseconds', null
+	useJUnit {
+		includeCategories 'com.diffplug.common.swt.InteractiveTest'
+	}
+}
+
 /////////////
 // ECLIPSE //
 /////////////
