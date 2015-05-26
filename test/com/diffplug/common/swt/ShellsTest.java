@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Text;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import com.diffplug.closet.swt.InteractiveTest;
+import com.diffplug.common.swt.InteractiveTest;
 import com.diffplug.common.swt.Layouts;
 import com.diffplug.common.swt.Shells;
 
