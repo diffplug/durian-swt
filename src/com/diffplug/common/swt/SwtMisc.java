@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -88,9 +89,12 @@ public class SwtMisc {
 
 	/** Returns the Display instance, asserting that the method was called from the UI thread. */
 	public static Display assertUI() {
-		Display current = Display.getCurrent();
-		Preconditions.checkArgument(current != null, "Must be called only from UI thread");
-		return current;
+		// returns the system display, creating it if necessary
+		synchronized (Device.class) {
+			Display display = Display.getDefault();
+			Preconditions.checkArgument(display.getThread() == Thread.currentThread(), "Must be called only from UI thread");
+			return display;
+		}
 	}
 
 	/** Asserts that the user didn't call this from the UI thread. */
