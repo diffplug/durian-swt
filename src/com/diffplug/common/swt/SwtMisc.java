@@ -91,6 +91,8 @@ public class SwtMisc {
 	public static Display assertUI() {
 		// returns the system display, creating it if necessary
 		synchronized (Device.class) {
+			// Display.getDefault() and display.getThread() both synchronize on
+			// Device.class.  By synchronizing ourselves, we minimize contention
 			Display display = Display.getDefault();
 			Preconditions.checkArgument(display.getThread() == Thread.currentThread(), "Must be called only from UI thread");
 			return display;
