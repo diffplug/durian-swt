@@ -45,11 +45,10 @@ import com.google.common.base.Preconditions;
 import com.google.common.primitives.Ints;
 import com.google.common.util.concurrent.ListenableFuture;
 
-import com.diffplug.common.base.Box;
+import com.diffplug.common.base.Box.Nullable;
 import com.diffplug.common.base.Unhandled;
 import com.diffplug.common.rx.IObservable;
 import com.diffplug.common.rx.Rx;
-
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -170,7 +169,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 			if (current != null) {
 				return supplier.get();
 			} else {
-				Box<T> holder = Box.ofNull();
+				Nullable<T> holder = Nullable.ofNull();
 				execute(() -> holder.set(supplier.get()));
 				return holder.get();
 			}

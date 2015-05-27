@@ -36,7 +36,7 @@ public class ImageDescriptors {
 	 * ImageDescriptor allows an image to be shared in a pool using reference counting. In order to not screw-up the reference
 	 * counting, you need to be pretty careful with how you use them.
 	 * 
-	 * This creates a Box<ImageDescriptor> which sets and gets images in a way that will keep the reference counting happy.
+	 * This creates a Box.Nullable<ImageDescriptor> which sets and gets images in a way that will keep the reference counting happy.
 	 * 
 	 * NO ONE MUST SET THE IMAGE EXCEPT THIS SETTER.
 	 *
@@ -45,8 +45,8 @@ public class ImageDescriptors {
 	 * @param imageSetter Function which sets the image being set.
 	 * @return
 	 */
-	public static Box<ImageDescriptor> createSetter(Widget lifecycle, Supplier<Image> imageGetter, Consumer<Image> imageSetter) {
-		return new Box<ImageDescriptor>() {
+	public static Box.Nullable<ImageDescriptor> createSetter(Widget lifecycle, Supplier<Image> imageGetter, Consumer<Image> imageSetter) {
+		return new Box.Nullable<ImageDescriptor>() {
 			private ImageDescriptor lastDesc;
 			private Image lastImg;
 
@@ -95,7 +95,7 @@ public class ImageDescriptors {
 	}
 
 	/** Global cache of widget -> image descriptor setters. */
-	private static final OnePerWidget<Widget, Box<ImageDescriptor>> map = OnePerWidget.from((Widget widget) -> {
+	private static final OnePerWidget<Widget, Box.Nullable<ImageDescriptor>> map = OnePerWidget.from((Widget widget) -> {
 		if (widget instanceof Item) {
 			Item cast = (Item) widget;
 			return createSetter(cast, cast::getImage, cast::setImage);

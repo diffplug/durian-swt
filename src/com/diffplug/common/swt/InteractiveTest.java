@@ -124,7 +124,7 @@ public class InteractiveTest {
 			underTest.setLocation(10, 10);
 
 			// create the test dialog
-			Box.NonNull<TestResult> result = Box.NonNull.of(TestResult.FAIL);
+			Box<TestResult> result = Box.of(TestResult.FAIL);
 			Shell instructionsDialog = openInstructions(underTest, instructions, result);
 			underTest.setActive();
 
@@ -199,7 +199,7 @@ public class InteractiveTest {
 	}
 
 	/** Opens the instructions dialog. */
-	private static Shell openInstructions(Shell underTest, String instructions, Box.NonNull<TestResult> result) {
+	private static Shell openInstructions(Shell underTest, String instructions, Box<TestResult> result) {
 		Shell instructionsShell = Shells.create(SWT.TITLE | SWT.BORDER, cmp -> {
 			Layouts.setGrid(cmp).numColumns(3);
 

@@ -38,7 +38,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ListenableFuture;
 
-import com.diffplug.common.base.Box;
+import com.diffplug.common.base.Box.Nullable;
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.TreeDef;
 import com.diffplug.common.base.TreeStream;
@@ -129,8 +129,8 @@ public class SwtMisc {
 
 	/** Runs the display loop until the given future has returned. */
 	public static <T> T loopUntilGet(ListenableFuture<T> future) throws Throwable {
-		Box<T> result = Box.ofNull();
-		Box<Throwable> error = Box.ofNull();
+		Nullable<T> result = Nullable.ofNull();
+		Nullable<Throwable> error = Nullable.ofNull();
 		Rx.subscribe(future, Rx.onValueOrFailure(result::set, error::set));
 
 		loopUntil(() -> future.isDone());
