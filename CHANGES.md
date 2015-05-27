@@ -1,5 +1,5 @@
 # Durian releases
 
-### Version 1.0 - TBD ([jcenter](https://bintray.com/diffplug/opensource/durian-rx/1.0/view))
+### Version 1.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/latest/))
 
 * First stable release

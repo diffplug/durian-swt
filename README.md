@@ -30,6 +30,5 @@ Durian's only requirement is Java 8 or greater, no other libraries needed (not e
 * Bundled for OSGI by [gradle-bundle-plugin](https://github.com/TomDmitriev/gradle-bundle-plugin).
 * Formatted by [gradle-format-plugin](https://github.com/youribonnaffe/gradle-format-plugin).
 * License headered by [license-gradle-plugin](https://github.com/hierynomus/license-gradle-plugin).
-* Artifacts hosted by [jcenter](https://bintray.com/bintray/jcenter) and uploaded by [gradle-bintray-plugin](https://github.com/bintray/gradle-bintray-plugin).
 * `StringPrinter.toOutputStream()` borrows heavily from `WriterOutputStream`, inside Apache commons-io.
 * `DurianPlugins` is inspired by RxJava's plugin mechanism.
