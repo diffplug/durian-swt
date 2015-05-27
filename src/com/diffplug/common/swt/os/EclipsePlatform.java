@@ -26,13 +26,13 @@ import com.google.common.collect.Lists;
 
 /** Parsing and whatsuch for the eclipse platform, including the Wuff gradle plugin. */
 public class EclipsePlatform {
-	public final String os;
 	public final String ws;
+	public final String os;
 	public final String arch;
 
-	private EclipsePlatform(String os, String ws, String arch) {
-		this.os = os;
+	private EclipsePlatform(String ws, String os, String arch) {
 		this.ws = ws;
+		this.os = os;
 		this.arch = arch;
 	}
 
@@ -40,7 +40,7 @@ public class EclipsePlatform {
 	public boolean equals(Object otherRaw) {
 		if (otherRaw instanceof EclipsePlatform) {
 			EclipsePlatform other = (EclipsePlatform) otherRaw;
-			return os.equals(other.os) && ws.equals(other.ws) && arch.equals(other.arch);
+			return ws.equals(other.ws) && os.equals(other.os) && arch.equals(other.arch);
 		} else {
 			return false;
 		}
@@ -48,13 +48,13 @@ public class EclipsePlatform {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(os, ws, arch);
+		return Objects.hash(ws, os, arch);
 	}
 
 	/** Returns "os.ws.arch" */
 	@Override
 	public String toString() {
-		return os + "." + ws + "." + arch;
+		return ws + "." + os + "." + arch;
 	}
 
 	/** Returns a string appropriate as an Eclipse-PlatformFilter. */
@@ -90,7 +90,7 @@ public class EclipsePlatform {
 		String ws = pieces[0];
 		String os = pieces[1];
 		String arch = pieces[2];
-		return new EclipsePlatform(os, ws, arch);
+		return new EclipsePlatform(ws, os, arch);
 	}
 
 	/** Parses ws.os.arch strings (as the SWT bundles are specified). */
@@ -100,7 +100,7 @@ public class EclipsePlatform {
 		String os = pieces[0];
 		String ws = pieces[1];
 		String arch = pieces[2];
-		return new EclipsePlatform(os, ws, arch);
+		return new EclipsePlatform(ws, os, arch);
 	}
 
 	/** Returns the EclipsePlatform for the native platform. */
@@ -115,10 +115,10 @@ public class EclipsePlatform {
 
 	/** Converts an OS to an EclipsePlatform. */
 	public static EclipsePlatform fromOS(OS raw) {
-		String os = raw.winMacLinux("win32", "macosx", "linux");
 		String ws = raw.winMacLinux("win32", "cocoa", "gtk");
+		String os = raw.winMacLinux("win32", "macosx", "linux");
 		String arch = raw.getArch().x86x64("x86", "x86_64");
-		return new EclipsePlatform(os, ws, arch);
+		return new EclipsePlatform(ws, os, arch);
 	}
 
 	/** Returns all of the platforms. */
