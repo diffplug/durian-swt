@@ -75,7 +75,7 @@ public class SwtMisc {
 	 * processed before the layout can take place. 
 	 */
 	public static void asyncLayout(Composite cmp) {
-		SwtExec.async().guardOn(cmp).exec(() -> cmp.layout(true, true));
+		SwtExec.async().guardOn(cmp).execute(() -> cmp.layout(true, true));
 	}
 
 	/**

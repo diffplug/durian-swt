@@ -21,6 +21,7 @@ import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.RunnableFuture;
 import java.util.concurrent.ScheduledExecutorService;
@@ -49,6 +50,7 @@ import com.diffplug.common.base.Box.Nullable;
 import com.diffplug.common.base.Unhandled;
 import com.diffplug.common.rx.IObservable;
 import com.diffplug.common.rx.Rx;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -144,6 +146,11 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 		return blocking;
 	}
 
+	/**
+	 * See SwtExec.blocking() for execution semantics.
+	 * 
+	 * Adds a blocking get() method for doing gets in the UI thread.
+	 */
 	public static class Blocking extends SwtExec {
 		private Blocking() {
 			super(Display.getDefault());
@@ -163,7 +170,12 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 			}
 		}
 
-		/** Performs a blocking get in the UI thread. */
+		/**
+		 * Performs a blocking get in the UI thread.
+		 * 
+		 * @param supplier will be executed in the UI thread.
+		 * @return the value which was returned by supplier.
+		 */
 		public <T> T get(Supplier<T> supplier) {
 			Display current = Display.getCurrent();
 			if (current != null) {
@@ -192,8 +204,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 		}
 
 		@Override
-		public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay,
-				TimeUnit unit) {
+		public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit) {
 			throw Unhandled.operationException();
 		}
 	}
@@ -205,39 +216,47 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 
 	/** Returns an API for performing actions which are guarded on the given widget. */
 	public Guarded guardOn(Widget widget) {
-		return new Guarded(widget);
+		return new Guarded(this, widget);
 	}
 
 	/** Returns an API for performing actions which are guarded on the given widget. */
 	public Guarded guardOn(ControlWrapper<?> wrapper) {
-		return guardOn(wrapper.control);
+		return guardOn(wrapper.asControl());
 	}
 
 	/** API for conducting actions which are guarded on an SWT widget. */
-	public class Guarded {
-		private Widget guard;
+	public static class Guarded implements Executor {
+		private final SwtExec parent;
+		private final Widget guard;
 
-		private Guarded(Widget guard) {
+		private Guarded(SwtExec parent, Widget guard) {
+			this.parent = parent;
 			this.guard = guard;
 		}
 
-		/** Creates a runnable which runs iff the guard widget is not disposed. */
+		/** Creates a runnable which runs on this Executor iff the guard widget is not disposed. */
 		public Runnable wrap(Runnable runnable) {
-			return () -> exec(runnable);
+			return () -> execute(runnable);
 		}
 
 		/** Runs the given runnable iff the guard widget is not disposed. */
-		public void exec(Runnable runnable) {
-			execute(() -> {
-				if (!guard.isDisposed()) {
-					runnable.run();
-				}
-			});
+		@Override
+		public void execute(Runnable runnable) {
+			parent.execute(guardedRunnable(runnable));
 		}
 
 		/** Runs the given runnable after the given delay iff the guard widget is not disposed. */
 		public void timerExec(int delayMs, Runnable runnable) {
-			display.timerExec(delayMs, wrap(runnable));
+			parent.display.timerExec(delayMs, guardedRunnable(runnable));
+		}
+
+		/** Returns a Runnable which guards on the guard widget. */
+		private Runnable guardedRunnable(Runnable toGuard) {
+			return () -> {
+				if (!guard.isDisposed()) {
+					toGuard.run();
+				}
+			};
 		}
 
 		////////////////
@@ -245,7 +264,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 		////////////////
 		public <T> Subscription subscribe(Observable<? extends T> observable, Rx<T> listener) {
 			if (!guard.isDisposed()) {
-				Subscription subscription = rxExecutor.subscribe(observable, listener);
+				Subscription subscription = parent.rxExecutor.subscribe(observable, listener);
 				guard.addListener(SWT.Dispose, e -> subscription.unsubscribe());
 				return subscription;
 			} else {
@@ -270,7 +289,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 		//////////////////////
 		public <T> Subscription subscribe(ListenableFuture<? extends T> future, Rx<T> listener) {
 			if (!guard.isDisposed()) {
-				Subscription subscription = rxExecutor.subscribe(future, listener);
+				Subscription subscription = parent.rxExecutor.subscribe(future, listener);
 				guard.addListener(SWT.Dispose, e -> subscription.unsubscribe());
 				return subscription;
 			} else {
@@ -278,8 +297,8 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 			}
 		}
 
-		public <T> Subscription subscribe(ListenableFuture<? extends T> observable, Consumer<T> listener) {
-			return subscribe(observable, Rx.onValue(listener));
+		public <T> Subscription subscribe(ListenableFuture<? extends T> future, Consumer<T> listener) {
+			return subscribe(future, Rx.onValue(listener));
 		}
 	}
 

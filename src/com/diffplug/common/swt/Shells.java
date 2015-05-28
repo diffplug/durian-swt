@@ -177,7 +177,7 @@ public class Shells {
 		};
 		shell.addListener(SWT.Close, listener);
 		return BooleanSubscription.create(() -> {
-			SwtExec.immediate().guardOn(shell).exec(() -> {
+			SwtExec.immediate().guardOn(shell).execute(() -> {
 				shell.removeListener(SWT.Close, listener);
 			});
 		});
