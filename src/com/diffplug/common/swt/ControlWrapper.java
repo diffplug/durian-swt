@@ -28,7 +28,7 @@ import org.eclipse.swt.widgets.Control;
  * - Users can set the layout oo your "Control" because it exposes the Composite interface.
  * - Users can add random listeners to your "Control", and overridding "addListener" to intercept them is a VERY DANGEROUS PLAN.
  * 
- * ControlWrapper fixes this by providing an extremely low-overhead skeleton which hides the
+ * ControlWrapper fixes this by providing an extremely low-overhead skeleton which encapsulates the
  * SWT Control that you're using as the base of your custom control, which allows you to only
  * expose the APIs that are appropriate.
  */

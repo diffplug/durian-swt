@@ -19,7 +19,14 @@ import java.util.Objects;
 
 import org.eclipse.swt.widgets.Composite;
 
-/** For populating composites. */
+/**
+ * An SWT Composite is a blank canvas.  As such, it's EXTREMELY COMMON to write functions
+ * that look like this `void initializeCmp(Composite cmp)`. In order to make higher-order
+ * functionality, such as a utility for stacking Composites, you need a way to pass these
+ * kinds of functions as arguments.
+ * 
+ * Coat is a function that you `putOn` a completely blank Composite.
+ */
 @FunctionalInterface
 public interface Coat {
 	/**
@@ -33,7 +40,7 @@ public interface Coat {
 		return cmp -> {};
 	}
 
-	/** A Coat which returns a handle to the content it created. */
+	/** A Coat which returns some handle to the content it created. */
 	@FunctionalInterface
 	public static interface Returning<T> {
 		/**
@@ -43,10 +50,10 @@ public interface Coat {
 		T putOn(Composite cmp);
 
 		/** Converts a non-returning Coat to a Coat.Returning. */
-		public static <T extends Coat> Returning<T> fromNonReturning(T client) {
+		public static <T extends Coat> Returning<T> fromNonReturning(T coat) {
 			return cmp -> {
-				client.putOn(cmp);
-				return client;
+				coat.putOn(cmp);
+				return coat;
 			};
 		}
 	}
@@ -60,10 +67,10 @@ public interface Coat {
 		Class<T> classOfT();
 
 		/** Transforms a Coat into a CmpClientDeluxe. */
-		public static <T> Reusable<T> fromReturning(Object dedupKey, Class<T> classOfT, Returning<T> client) {
+		public static <T> Reusable<T> fromReturning(Object dedupKey, Class<T> classOfT, Returning<T> coat) {
 			Objects.requireNonNull(dedupKey);
 			Objects.requireNonNull(classOfT);
-			Objects.requireNonNull(client);
+			Objects.requireNonNull(coat);
 			return new Reusable<T>() {
 				@Override
 				public Object dedupKey() {
@@ -77,17 +84,17 @@ public interface Coat {
 
 				@Override
 				public T putOn(Composite cmp) {
-					return client.putOn(cmp);
+					return coat.putOn(cmp);
 				}
 			};
 		}
 	}
 
 	/** Transforms a Coat into a Coat.Reusable which promises to never be reused. */
-	public static Reusable<Coat> asNeverReusedReusable(Coat client) {
+	public static Reusable<Coat> asNeverReusedReusable(Coat coat) {
 		return Reusable.fromReturning(new Object(), Coat.class, cmp -> {
-			client.putOn(cmp);
-			return client;
+			coat.putOn(cmp);
+			return coat;
 		});
 	}
 }
