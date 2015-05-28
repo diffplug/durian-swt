@@ -116,51 +116,53 @@ public class InteractiveTest {
 	 * @param function A function which takes a Display and returns a Shell to test.  The instructions will pop-up next to the test shell.
 	 */
 	public static void testShell(String instructions, Function<Display, Shell> function) {
-		Display display = Display.getDefault();
+		SwtExec.blocking().execute(() -> {
+			Display display = SwtMisc.assertUI();
 
-		try {
-			// create the shell under test
-			Shell underTest = function.apply(display);
-			underTest.setLocation(10, 10);
+			try {
+				// create the shell under test
+				Shell underTest = function.apply(display);
+				underTest.setLocation(10, 10);
 
-			// create the test dialog
-			Box<TestResult> result = Box.of(TestResult.FAIL);
-			Shell instructionsDialog = openInstructions(underTest, instructions, result);
-			underTest.setActive();
+				// create the test dialog
+				Box<TestResult> result = Box.of(TestResult.FAIL);
+				Shell instructionsDialog = openInstructions(underTest, instructions, result);
+				underTest.setActive();
 
-			// when either is disposed, dispose the other
-			disposeIfDisposed(underTest, instructionsDialog);
-			disposeIfDisposed(instructionsDialog, underTest);
+				// when either is disposed, dispose the other
+				disposeIfDisposed(underTest, instructionsDialog);
+				disposeIfDisposed(instructionsDialog, underTest);
 
-			// if we're in autoclose mode, then we'll dispose the test after a timeout
-			autoCloseMs().ifPresent(autoCloseMs -> {
-				SwtExec.async().guardOn(underTest).timerExec(autoCloseMs, () -> {
-					// dispose the shells
-					instructionsDialog.dispose();
-					underTest.dispose();
-					// set the result to be a pass
-					result.set(TestResult.PASS);
+				// if we're in autoclose mode, then we'll dispose the test after a timeout
+				autoCloseMs().ifPresent(autoCloseMs -> {
+					SwtExec.async().guardOn(underTest).timerExec(autoCloseMs, () -> {
+						// dispose the shells
+						instructionsDialog.dispose();
+						underTest.dispose();
+						// set the result to be a pass
+						result.set(TestResult.PASS);
+					});
 				});
-			});
 
-			// wait for the result
-			SwtMisc.loopUntilDisposed(underTest);
+				// wait for the result
+				SwtMisc.loopUntilDisposed(underTest);
 
-			// take the appropriate action for that result
-			switch (result.get()) {
-			case PASS:
-				return;
-			case FAIL:
-				throw new AssertionError(instructions);
-			default:
-				throw Unhandled.enumException(result.get());
+				// take the appropriate action for that result
+				switch (result.get()) {
+				case PASS:
+					return;
+				case FAIL:
+					throw new AssertionError(instructions);
+				default:
+					throw Unhandled.enumException(result.get());
+				}
+			} finally {
+				// dispose everything at the end
+				for (Shell shell : display.getShells()) {
+					shell.dispose();
+				}
 			}
-		} finally {
-			// dispose everything at the end
-			for (Shell shell : display.getShells()) {
-				shell.dispose();
-			}
-		}
+		});
 	}
 
 	/** Cascades disposal. */

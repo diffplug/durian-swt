@@ -21,21 +21,23 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.rules.Timeout;
 
+import com.diffplug.common.swt.InteractiveTest.FailsWithoutUser;
 import com.google.common.collect.Range;
 import com.google.common.util.concurrent.Uninterruptibles;
 
-import com.diffplug.common.swt.InteractiveTest;
-import com.diffplug.common.swt.InteractiveTest.FailsWithoutUser;
-import com.diffplug.common.swt.Layouts;
-import com.diffplug.common.swt.Shells;
-import com.diffplug.common.swt.SwtExec;
-import com.diffplug.common.swt.SwtMisc;
-
 @Category(InteractiveTest.class)
 public class InteractiveTestTest {
+	@Rule
+	public Timeout globalTimeout = Timeout.builder()
+	.withLookingForStuckThread(true)
+	.withTimeout(10, TimeUnit.SECONDS)
+	.build();
+
 	@Category(FailsWithoutUser.class)
 	@Test(expected = AssertionError.class)
 	public void testFail() {
@@ -77,7 +79,7 @@ public class InteractiveTestTest {
 	@Test
 	public void testAutoclose() {
 		long AUTOCLOSE_TEST_DUR = 2000;
-		long TOLERANCE = 500;
+		long TOLERANCE = 1000;
 
 		// store the current AUTOCLOSE_KEY value so we can restore it after the test
 		String autocloseValue = System.getProperty(InteractiveTest.AUTOCLOSE_KEY);
