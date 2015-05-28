@@ -20,13 +20,13 @@ import java.util.Map;
 import java.util.function.Function;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Widget;
 
 /**
- * Simple little class which handles objects that need one-to-one correspondence
- * with an SWT Widget of some type, but need to be shared.
+ * Maintains a cache of values which are mapped to SWT widgets.  The
+ * cache is automatically updated as these widgets are disposed.
+ * 
+ * Useful for implementing resource managers, such as ColorPool.
  */
 public abstract class OnePerWidget<WidgetType extends Widget, T> {
 	/** Creates a OnePerWidget instance where objects are created using the given function. */
@@ -47,11 +47,8 @@ public abstract class OnePerWidget<WidgetType extends Widget, T> {
 		if (value == null) {
 			value = create(ctl);
 			map.put(ctl, value);
-			ctl.addListener(SWT.Dispose, new Listener() {
-				@Override
-				public void handleEvent(Event event) {
-					map.remove(ctl);
-				}
+			ctl.addListener(SWT.Dispose, e -> {
+				map.remove(ctl);
 			});
 		}
 		return value;
