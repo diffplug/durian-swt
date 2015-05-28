@@ -1,10 +1,1 @@
 apply plugin: 'java'
-
-repositories {
-	jcenter()
-}
-
-dependencies {
-	compile 'com.diffplug.durian:durian:2.0'
-	compile "com.google.guava:guava:18.0"
-}

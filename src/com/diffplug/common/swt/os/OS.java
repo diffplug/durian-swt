@@ -15,11 +15,8 @@
  */
 package com.diffplug.common.swt.os;
 
+import java.util.Arrays;
 import java.util.Locale;
-
-import com.google.common.collect.ImmutableList;
-
-import com.diffplug.common.base.Unhandled;
 
 /** Utility for detecting OS type. */
 public enum OS {
@@ -86,7 +83,7 @@ public enum OS {
 		String os_name = System.getProperty("os.name").toLowerCase(Locale.getDefault());
 		boolean isWin = os_name.contains("win");
 		boolean isMac = os_name.contains("mac");
-		boolean isLinux = ImmutableList.of("nix", "nux", "aix").stream().anyMatch(os_name::contains);
+		boolean isLinux = Arrays.asList("nix", "nux", "aix").stream().anyMatch(os_name::contains);
 
 		if (isMac) {
 			return MAC_x64;
@@ -102,10 +99,10 @@ public enum OS {
 			case "amd64":
 				return LINUX_x64;
 			default:
-				throw Unhandled.exception("Unknown os.arch " + os_arch + "'.");
+				throw new IllegalArgumentException("Unknown os.arch " + os_arch + "'.");
 			}
 		} else {
-			throw new UnsupportedOperationException("Unknown os.name '" + os_name + "'.");
+			throw new IllegalArgumentException("Unknown os.name '" + os_name + "'.");
 		}
 	}
 
@@ -129,7 +126,7 @@ public enum OS {
 		case "64":
 			return Arch.x64;
 		default:
-			throw Unhandled.stringException(sunArchDataModel);
+			throw new IllegalArgumentException(sunArchDataModel);
 		}
 	}
 

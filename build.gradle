@@ -52,7 +52,7 @@ dependencies {
 
 	compile "p2:org.eclipse.swt:${VER_SWT}"
 	compile "p2:org.eclipse.jface:${VER_JFACE}"
-	compile "p2:org.eclipse.swt.${com.diffplug.common.swt.os.EclipsePlatform.getRunning()}:${VER_SWT_PLATFORM}"
+	compile "p2:org.eclipse.swt.${com.diffplug.common.swt.os.SwtPlatform.getRunning()}:${VER_SWT_PLATFORM}"
 
 	testCompile "junit:junit:${VER_JUNIT}"
 }

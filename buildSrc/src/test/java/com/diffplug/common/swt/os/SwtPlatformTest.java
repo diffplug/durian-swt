@@ -18,13 +18,13 @@ package com.diffplug.common.swt.os;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class EclipsePlatformTest {
+public class SwtPlatformTest {
 	@Test
 	public void test() {
-		EclipsePlatform platform = EclipsePlatform.parseWsOsArch("win32.win32.x86");
-		Assert.assertEquals("win32", platform.os);
-		Assert.assertEquals("win32", platform.ws);
-		Assert.assertEquals("x86", platform.arch);
+		SwtPlatform platform = SwtPlatform.parseWsOsArch("win32.win32.x86");
+		Assert.assertEquals("win32", platform.getWs());
+		Assert.assertEquals("win32", platform.getOs());
+		Assert.assertEquals("x86", platform.getArch());
 
 		Assert.assertEquals("windows-x86_32", platform.getWuffString());
 		Assert.assertEquals("(& (osgi.ws=win32) (osgi.os=win32) (osgi.arch=x86) )", platform.platformFilter());
