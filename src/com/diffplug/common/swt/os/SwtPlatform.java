@@ -25,21 +25,40 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
 /** Parsing and whatsuch for the eclipse platform, including the Wuff gradle plugin. */
-public class EclipsePlatform {
-	public final String ws;
-	public final String os;
-	public final String arch;
+public class SwtPlatform {
+	/** Windowing system. */
+	private final String ws;
+	/** Operating system. */
+	private final String os;
+	/** CPU architecture. */
+	private final String arch;
 
-	private EclipsePlatform(String ws, String os, String arch) {
+	/** Arguments go from most-specific (windowing-system) to least-specific (CPU architecture). */
+	private SwtPlatform(String ws, String os, String arch) {
 		this.ws = ws;
 		this.os = os;
 		this.arch = arch;
 	}
 
+	/** Returns the windowing system. */
+	public String getWs() {
+		return ws;
+	}
+
+	/** Returns the operating system. */
+	public String getOs() {
+		return os;
+	}
+
+	/** Returns the CPU architecture. */
+	public String getArch() {
+		return arch;
+	}
+
 	@Override
 	public boolean equals(Object otherRaw) {
-		if (otherRaw instanceof EclipsePlatform) {
-			EclipsePlatform other = (EclipsePlatform) otherRaw;
+		if (otherRaw instanceof SwtPlatform) {
+			SwtPlatform other = (SwtPlatform) otherRaw;
 			return ws.equals(other.ws) && os.equals(other.os) && arch.equals(other.arch);
 		} else {
 			return false;
@@ -51,13 +70,13 @@ public class EclipsePlatform {
 		return Objects.hash(ws, os, arch);
 	}
 
-	/** Returns "os.ws.arch" */
+	/** Returns "ws.os.arch", which is how SWT bundles are specified. */
 	@Override
 	public String toString() {
 		return ws + "." + os + "." + arch;
 	}
 
-	/** Returns a string appropriate as an Eclipse-PlatformFilter. */
+	/** Returns a string appropriate as an Eclipse-PlatformFilter in a MANIFEST.MF */
 	public String platformFilter() {
 		return "(& " + "(osgi.ws=" + ws + ") " + "(osgi.os=" + os + ") " + "(osgi.arch=" + arch + ")" + " )";
 	}
@@ -67,7 +86,7 @@ public class EclipsePlatform {
 		return ImmutableMap.of("osgi.ws", ws, "osgi.os", os, "osgi.arch", arch);
 	}
 
-	/** Returns the code that wuff uses for this EclipsePlatform. */
+	/** Returns the code that wuff uses for this SwtPlatform. */
 	public String getWuffString() {
 		String wuffString = WUFF_MAP.get(this);
 		Preconditions.checkNotNull(wuffString);
@@ -75,7 +94,7 @@ public class EclipsePlatform {
 	}
 
 	// @formatter:off
-	private static final ImmutableMap<EclipsePlatform, String> WUFF_MAP = ImmutableMap.of(
+	private static final ImmutableMap<SwtPlatform, String> WUFF_MAP = ImmutableMap.of(
 			parseWsOsArch("cocoa.macosx.x86_64"),	"macosx-x86_64",
 			parseWsOsArch("gtk.linux.x86"),			"linux-x86_32",
 			parseWsOsArch("gtk.linux.x86_64"),		"linux-x86_64",
@@ -83,46 +102,36 @@ public class EclipsePlatform {
 			parseWsOsArch("win32.win32.x86_64"),	"windows-x86_64");
 	// @formatter:on
 
-	/** Parses ws.os.arch strings (as the SWT bundles are specified). */
-	public static EclipsePlatform parseWsOsArch(String unparsed) {
+	/** Parses ws.os.arch strings (which is how SWT bundles are specified). */
+	public static SwtPlatform parseWsOsArch(String unparsed) {
 		String[] pieces = unparsed.split("\\.");
 		Preconditions.checkArgument(pieces.length == 3);
 		String ws = pieces[0];
 		String os = pieces[1];
 		String arch = pieces[2];
-		return new EclipsePlatform(ws, os, arch);
+		return new SwtPlatform(ws, os, arch);
 	}
 
-	/** Parses ws.os.arch strings (as the SWT bundles are specified). */
-	public static EclipsePlatform parseOsWsArch(String unparsed) {
-		String[] pieces = unparsed.split("\\.");
-		Preconditions.checkArgument(pieces.length == 3);
-		String os = pieces[0];
-		String ws = pieces[1];
-		String arch = pieces[2];
-		return new EclipsePlatform(ws, os, arch);
-	}
-
-	/** Returns the EclipsePlatform for the native platform. */
-	public static EclipsePlatform getNative() {
+	/** Returns the SwtPlatform for the native platform. */
+	public static SwtPlatform getNative() {
 		return fromOS(OS.getNative());
 	}
 
-	/** Returns the EclipsePlatform for the running platform. */
-	public static EclipsePlatform getRunning() {
+	/** Returns the SwtPlatform for the running platform. */
+	public static SwtPlatform getRunning() {
 		return fromOS(OS.getRunning());
 	}
 
-	/** Converts an OS to an EclipsePlatform. */
-	public static EclipsePlatform fromOS(OS raw) {
+	/** Converts an OS to an SwtPlatform. */
+	public static SwtPlatform fromOS(OS raw) {
 		String ws = raw.winMacLinux("win32", "cocoa", "gtk");
 		String os = raw.winMacLinux("win32", "macosx", "linux");
 		String arch = raw.getArch().x86x64("x86", "x86_64");
-		return new EclipsePlatform(ws, os, arch);
+		return new SwtPlatform(ws, os, arch);
 	}
 
 	/** Returns all of the platforms. */
-	public static List<EclipsePlatform> getAll() {
-		return Lists.transform(Arrays.asList(OS.values()), EclipsePlatform::fromOS);
+	public static List<SwtPlatform> getAll() {
+		return Lists.transform(Arrays.asList(OS.values()), SwtPlatform::fromOS);
 	}
 }

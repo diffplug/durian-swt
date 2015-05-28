@@ -15,11 +15,11 @@
  */
 package com.diffplug.common.swt.os;
 
-/** Enum for handling different processor architectures. Just x86 and x64 for the foreseeable future. */
+/** Enum for handling different processor architectures supported by SWT. */
 public enum Arch {
 	x86, x64;
 
-	/** Pattern-match style thingy. */
+	/** Returns the appropriate value depending on the arch. */
 	public <T> T x86x64(T val86, T val64) {
 		switch (this) {
 		case x86:

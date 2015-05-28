@@ -69,12 +69,12 @@ public enum OS {
 		}
 	}
 
-	/** Returns the native OS. e.g. running 32-bit JVM on 64-bit Windows returns OS.WIN_64. */
+	/** Returns the native OS: 32-bit JVM on 64-bit Windows returns OS.WIN_64. */
 	public static OS getNative() {
 		return NATIVE_OS;
 	}
 
-	/** Returns the running OS.  e.g. running 32-bit JVM on 64-bit Windows returns OS.WIN_32. */
+	/** Returns the running OS: 32-bit JVM on 64-bit Windows returns OS.WIN_32. */
 	public static OS getRunning() {
 		return RUNNING_OS;
 	}
@@ -83,10 +83,10 @@ public enum OS {
 
 	/** Calculates the native OS. */
 	private static OS calculateNative() {
-		String OS = System.getProperty("os.name").toLowerCase(Locale.getDefault());
-		boolean isWin = OS.contains("win");
-		boolean isMac = OS.contains("mac");
-		boolean isLinux = ImmutableList.of("nix", "nux", "aix").stream().anyMatch(OS::contains);
+		String os_name = System.getProperty("os.name").toLowerCase(Locale.getDefault());
+		boolean isWin = os_name.contains("win");
+		boolean isMac = os_name.contains("mac");
+		boolean isLinux = ImmutableList.of("nix", "nux", "aix").stream().anyMatch(os_name::contains);
 
 		if (isMac) {
 			return MAC_x64;
@@ -94,18 +94,18 @@ public enum OS {
 			boolean is64bit = System.getenv("ProgramFiles(x86)") != null;
 			return is64bit ? WIN_x64 : WIN_x86;
 		} else if (isLinux) {
-			String arch = System.getProperty("os.arch");
-			switch (arch) {
+			String os_arch = System.getProperty("os.arch");
+			switch (os_arch) {
 			case "x86":
 				return LINUX_x86;
 			case "x86_64":
 			case "amd64":
 				return LINUX_x64;
 			default:
-				throw new UnsupportedOperationException("Unknown arch '" + arch + "'.");
+				throw Unhandled.exception("Unknown os.arch " + os_arch + "'.");
 			}
 		} else {
-			throw new UnsupportedOperationException("Unknown os '" + OS + "'.");
+			throw new UnsupportedOperationException("Unknown os.name '" + os_name + "'.");
 		}
 	}
 
@@ -114,7 +114,9 @@ public enum OS {
 	/** Calculates the running OS. */
 	private static OS calculateRunning() {
 		Arch runningArch = runningJvm();
-		return NATIVE_OS.winMacLinux(runningArch.x86x64(OS.WIN_x86, OS.WIN_x64), OS.MAC_x64,
+		return NATIVE_OS.winMacLinux(
+				runningArch.x86x64(OS.WIN_x86, OS.WIN_x64),
+				OS.MAC_x64,
 				runningArch.x86x64(OS.LINUX_x86, OS.LINUX_x64));
 	}
 
