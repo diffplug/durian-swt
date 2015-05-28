@@ -47,7 +47,7 @@ public class ColorPool {
 
 	/** Returns a ColorPool for the given Widget, creating one if necessary. */
 	public static ColorPool forWidget(Widget widget) {
-		return onePerWidget.get(widget);
+		return onePerWidget.forWidget(widget);
 	}
 
 	private static OnePerWidget<Widget, ColorPool> onePerWidget = OnePerWidget.from(ColorPool::new);

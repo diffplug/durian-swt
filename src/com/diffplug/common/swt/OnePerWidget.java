@@ -42,7 +42,7 @@ public abstract class OnePerWidget<WidgetType extends Widget, T> {
 	private Map<WidgetType, T> map = new HashMap<>();
 
 	/** Returns the object for the given control. */
-	public T get(WidgetType ctl) {
+	public T forWidget(WidgetType ctl) {
 		T value = map.get(ctl);
 		if (value == null) {
 			value = create(ctl);

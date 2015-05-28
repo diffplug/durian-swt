@@ -95,7 +95,7 @@ public class ImageDescriptors {
 	}
 
 	/** Global cache of widget -> image descriptor setters. */
-	private static final OnePerWidget<Widget, Box.Nullable<ImageDescriptor>> map = OnePerWidget.from((Widget widget) -> {
+	private static final OnePerWidget<Widget, Box.Nullable<ImageDescriptor>> globalSetter = OnePerWidget.from((Widget widget) -> {
 		if (widget instanceof Item) {
 			Item cast = (Item) widget;
 			return createSetter(cast, cast::getImage, cast::setImage);
@@ -112,16 +112,16 @@ public class ImageDescriptors {
 
 	/** Sets the given Item to have the image described by the given descriptor, maintaining proper reference counting. */
 	public static void set(Item widget, ImageDescriptor image) {
-		map.get(widget).set(image);
+		globalSetter.forWidget(widget).set(image);
 	}
 
 	/** Sets the given Button to have the image described by the given descriptor, maintaining proper reference counting. */
 	public static void set(Button widget, ImageDescriptor image) {
-		map.get(widget).set(image);
+		globalSetter.forWidget(widget).set(image);
 	}
 
 	/** Sets the given Label to have the image described by the given descriptor, maintaining proper reference counting. */
 	public static void set(Label widget, ImageDescriptor image) {
-		map.get(widget).set(image);
+		globalSetter.forWidget(widget).set(image);
 	}
 }
