@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.Widget;
 
 import com.google.common.collect.Maps;
 
-/** Caches colors, and manages their disposal. */
+/** Caches colors, and automatically manages their disposal. */
 public class ColorPool {
 	private final HashMap<RGB, Color> colorTable = Maps.newHashMap();
 	private final Display display;
@@ -45,7 +45,7 @@ public class ColorPool {
 		return color;
 	}
 
-	/** Returns a ColorPool for the given Control, creating one if necessary. */
+	/** Returns a ColorPool for the given Widget, creating one if necessary. */
 	public static ColorPool forWidget(Widget widget) {
 		return onePerWidget.get(widget);
 	}
