@@ -71,6 +71,10 @@ test {
 	useJUnit {
 		// there are some tests that can't pass without a user, so we'll exclude them
 		excludeCategories 'com.diffplug.common.swt.InteractiveTest$FailsWithoutUser'
+		// SWT tests don't work in gradle on OS X (https://github.com/ReadyTalk/swt-bling/issues/4)
+		if (com.diffplug.common.swt.os.OS.getNative().isMac()) {
+			excludeCategories 'com.diffplug.common.swt.InteractiveTest'
+		}
 	}
 }
 
