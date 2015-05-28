@@ -5,7 +5,7 @@
 
 if [ "$TRAVIS_REPO_SLUG" == "diffplug/durian-swt" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" == "master" ]; then
 	# Publish the artifacts
-	./.ci/publish-artifacts.sh
+	./gradlew publish || exit 1
 	# Push the javadoc
 	./.ci/push-javadoc.sh
 fi
