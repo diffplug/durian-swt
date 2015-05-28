@@ -50,7 +50,6 @@ import com.diffplug.common.base.Box.Nullable;
 import com.diffplug.common.base.Unhandled;
 import com.diffplug.common.rx.IObservable;
 import com.diffplug.common.rx.Rx;
-
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -147,9 +146,9 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	}
 
 	/**
-	 * See SwtExec.blocking() for execution semantics.
+	 * An SwtExec which adds a blocking get() method for doing gets in the UI thread.
 	 * 
-	 * Adds a blocking get() method for doing gets in the UI thread.
+	 * See SwtExec.blocking() for execution semantics.
 	 */
 	public static class Blocking extends SwtExec {
 		private Blocking() {
