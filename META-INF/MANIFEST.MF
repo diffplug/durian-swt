@@ -14,7 +14,7 @@ Export-Package: com.diffplug.common.swt;version="1.0.0",
  com.diffplug.common.swt.os;version="1.0.0"
 Require-Bundle: org.eclipse.swt,
  org.eclipse.jface
-Import-Package: com.diffplug.common.base;version="[2.1.0,3.0.0)",
+Import-Package: com.diffplug.common.base;version="[3.0.0,4.0.0)",
  com.diffplug.common.rx;version="[1.0.0,2)",
  com.google.common.base;version="[18.0,19)",
  com.google.common.collect;version="[18.0,19)",
