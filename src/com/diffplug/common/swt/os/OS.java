@@ -18,7 +18,7 @@ package com.diffplug.common.swt.os;
 import java.util.Arrays;
 import java.util.Locale;
 
-/** Utility for detecting OS type. */
+/** Enum representing an OS and its underlying CPU architecture. */
 public enum OS {
 	WIN_x64, WIN_x86, LINUX_x64, LINUX_x86, MAC_x64;
 

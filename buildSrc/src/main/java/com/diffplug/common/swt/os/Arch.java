@@ -31,6 +31,16 @@ public enum Arch {
 		}
 	}
 
+	/** Returns the Arch for the native platform: 32-bit JVM on 64-bit Windows returns Arch.x64. */
+	public static Arch getNative() {
+		return OS.getNative().getArch();
+	}
+
+	/** Returns the Arch for the native platform: 32-bit JVM on 64-bit Windows returns Arch.x86. */
+	public static Arch getRunning() {
+		return OS.getRunning().getArch();
+	}
+
 	/** Returns an UnsupportedOperationException for the given arch. */
 	public static UnsupportedOperationException unsupportedException(Arch arch) {
 		return new UnsupportedOperationException("Arch '" + arch + "' is unsupported.");

@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-/** Parsing and whatsuch for the eclipse platform, including the Wuff gradle plugin. */
+/** Models the platforms that the SWT binaries are built for. */
 public class SwtPlatform {
 	/** Windowing system. */
 	private final String ws;
@@ -69,7 +69,7 @@ public class SwtPlatform {
 		return Objects.hash(ws, os, arch);
 	}
 
-	/** Returns "ws.os.arch", which is how SWT bundles are specified. */
+	/** Returns "ws.os.arch", which is how SWT bundles are named. */
 	@Override
 	public String toString() {
 		return ws + "." + os + "." + arch;
@@ -114,12 +114,12 @@ public class SwtPlatform {
 		return new SwtPlatform(ws, os, arch);
 	}
 
-	/** Returns the SwtPlatform for the native platform. */
+	/** Returns the SwtPlatform for the native platform: 32-bit JVM on 64-bit Windows returns x86_64. */
 	public static SwtPlatform getNative() {
 		return fromOS(OS.getNative());
 	}
 
-	/** Returns the SwtPlatform for the running platform. */
+	/** Returns the SwtPlatform for the running platform: 32-bit JVM on 64-bit Windows returns x86. */
 	public static SwtPlatform getRunning() {
 		return fromOS(OS.getRunning());
 	}
