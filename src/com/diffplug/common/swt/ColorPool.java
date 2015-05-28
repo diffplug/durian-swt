@@ -26,11 +26,11 @@ import org.eclipse.swt.widgets.Widget;
 import com.google.common.collect.Maps;
 
 /** Caches colors, and manages their disposal. */
-public class ColorManager {
+public class ColorPool {
 	private final HashMap<RGB, Color> colorTable = Maps.newHashMap();
 	private final Display display;
 
-	private ColorManager(Widget parent) {
+	private ColorPool(Widget parent) {
 		display = parent.getDisplay();
 		parent.addListener(SWT.Dispose, e -> colorTable.values().forEach(Color::dispose));
 	}
@@ -45,10 +45,10 @@ public class ColorManager {
 		return color;
 	}
 
-	/** Returns a ColorManager for the given Control, crating one if necessary. */
-	public static ColorManager forWidget(Widget widget) {
+	/** Returns a ColorPool for the given Control, creating one if necessary. */
+	public static ColorPool forWidget(Widget widget) {
 		return onePerWidget.get(widget);
 	}
 
-	private static OnePerWidget<Widget, ColorManager> onePerWidget = OnePerWidget.from(ColorManager::new);
+	private static OnePerWidget<Widget, ColorPool> onePerWidget = OnePerWidget.from(ColorPool::new);
 }
