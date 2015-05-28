@@ -15,23 +15,48 @@
  */
 package com.diffplug.common.swt;
 
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-/** Wraps an SWT Control to hide most of its API. */
+/**
+ * Wraps an SWT Control to hide its API.
+ * 
+ * The traditional way to make a custom class is this: `class CustomControl extends Composite`
+ * 
+ * This has three main problems:
+ * - Users can add random widgets to your "Control" because it exposes the Composite interface.
+ * - Users can set the layout oo your "Control" because it exposes the Composite interface.
+ * - Users can add random listeners to your "Control", and overridding "addListener" to intercept them is a VERY DANGEROUS PLAN.
+ * 
+ * ControlWrapper fixes this by providing an extremely low-overhead skeleton which hides the
+ * SWT Control that you're using as the base of your custom control, which allows you to only
+ * expose the APIs that are appropriate.
+ */
 public class ControlWrapper<T extends Control> {
+	/** The wrapped control. */
 	protected final T control;
 
 	public ControlWrapper(T control) {
 		this.control = control;
 	}
 
-	/** Sets the layoutData for this control. */
+	/** Sets the LayoutData for this control. */
 	public void setLayoutData(Object layoutData) {
 		control.setLayoutData(layoutData);
 	}
 
-	/** Returns the underlying control. */
-	public T getControl() {
+	/** Returns the parent of the Control. */
+	public Composite getParent() {
+		return control.getParent();
+	}
+
+	/**
+	 * Returns the wrapped widget as a raw Control. Useful for writing SWT code that needs the Control
+	 * instance such as DND code.
+	 * 
+	 * The returned Control is not exposed as T on purpose.
+	 */
+	public Control asControl() {
 		return control;
 	}
 }

@@ -100,7 +100,7 @@ public class Layouts {
 
 	/** Sets the layout data on the ControlWrapper be a new GridData, and returns an API for modifying it. */
 	public static LayoutsGridData setGridData(ControlWrapper<?> wrapper) {
-		return setGridData(wrapper.getControl());
+		return setGridData(wrapper.asControl());
 	}
 
 	/** Returns an API for modifying the already-existing GridData which has been set on the given Control. */
@@ -112,7 +112,7 @@ public class Layouts {
 
 	/** Returns an API for modifying the already-existing GridData which has been set on the given ControlWrapper. */
 	public static LayoutsGridData modifyGridData(ControlWrapper<?> wrapper) {
-		return setGridData(wrapper.getControl());
+		return setGridData(wrapper.asControl());
 	}
 
 	/** Returns an API for modifying the given GridData. */
