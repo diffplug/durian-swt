@@ -26,17 +26,18 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.Timeout;
 
-import com.diffplug.common.swt.InteractiveTest.FailsWithoutUser;
 import com.google.common.collect.Range;
 import com.google.common.util.concurrent.Uninterruptibles;
+
+import com.diffplug.common.swt.InteractiveTest.FailsWithoutUser;
 
 @Category(InteractiveTest.class)
 public class InteractiveTestTest {
 	@Rule
 	public Timeout globalTimeout = Timeout.builder()
-	.withLookingForStuckThread(true)
-	.withTimeout(10, TimeUnit.SECONDS)
-	.build();
+			.withLookingForStuckThread(true)
+			.withTimeout(10, TimeUnit.SECONDS)
+			.build();
 
 	@Category(FailsWithoutUser.class)
 	@Test(expected = AssertionError.class)

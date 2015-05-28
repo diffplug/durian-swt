@@ -67,8 +67,8 @@ public class InteractiveTest {
 	/** Key for specifying that autoclose should be used. */
 	public static final String AUTOCLOSE_KEY = "com.diffplug.test.autoclose.milliseconds";
 
-	/** Marker interface for interactive tests that aren't compatible with auto-close. */
-	public static interface FailsWithoutUser {}
+	/** Marker class for interactive tests that aren't compatible with auto-close. */
+	public static class FailsWithoutUser {}
 
 	/** Default width of testCoat(). */
 	public static final int DEFAULT_COLS = 60;
