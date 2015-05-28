@@ -17,6 +17,10 @@ It's a bog-standard gradle build.
 
 If you're getting style warnings, `gradlew spotlessApply` will apply anything necessary to fix formatting. For more info on the formatter, check out [spotless](https://github.com/diffplug/spotless).
 
+## Known problems
+
+On OS X, SWT must be started with the `-XstartOnFirstThread` flag.  [The gradle test runner doesn't support this](https://discuss.gradle.org/t/gradle-test-task-and-xstartonfirstthread/6844). This only affects testing from the command line, testing from the IDE is still just fine.  There is a [workaround](https://github.com/ReadyTalk/swt-bling/issues/4) by calling out to ant, but it's not friendly to our requirement to include `@Category(InteractiveTest.class)` and exclude `@Category(FailsWithoutUser.class)`.
+
 ## License
 
 By contributing your code, you agree to license your contribution under the terms of the APLv2: https://github.com/diffplug/durian/blob/master/LICENSE
