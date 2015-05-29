@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.Widget;
  * Maintains a cache of values which are mapped to SWT widgets.  The
  * cache is automatically updated as these widgets are disposed.
  * 
- * Useful for implementing resource managers, such as ColorPool.
+ * Useful for implementing resource managers, such as {@link ColorPool}.
  */
 public abstract class OnePerWidget<WidgetType extends Widget, T> {
 	/** Creates a OnePerWidget instance where objects are created using the given function. */

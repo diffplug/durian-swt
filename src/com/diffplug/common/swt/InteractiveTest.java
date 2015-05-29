@@ -34,17 +34,15 @@ import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.Unhandled;
 
 /**
- * InteractiveTest opens a Coat or a Shell, and displays instructions for a human
- * tester to determine whether the test passed or failed.  This makes it extremely
- * easy to create and specify a UI test, which can be converted into an automated
- * UI test at a later date.
- * 
- * If the system property 'com.diffplug.InteractiveTest.autoclose.milliseconds'
- * is set, then the tests will open and then automatically pass after the
- * specified timeout.
- * 
- * This lets a headless environment keep the tests in working order, although a
- * human is required for full validation.
+ * InteractiveTest opens a {@link Coat} or {@code Shell}, and displays instructions
+ * for a human tester to determine whether the test passed or failed.  This makes
+ * it extremely easy to create and specify a UI test, which can be converted into
+ * an automated UI test at a later date.
+ * <p>
+ * If the system property {@code com.diffplug.InteractiveTest.autoclose.milliseconds}
+ * is set, then the tests will open and then automatically pass after the specified
+ * timeout. This lets a headless CI server ensure that the tests are in working order,
+ * although a meatbag is still required for full validation.
  */
 public class InteractiveTest {
 	private InteractiveTest() {}
@@ -84,8 +82,8 @@ public class InteractiveTest {
 
 	/**
 	 * @param instructions Instructions for the user to follow.
-	 * @param cols Width of the test composite (unit is the system font height).
-	 * @param rows Height of the test composite (unit is the system font height). 
+	 * @param cols Width of the test composite (in multiples of the system font height).
+	 * @param rows Height of the test composite (in multiples of the system font height). 
 	 * @param coat A function to populate the test composite.
 	 */
 	public static void testCoat(String instructions, int cols, int rows, Coat coat) {
@@ -98,7 +96,7 @@ public class InteractiveTest {
 
 	/**
 	 * @param instructions Instructions for the user to follow.
-	 * @param size Width and height of the test composite (unit is the system font height).
+	 * @param size Width and height of the test composite (in multiples of the system font height).
 	 * @param coat A function to populate the test composite.
 	 */
 	public static void testCoat(String instructions, Point size, Coat coat) {
@@ -112,9 +110,9 @@ public class InteractiveTest {
 
 	/**
 	 * @param instructions Instructions for the user to follow.
-	 * @param function A function which takes a Display and returns a Shell to test.  The instructions will pop-up next to the test shell.
+	 * @param harness A function which takes a Display and returns a Shell to test.
 	 */
-	public static void testShell(String instructions, Function<Display, Shell> function) {
+	public static void testShell(String instructions, Function<Display, Shell> harness) {
 		SwtExec.blocking().execute(() -> {
 			Display display = SwtMisc.assertUI();
 
@@ -123,7 +121,7 @@ public class InteractiveTest {
 
 			try {
 				// create the shell under test
-				Shell underTest = function.apply(display);
+				Shell underTest = harness.apply(display);
 				underTest.setLocation(10, 10);
 
 				// create the test dialog
@@ -165,17 +163,15 @@ public class InteractiveTest {
 	}
 
 	/**
-	 * 
-	 * Same as testShell, but for situations where it is impossible to return
-	 * the shell handle, so we get the shell automatically.
+	 * Same as testShell, but for situations where it is impossible to return the shell handle.
 	 * 
 	 * @param instructions Instructions for the user to follow.
-	 * @param function A function which takes a Display and returns a Shell to test.  The instructions will pop-up next to the test shell.
+	 * @param harness A function which takes a Display and returns a Shell to test.  The instructions will pop-up next to the test shell.
 	 */
-	public static void testShellWithoutHandle(String instructions, Consumer<Display> consumer) {
+	public static void testShellWithoutHandle(String instructions, Consumer<Display> harness) {
 		testShell(instructions, display -> {
 			// initiate the thing that should create the dialog
-			consumer.accept(display);
+			harness.accept(display);
 
 			// wait until this dialog is created
 			SwtMisc.loopUntil(() -> display.getShells().length > 0);

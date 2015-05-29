@@ -21,9 +21,9 @@ import org.eclipse.swt.widgets.Composite;
 
 /**
  * A function that can be "put on" a blank Composite.
- * 
+ * <p>
  * An SWT Composite is a blank canvas.  As such, it's common to write functions
- * that look like `void initializeCmp(Composite cmp)`. In order to make higher-order
+ * that look like {@code void initializeCmp(Composite cmp)}. In order to make higher-order
  * functionality, such as a utility for stacking Composites, you need a way to pass
  * these kinds of functions as arguments. That's what Coat does.
  */
@@ -35,12 +35,12 @@ public interface Coat {
 	 */
 	void putOn(Composite cmp);
 
-	/** Coat which does nothing. */
+	/** A Coat which does nothing. */
 	public static Coat empty() {
 		return cmp -> {};
 	}
 
-	/** A Coat which returns some handle to the content it created. */
+	/** A Coat which returns a handle to the content it created. */
 	@FunctionalInterface
 	public static interface Returning<T> {
 		/**

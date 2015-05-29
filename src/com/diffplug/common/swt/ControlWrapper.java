@@ -19,44 +19,60 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 /**
- * Wraps an SWT Control to hide its API.
- * 
- * The traditional way to make a custom class is this: `class CustomControl extends Composite`
- * 
+ * Wraps an SWT Control to encapsulate its API.
+ * <p>
+ * The traditional way to make a custom class is this: {@code class CustomControl extends Composite}
+ * <p>
  * This has three main problems:
- * - Users can add random widgets to your "Control" because it exposes the Composite interface.
- * - Users can set the layout oo your "Control" because it exposes the Composite interface.
- * - Users can add random listeners to your "Control", and overridding "addListener" to intercept them is a VERY DANGEROUS PLAN.
- * 
- * ControlWrapper fixes this by providing an extremely low-overhead skeleton which encapsulates the
+ * <ol>
+ * <li>Users can add random widgets to your "Control" because it exposes the {@code Composite} interface.</li>
+ * <li>Users can set the layout to your "Control" because it exposes the {@code Composite} interface.</li>
+ * <li>Users can add random listeners to your "Control", and overridding {@code addListener} to intercept them is a <b>very dangerous plan</b>.</li>
+ * </ol>
+ * <p>
+ * ControlWrapper fixes this by providing an low-overhead skeleton which encapsulates the
  * SWT Control that you're using as the base of your custom control, which allows you to only
  * expose the APIs that are appropriate.
  */
 public class ControlWrapper<T extends Control> {
 	/** The wrapped control. */
-	protected final T control;
+	protected final T wrapped;
 
-	public ControlWrapper(T control) {
-		this.control = control;
+	/** Creates a ControlWrapper which wraps the given control. */
+	public ControlWrapper(T wrapped) {
+		this.wrapped = wrapped;
 	}
 
 	/** Sets the LayoutData for this control. */
-	public void setLayoutData(Object layoutData) {
-		control.setLayoutData(layoutData);
+	public final void setLayoutData(Object layoutData) {
+		wrapped.setLayoutData(layoutData);
 	}
 
-	/** Returns the parent of the Control. */
-	public Composite getParent() {
-		return control.getParent();
+	/** Returns the LayoutData for this control. */
+	public final Object getLayoutData() {
+		return wrapped.getLayoutData();
+	}
+
+	/** Returns the parent of this Control. */
+	public final Composite getParent() {
+		return wrapped.getParent();
 	}
 
 	/**
-	 * Returns the wrapped widget as a raw Control. Useful for writing SWT code that needs the Control
-	 * instance such as DND code.
-	 * 
-	 * The returned Control is not exposed as T on purpose.
+	 * Returns the wrapped Control (only appropriate for limited purposes!).
+	 * <p>
+	 * The implementor of this ControlWrapper is free to change the wrapped Control
+	 * as she sees fit, and she doesn't have to tell you about it!  You shouldn't rely
+	 * on this control being anything in particular.
+	 * <p>
+	 * You <i>can</i> rely on this Control for:
+	 * <ol>
+	 * <li>Managing lifetimes: {@code wrapped.getRootControl().addListener(SWT.Dispose, ...}</li>
+	 * </ol>
+	 * <p>
+	 * But that's all. If you use it for something else, it's on you when it breaks.
 	 */
-	public Control asControl() {
-		return control;
+	public Control getRootControl() {
+		return wrapped;
 	}
 }

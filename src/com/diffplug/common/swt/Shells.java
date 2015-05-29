@@ -61,11 +61,19 @@ public class Shells {
 	}
 
 	/**
-	 * Sets the size for this Shell. If it is null, the shell will be packed as
-	 * tightly as possible.  If either component is <= 0, the positive dimension
-	 * will be constrained, and the other dimension will be packed as tightly as
-	 * possible.  */
+	 * Sets the size for this Shell.
+	 * <ul>
+	 * <li>If {@code size} is null, the shell will be packed as tightly as possible.</li>
+	 * <li>If both components are {@code > 0}, the shell will be set to that size.</li>
+	 * <li>If <i>one</i> component is {@code <= 0}, the positive dimension will be constrained and the other dimension will be packed as tightly as possible.</li>
+	 * <li>If both components are {@code <= 0}, you'll get an {@code IllegalArgumentException}.</li>
+	 * </ul>
+	 * @throws IllegalArgumentException if size is non-null and both components are negative
+	 */
 	public Shells setSize(Point size) {
+		if (size != null && size.x <= 0 && size.y <= 0) {
+			throw new IllegalArgumentException("Size must either be null or have at least one positive dimension, this was: " + size);
+		}
 		this.size = size;
 		return this;
 	}

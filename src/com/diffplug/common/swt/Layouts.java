@@ -28,13 +28,16 @@ import com.google.common.base.Preconditions;
 
 /**
  * Provides fluent utilities for manipulating SWT layouts.
- * 
- * Serves as the entry point to LayoutsFillLayout, LayoutsGridLayout, and LayoutsGridData.
+ * <p> 
+ * Serves as the entry point to {@link LayoutsFillLayout}, {@link LayoutsGridLayout}, and {@link LayoutsGridData}.
  */
 public class Layouts {
 	private Layouts() {}
 
-	public static final int DEFAULT_MARGIN = 5;
+	/** Returns the default margin for layouts. */
+	public static int defaultMargin() {
+		return 5;
+	}
 
 	////////////////
 	// FillLayout //
@@ -42,10 +45,10 @@ public class Layouts {
 	/** Sets the composite to have a standard FillLayout, and returns an API for modifying it. */
 	public static LayoutsFillLayout setFill(Composite composite) {
 		FillLayout fillLayout = new FillLayout();
-		fillLayout.spacing = SWT.HORIZONTAL;
-		fillLayout.marginHeight = DEFAULT_MARGIN;
-		fillLayout.marginWidth = DEFAULT_MARGIN;
-		fillLayout.spacing = DEFAULT_MARGIN;
+		fillLayout.type = SWT.HORIZONTAL;
+		fillLayout.marginHeight = defaultMargin();
+		fillLayout.marginWidth = defaultMargin();
+		fillLayout.spacing = defaultMargin();
 		composite.setLayout(fillLayout);
 		return new LayoutsFillLayout(fillLayout);
 	}
@@ -68,10 +71,10 @@ public class Layouts {
 	/** Sets the composite to have a standard GridLayout, and returns an API for modifying it. */
 	public static LayoutsGridLayout setGrid(Composite composite) {
 		GridLayout gridLayout = new GridLayout();
-		gridLayout.marginHeight = DEFAULT_MARGIN;
-		gridLayout.marginWidth = DEFAULT_MARGIN;
-		gridLayout.horizontalSpacing = DEFAULT_MARGIN;
-		gridLayout.verticalSpacing = DEFAULT_MARGIN;
+		gridLayout.marginHeight = defaultMargin();
+		gridLayout.marginWidth = defaultMargin();
+		gridLayout.horizontalSpacing = defaultMargin();
+		gridLayout.verticalSpacing = defaultMargin();
 		composite.setLayout(gridLayout);
 		return new LayoutsGridLayout(gridLayout);
 	}
@@ -91,28 +94,33 @@ public class Layouts {
 	//////////////
 	// GridData //
 	//////////////
-	/** Sets the layout data on the Control be a new GridData, and returns an API for modifying it. */
+	/** Sets the layouData on the Control to a new GridData, and returns an API for modifying it. */
 	public static LayoutsGridData setGridData(Control control) {
 		GridData gridData = new GridData();
 		control.setLayoutData(gridData);
 		return new LayoutsGridData(gridData);
 	}
 
-	/** Sets the layout data on the ControlWrapper be a new GridData, and returns an API for modifying it. */
+	/** Sets the layoutData on the ControlWrapper to a new GridData, and returns an API for modifying it. */
 	public static LayoutsGridData setGridData(ControlWrapper<?> wrapper) {
-		return setGridData(wrapper.asControl());
+		GridData gridData = new GridData();
+		wrapper.setLayoutData(gridData);
+		return new LayoutsGridData(gridData);
 	}
 
 	/** Returns an API for modifying the already-existing GridData which has been set on the given Control. */
 	public static LayoutsGridData modifyGridData(Control control) {
-		Object layoutData = control.getLayoutData();
-		Preconditions.checkArgument(layoutData instanceof GridData, "Control must have GridData, but has %s.", layoutData);
-		return new LayoutsGridData((GridData) layoutData);
+		return modifyGridData(control.getLayoutData());
 	}
 
 	/** Returns an API for modifying the already-existing GridData which has been set on the given ControlWrapper. */
 	public static LayoutsGridData modifyGridData(ControlWrapper<?> wrapper) {
-		return setGridData(wrapper.asControl());
+		return modifyGridData(wrapper.getLayoutData());
+	}
+
+	private static LayoutsGridData modifyGridData(Object layoutData) {
+		Preconditions.checkArgument(layoutData instanceof GridData, "Control must have GridData, but has %s.", layoutData);
+		return new LayoutsGridData((GridData) layoutData);
 	}
 
 	/** Returns an API for modifying the given GridData. */
@@ -120,7 +128,7 @@ public class Layouts {
 		return new LayoutsGridData(gridData);
 	}
 
-	/** Creates an invisible Label, and returns an API for setting its GridData. Useful for filling spots in a GridLayout. */
+	/** Creates an invisible {@code org.eclipse.swt.widgets.Label}, and returns an API for setting its GridData. Useful for filling spots in a GridLayout. */
 	public static LayoutsGridData newGridPlaceholder(Composite parent) {
 		Label placeholder = new Label(parent, SWT.NONE);
 		return setGridData(placeholder);

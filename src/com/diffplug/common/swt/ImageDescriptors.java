@@ -35,15 +35,15 @@ public class ImageDescriptors {
 	/**
 	 * ImageDescriptor allows an image to be shared in a pool using reference counting. In order to not screw-up the reference
 	 * counting, you need to be pretty careful with how you use them.
-	 * 
-	 * This creates a Box.Nullable<ImageDescriptor> which sets and gets images in a way that will keep the reference counting happy.
-	 * 
-	 * NO ONE MUST SET THE IMAGE EXCEPT THIS SETTER.
+	 * <p>
+	 * This creates a {@code Box.Nullable<ImageDescriptor>} which sets and gets images in a way that will keep the reference counting happy.
+	 * <p>
+	 * <b>NO ONE MUST SET THE IMAGE EXCEPT THIS SETTER.</b>
 	 *
 	 * @param lifecycle   Any outstanding images will be destroyed with the lifecycle of this Widget.
-	 * @param imageGetter Function which returns the image being gotten.
-	 * @param imageSetter Function which sets the image being set.
-	 * @return
+	 * @param imageGetter Function which returns the image currently on the Widget (used to ensure that nobody messed with it).
+	 * @param imageSetter Function which sets the image on the Widget.
+	 * @return A {@code Box.Nullable<ImageDescriptor>} for setting the {@code Image} using an {@code ImageDescriptor}.
 	 */
 	public static Box.Nullable<ImageDescriptor> createSetter(Widget lifecycle, Supplier<Image> imageGetter, Consumer<Image> imageSetter) {
 		return new Box.Nullable<ImageDescriptor>() {

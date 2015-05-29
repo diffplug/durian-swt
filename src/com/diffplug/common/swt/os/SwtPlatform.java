@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-/** Models the platforms that the SWT binaries are built for. */
+/** Models the platforms that SWT binaries are built for, useful for build tools that interact with SWT jars. */
 public class SwtPlatform {
 	/** Windowing system. */
 	private final String ws;
@@ -89,7 +89,7 @@ public class SwtPlatform {
 		return map;
 	}
 
-	/** Returns the code that wuff uses for this SwtPlatform. */
+	/** Returns the folder name that <a href="https://github.com/akhikhl/wuff">wuff</a> uses for this SwtPlatform. */
 	public String getWuffString() {
 		// @formatter:off
 		Map<SwtPlatform, String> wuffMap = new HashMap<>();

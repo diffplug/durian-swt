@@ -346,12 +346,12 @@ public class SwtMisc {
 				.forEach(ctl -> ctl.setEnabled(enabled));
 	}
 
-	/** TreeDef for Composites. */
+	/** <code><a href="https://diffplug.github.io/durian/javadoc/snapshot/com/diffplug/common/base/TreeDef.html">TreeDef</a></code> for Composites. */
 	public static TreeDef.Parented<Composite> treeDefComposite() {
 		return COMPOSITE_TREE_DEF;
 	}
 
-	/** TreeDef for Control. */
+	/** <code><a href="https://diffplug.github.io/durian/javadoc/snapshot/com/diffplug/common/base/TreeDef.html">TreeDef</a></code> for Controls. */
 	public static TreeDef.Parented<Control> treeDefControl() {
 		return CONTROL_TREE_DEF;
 	}
