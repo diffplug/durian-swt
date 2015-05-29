@@ -15,6 +15,8 @@
  */
 package com.diffplug.common.swt;
 
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
@@ -23,6 +25,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import com.google.common.collect.Range;
+import com.google.common.util.concurrent.Uninterruptibles;
 
 import com.diffplug.common.swt.InteractiveTest.FailsWithoutUser;
 
@@ -55,7 +58,14 @@ public class InteractiveTestTest {
 	@Test
 	public void testShellWithoutHandle() {
 		InteractiveTest.testShellWithoutHandle("A blank dialog should be open to the left, press Pass", display -> {
-			Shells.create(SWT.SHELL_TRIM, this::dummyCoat).setSize(SwtMisc.scaleByFontHeight(30, 0)).openOnDisplay();
+			new Thread(() -> {
+				// the test harness will spin the SWT Display loop until a Shell is opened
+				Uninterruptibles.sleepUninterruptibly(250, TimeUnit.MILLISECONDS);
+				// now we'll open it
+				SwtExec.async().execute(() -> {
+					Shells.create(SWT.SHELL_TRIM, this::dummyCoat).setSize(SwtMisc.scaleByFontHeight(30, 0)).openOnDisplay();
+				});
+			}, "testShellWithoutHandle").start();
 		});
 	}
 

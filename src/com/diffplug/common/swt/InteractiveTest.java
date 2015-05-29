@@ -178,10 +178,15 @@ public class InteractiveTest {
 			consumer.accept(display);
 
 			// wait until this dialog is created
-			SwtMisc.loopUntil(() -> display.getActiveShell() != null);
+			SwtMisc.loopUntil(() -> display.getShells().length > 0);
 
 			// return the dialog that was created
-			return display.getActiveShell();
+			Shell[] shells = display.getShells();
+			if (shells.length == 1) {
+				return shells[0];
+			} else {
+				throw new IllegalArgumentException("The test harness created multiple shells.");
+			}
 		});
 	}
 
