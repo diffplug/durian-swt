@@ -53,21 +53,21 @@ import com.diffplug.common.rx.Rx;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
- * {@code ExecutorService}s which execute on the SWT UI thread.
+ * {link ExecutorService}s which execute on the SWT UI thread.
  * <p>
  * There are three "kinds" of {@code SwtExec}:
  * <ul>
- * <li>{@link #async} -> performs actions using  {@code Display.asyncExec()}</li>
- * <li>{@link #immediate} -> performs actions immediately if called from a UI thread, otherwise delegates to  {@code Display.asyncExec()}.</li>
- * <li>{@link #blocking} -> performs actions immediately if called from a UI thread, else delegates to  {@code Display.syncExec()}.</li>
+ * <li>{@link #async} -> performs actions using  {@link Display#asyncExec}</li>
+ * <li>{@link #immediate} -> performs actions immediately if called from a UI thread, otherwise delegates to  {@link Display#asyncExec}.</li>
+ * <li>{@link #blocking} -> performs actions immediately if called from a UI thread, else delegates to  {@link Display#syncExec}.</li>
  * </ul>
  * <p>
  * In addition to the standard executor methods, each {@code SwtExec} also has a method {@link #guardOn}, which
  * returns a {@link Guarded} instance - the cure for "Widget is disposed" errors.  {@code Guarded} has methods like
  * {@link Guarded#wrap} and {@link Guarded#execute}, whose contents are <i>only executed if the guarded widget is not disposed</i>.
  * <p>
- * {@link Guarded} also contains the full API of <code><a href="https://diffplug.github.io/durian-rx/javadoc/snapshot/com/diffplug/common/rx/Rx.html">Rx</a></code>,
- * which allows subscribing to Observables and ListenableFutures while guarding on a given widget.
+ * {@link Guarded} also contains the full API of {@link com.diffplug.common.rx.Rx},
+ * which allows subscribing to {@link rx.Observable}s and {@link com.google.common.util.concurrent.ListenableFuture}s while guarding on a given widget.
  */
 public class SwtExec extends AbstractExecutorService implements ScheduledExecutorService, Rx.HasRxExecutor {
 	/** Global executor for async. */
@@ -76,7 +76,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	/**
 	 * Returns an "async" SwtExecutor.
 	 * <p>
-	 * When {@code execute(Runnable)} is called, the {@code Runnable} will be passed to {@code Display.asyncExec()}.
+	 * When {@code execute(Runnable)} is called, the {@code Runnable} will be passed to {@link Display#asyncExec Display.asyncExec}.
 	 */
 	@SuppressFBWarnings(value = "LI_LAZY_INIT_STATIC", justification = "This race condition is fine, as explained in the comment below.")
 	public static SwtExec async() {
@@ -94,7 +94,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 * Returns an "immediate" SwtExecutor.
 	 * <ul>
 	 * <li>When {@code execute(Runnable)} is called from the SWT thread, the {@code Runnable} will be executed immediately.</li>
-	 * <li>Else, the {@code Runnable} will be passed to {@code Display.asyncExec()}.</li>
+	 * <li>Else, the {@code Runnable} will be passed to {@link Display#asyncExec Display.asyncExec}.</li>
 	 * </ul>
 	 */
 	@SuppressFBWarnings(value = "LI_LAZY_INIT_STATIC", justification = "This race condition is fine, as explained in the comment below.")
@@ -127,8 +127,9 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 * Returns a "blocking" SwtExecutor.
 	 * <ul>
 	 * <li>When {@code execute(Runnable)} is called from the SWT thread, the {@code Runnable} will be executed immediately.</li>
-	 * <li>Else, the {@code Runnable} will be passed to {@code Display.asyncExec()}.</li>
+	 * <li>Else, the {@code Runnable} will be passed to {@link Display#syncExec Display.syncExec}.</li>
 	 * </ul>
+	 * This instance also has a blocking {@link Blocking#get get()} method for doing a get in the UI thread.
 	 */
 	@SuppressFBWarnings(value = "LI_LAZY_INIT_STATIC", justification = "This race condition is fine, as explained in the comment below.")
 	public static Blocking blocking() {
@@ -146,8 +147,11 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	}
 
 	/**
-	 * An SwtExec which adds a blocking get() method for doing gets in the UI thread.
-	 * <p>
+	 * An SwtExec (obtained via {@link SwtExec#blocking()}) which adds a blocking {@link Blocking#get get()} method.
+	 * <ul>
+	 * <li>When {@code execute(Runnable)} is called from the SWT thread, the {@code Runnable} will be executed immediately.</li>
+	 * <li>Else, the {@code Runnable} will be passed to {@link Display#syncExec Display.syncExec}.</li>
+	 * </ul>
 	 * @see SwtExec#blocking
 	 */
 	public static class Blocking extends SwtExec {
@@ -213,17 +217,27 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 		async().display.timerExec(ms, runnable);
 	}
 
-	/** Returns an API for performing actions which are guarded on the given widget. */
+	/** Returns an API for performing actions which are guarded on the given Widget. */
 	public Guarded guardOn(Widget widget) {
 		return new Guarded(this, widget);
 	}
 
-	/** Returns an API for performing actions which are guarded on the given widget. */
+	/** Returns an API for performing actions which are guarded on the given ControlWrapper. */
 	public Guarded guardOn(ControlWrapper<?> wrapper) {
 		return guardOn(wrapper.getRootControl());
 	}
 
-	/** API for conducting actions which are guarded on an SWT widget. */
+	/**
+	 * {@link Executor} and {@link com.diffplug.common.rx.Rx} for conducting actions which are guarded on an SWT widget.
+	 * Obtained via {@link SwtExec#guardOn(Widget) SwtExec.guardOn(Widget)} or {@link SwtExec#guardOn(ControlWrapper) SwtExec.guardOn(ControlWrapper)}.
+	 * <p>
+	 * <pre>
+	 * SwtExec.Guarded guarded = SwtExec.immediate().guardOn(textBox);
+	 * // guaranteed to not cause "Widget is disposed" errors
+	 * guarded.subscribe(serverResponse, txt -> textBox.setText(text));
+	 * </pre>
+	 * @see com.diffplug.common.rx.Rx
+	 */
 	public static class Guarded implements Executor {
 		private final SwtExec parent;
 		private final Widget guard;
@@ -304,7 +318,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	protected final Display display;
 	protected final Rx.RxExecutor rxExecutor;
 
-	/** Returns an instance of RxExecutor. */
+	/** Returns an instance of {@link com.diffplug.common.rx.Rx.RxExecutor}. */
 	@Override
 	public Rx.RxExecutor getRxExecutor() {
 		return rxExecutor;

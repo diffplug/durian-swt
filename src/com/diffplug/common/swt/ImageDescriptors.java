@@ -30,20 +30,20 @@ import com.diffplug.common.base.Box;
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.Unhandled;
 
-/** Utilities for using ImageDescriptors correctly. */
+/** Utilities for using {@link ImageDescriptor}s correctly. */
 public class ImageDescriptors {
 	/**
-	 * ImageDescriptor allows an image to be shared in a pool using reference counting. In order to not screw-up the reference
+	 * {@link ImageDescriptor} allows an {@link Image} to be shared in a pool using reference counting. In order to not screw-up the reference
 	 * counting, you need to be pretty careful with how you use them.
 	 * <p>
-	 * This creates a {@code Box.Nullable<ImageDescriptor>} which sets and gets images in a way that will keep the reference counting happy.
+	 * This creates a {@link com.diffplug.common.base.Box.Nullable Box.Nullable&lt;ImageDescriptor&gt;} which sets and gets images in a way that will keep the reference counting happy.
 	 * <p>
 	 * <b>NO ONE MUST SET THE IMAGE EXCEPT THIS SETTER.</b>
 	 *
 	 * @param lifecycle   Any outstanding images will be destroyed with the lifecycle of this Widget.
 	 * @param imageGetter Function which returns the image currently on the Widget (used to ensure that nobody messed with it).
 	 * @param imageSetter Function which sets the image on the Widget.
-	 * @return A {@code Box.Nullable<ImageDescriptor>} for setting the {@code Image} using an {@code ImageDescriptor}.
+	 * @return A {@code Box.Nullable<ImageDescriptor>} for setting the {@link Image} using an {@link ImageDescriptor}.
 	 */
 	public static Box.Nullable<ImageDescriptor> createSetter(Widget lifecycle, Supplier<Image> imageGetter, Consumer<Image> imageSetter) {
 		return new Box.Nullable<ImageDescriptor>() {
@@ -110,17 +110,17 @@ public class ImageDescriptors {
 		}
 	});
 
-	/** Sets the given Item to have the image described by the given descriptor, maintaining proper reference counting. */
+	/** Sets the given {@link Item} to have the image described by the given descriptor, maintaining proper reference counting. */
 	public static void set(Item widget, ImageDescriptor image) {
 		globalSetter.forWidget(widget).set(image);
 	}
 
-	/** Sets the given Button to have the image described by the given descriptor, maintaining proper reference counting. */
+	/** Sets the given {@link Button} to have the image described by the given descriptor, maintaining proper reference counting. */
 	public static void set(Button widget, ImageDescriptor image) {
 		globalSetter.forWidget(widget).set(image);
 	}
 
-	/** Sets the given Label to have the image described by the given descriptor, maintaining proper reference counting. */
+	/** Sets the given {@link Label} to have the image described by the given descriptor, maintaining proper reference counting. */
 	public static void set(Label widget, ImageDescriptor image) {
 		globalSetter.forWidget(widget).set(image);
 	}

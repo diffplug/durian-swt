@@ -20,9 +20,9 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 
 /**
- * A fluent api for setting and modifying a GridData.  Created by static methods in Layouts.
+ * A fluent api for setting and modifying a {@link GridData}, created by {@link Layouts}.
  * 
- * Inspired by Moritz Post: http://eclipsesource.com/blogs/2013/07/25/efficiently-dealing-with-swt-gridlayout-and-griddata/
+ * Inspired by <a href="http://eclipsesource.com/blogs/2013/07/25/efficiently-dealing-with-swt-gridlayout-and-griddata/">Moritz Post's blog post.</a>.
  */
 public class LayoutsGridData {
 	private final GridData gridData;

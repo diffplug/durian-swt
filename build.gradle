@@ -184,7 +184,12 @@ javadoc {
 	options.addStringOption('Xdoclint:none', '-quiet')
 	options.header javadocInfo
 	options.footer javadocInfo
-	options.noQualifiers 'java.lang.*', 'java.util.function.*', 'org.eclipse.swt.*', 'org.eclipse.jface.*'
+	options.links('https://diffplug.github.io/durian/javadoc/' + (VER_DURIAN.endsWith('-SNAPSHOT') ? 'snapshot' : VER_DURIAN) + '/')
+	options.links('https://diffplug.github.io/durian-rx/javadoc/' + (VER_DURIAN_RX.endsWith('-SNAPSHOT') ? 'snapshot' : VER_DURIAN_RX) + '/')
+	options.links('https://docs.oracle.com/javase/8/docs/api/')
+	options.links('http://reactivex.io/RxJava/javadoc/')
+	options.links('http://docs.guava-libraries.googlecode.com/git-history/v18.0/javadoc/')
+	options.links('http://help.eclipse.org/luna/nftopic/org.eclipse.platform.doc.isv/reference/api/')
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {

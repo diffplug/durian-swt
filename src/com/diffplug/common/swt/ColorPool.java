@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.Widget;
 
 import com.google.common.collect.Maps;
 
-/** Caches colors, and automatically manages their disposal. */
+/** Caches {@link Color}s, and automatically manages their disposal. */
 public class ColorPool {
 	private final HashMap<RGB, Color> colorTable = Maps.newHashMap();
 	private final Display display;

@@ -19,9 +19,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 
 /**
- * A fluent api for setting and modifying a FillLayout.  Created by static methods in Layouts.
+ * A fluent api for setting and modifying a {@link FillLayout}, created by {@link Layouts}.
  * 
- * Inspired by Moritz Post: http://eclipsesource.com/blogs/2013/07/25/efficiently-dealing-with-swt-gridlayout-and-griddata/
+ * Inspired by <a href="http://eclipsesource.com/blogs/2013/07/25/efficiently-dealing-with-swt-gridlayout-and-griddata/">Moritz Post's blog post.</a>.
  */
 public class LayoutsFillLayout {
 	private final FillLayout fillLayout;

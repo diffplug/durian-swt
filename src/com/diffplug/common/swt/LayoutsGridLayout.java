@@ -18,9 +18,9 @@ package com.diffplug.common.swt;
 import org.eclipse.swt.layout.GridLayout;
 
 /**
- * A fluent api for setting and modifying a GridLayout.  Created by static methods in Layouts.
+ * A fluent api for setting and modifying a {@link GridLayout}, created by {@link Layouts}.
  * 
- * Inspired by Moritz Post: http://eclipsesource.com/blogs/2013/07/25/efficiently-dealing-with-swt-gridlayout-and-griddata/
+ * Inspired by <a href="http://eclipsesource.com/blogs/2013/07/25/efficiently-dealing-with-swt-gridlayout-and-griddata/">Moritz Post's blog post.</a>.
  */
 public class LayoutsGridLayout {
 	private final GridLayout gridLayout;

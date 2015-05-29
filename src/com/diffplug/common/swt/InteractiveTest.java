@@ -34,7 +34,7 @@ import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.Unhandled;
 
 /**
- * InteractiveTest opens a {@link Coat} or {@code Shell}, and displays instructions
+ * InteractiveTest opens a {@link Coat} or {@link Shell}, and displays instructions
  * for a human tester to determine whether the test passed or failed.  This makes
  * it extremely easy to create and specify a UI test, which can be converted into
  * an automated UI test at a later date.

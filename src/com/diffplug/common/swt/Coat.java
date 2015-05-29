@@ -20,7 +20,7 @@ import java.util.Objects;
 import org.eclipse.swt.widgets.Composite;
 
 /**
- * A function that can be "put on" a blank Composite.
+ * A function that can be "put on" a blank {@link Composite}.
  * <p>
  * An SWT Composite is a blank canvas.  As such, it's common to write functions
  * that look like {@code void initializeCmp(Composite cmp)}. In order to make higher-order

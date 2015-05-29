@@ -19,15 +19,15 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 /**
- * Wraps an SWT Control to encapsulate its API.
+ * Wraps an SWT {@link Control} to encapsulate its API.
  * <p>
- * The traditional way to make a custom class is this: {@code class CustomControl extends Composite}
+ * The traditional way to make a custom class is this: <code>class CustomControl extends {@link Composite}</code>
  * <p>
  * This has three main problems:
  * <ol>
- * <li>Users can add random widgets to your "Control" because it exposes the {@code Composite} interface.</li>
- * <li>Users can set the layout to your "Control" because it exposes the {@code Composite} interface.</li>
- * <li>Users can add random listeners to your "Control", and overridding {@code addListener} to intercept them is a <b>very dangerous plan</b>.</li>
+ * <li>Users can add random widgets to your "Control" because it exposes the {@link Composite} interface.</li>
+ * <li>Users can set the layout to your "Control" because it exposes the {@link Composite} interface.</li>
+ * <li>Users can add random listeners to your "Control", and overridding {@link org.eclipse.swt.widgets.Widget#addListener Widget.addListener} to intercept them is a <b>very dangerous plan</b>.</li>
  * </ol>
  * <p>
  * ControlWrapper fixes this by providing an low-overhead skeleton which encapsulates the

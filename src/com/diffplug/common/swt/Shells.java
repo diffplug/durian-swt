@@ -29,7 +29,7 @@ import rx.subscriptions.BooleanSubscription;
 
 import com.google.common.base.Preconditions;
 
-/** A fluent builder for creating SWT shells. */
+/** A fluent builder for creating SWT {@link Shell}s. */
 public class Shells {
 	private final Coat coat;
 	private final int style;
