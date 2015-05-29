@@ -76,6 +76,10 @@ test {
 			excludeCategories 'com.diffplug.common.swt.InteractiveTest'
 		}
 	}
+	// log all test events
+	testLogging {
+		events "failed", "passed", "skipped", "standard_error", "standard_out", "started"
+	}
 }
 
 // only run the interactive tests
