@@ -15,7 +15,7 @@
 * [`ControlWrapper`](http://diffplug.github.io/durian-swt/javadoc/snapshot/com/diffplug/common/swt/ControlWrapper.html) - create custom widgets which properly encapsulate their base control.
 * [`Coat`](http://diffplug.github.io/durian-swt/javadoc/snapshot/com/diffplug/common/swt/Coat.html) - a functional interface for populating an empty Composite.
 * [`SwtExec`](http://diffplug.github.io/durian-swt/javadoc/snapshot/com/diffplug/common/swt/SwtExec.html) - an `ExecutorService` which executes on the SWT thread.
-* [`SwtExec.Guarded`](http://diffplug.github.io/durian-swt/javadoc/snapshot/com/diffplug/common/swt/SwtExec.Guarded.html) - an `Executor` which is tied to the lifetime of an SWT widget. Say goodbye to `SWTException: Widget is disposed` forever! It can also subscribe to any kind of observable (Guava's ListenableFuture or RxJava's Observable), see [DurianRx](https://github.com/diffplug/durian-rx) for more info. 
+* [`SwtExec.Guarded`](http://diffplug.github.io/durian-swt/javadoc/snapshot/com/diffplug/common/swt/SwtExec.Guarded.html) - an `Executor` which is tied to the lifetime of an SWT widget. Say goodbye to `SWTException: Widget is disposed` forever! It can also subscribe to any kind of observable (Guava's ListenableFuture or RxJava's Observable), see [DurianRx](https://github.com/diffplug/durian-rx) for more info.
 ```java
 SwtExec.async().guardOn(textBox).subscribe(serverResponse, txt -> {
 	textBox.setText(txt);
