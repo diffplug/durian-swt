@@ -26,7 +26,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.Widget;
 
 import com.google.common.base.Preconditions;
 
@@ -119,25 +118,25 @@ public class InteractiveTest {
 		SwtExec.blocking().execute(() -> {
 			Display display = SwtMisc.assertUI();
 
+			// the test is a failure until the user tells us otherwise
+			Box<TestResult> result = Box.of(TestResult.FAIL);
+
 			try {
 				// create the shell under test
 				Shell underTest = function.apply(display);
 				underTest.setLocation(10, 10);
 
 				// create the test dialog
-				Box<TestResult> result = Box.of(TestResult.FAIL);
 				Shell instructionsDialog = openInstructions(underTest, instructions, result);
+				// if the user closes the instructions, close the test too
+				instructionsDialog.addListener(SWT.Dispose, e -> underTest.dispose());
+				// make sure underTest has focus
 				underTest.setActive();
-
-				// when either is disposed, dispose the other
-				disposeIfDisposed(underTest, instructionsDialog);
-				disposeIfDisposed(instructionsDialog, underTest);
 
 				// if we're in autoclose mode, then we'll dispose the test after a timeout
 				autoCloseMs().ifPresent(autoCloseMs -> {
 					SwtExec.async().guardOn(underTest).timerExec(autoCloseMs, () -> {
-						// dispose the shells
-						instructionsDialog.dispose();
+						// dispose the test shell (we'll let the instructions shell dispose itself)
 						underTest.dispose();
 						// set the result to be a pass
 						result.set(TestResult.PASS);
@@ -161,15 +160,6 @@ public class InteractiveTest {
 				for (Shell shell : display.getShells()) {
 					shell.dispose();
 				}
-			}
-		});
-	}
-
-	/** Cascades disposal. */
-	private static void disposeIfDisposed(Widget ifDisposed, Widget thenDispose) {
-		ifDisposed.addListener(SWT.Dispose, e -> {
-			if (!thenDispose.isDisposed()) {
-				thenDispose.dispose();
 			}
 		});
 	}

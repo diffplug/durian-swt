@@ -21,10 +21,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.junit.rules.Timeout;
 
 import com.google.common.collect.Range;
 import com.google.common.util.concurrent.Uninterruptibles;
@@ -33,12 +31,6 @@ import com.diffplug.common.swt.InteractiveTest.FailsWithoutUser;
 
 @Category(InteractiveTest.class)
 public class InteractiveTestTest {
-	@Rule
-	public Timeout globalTimeout = Timeout.builder()
-			.withLookingForStuckThread(true)
-			.withTimeout(10, TimeUnit.SECONDS)
-			.build();
-
 	@Category(FailsWithoutUser.class)
 	@Test(expected = AssertionError.class)
 	public void testFail() {
