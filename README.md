@@ -81,7 +81,7 @@ String swtJarName = "org.eclipse.swt." + SwtPlatform.getRunning();
 Durian requires:
 * Java 8
 * [Durian](https://github.com/diffplug/durian) and [DurianRx](https://github.com/diffplug/durian-rx)
-* [Guava](https://github.com/google/guava) and [RxJava](https://github.com/ReactiveX/RxJava)
+* [Guava](https://github.com/google/guava) and [RxJava](https://github.com/reactivex/rxjava)
 * SWT and JFace from Eclipse 4.4+
 	+ SWT and JFace are not included in the Maven POM, but everything else is.
 
