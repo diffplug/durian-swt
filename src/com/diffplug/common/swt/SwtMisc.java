@@ -18,7 +18,7 @@ package com.diffplug.common.swt;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Supplier;
+import java.util.function.Predicate;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Device;
@@ -108,10 +108,10 @@ public class SwtMisc {
 	////////////////////////////////////////
 	// Run the SWT display loop until ... //
 	////////////////////////////////////////
-	/** Runs the display loop until the given Supplier returns false. */
-	public static void loopUntil(Supplier<Boolean> until) {
+	/** Runs the display loop until the given {@code Predicate<Display>} returns false. */
+	public static void loopUntil(Predicate<Display> until) {
 		Display display = assertUI();
-		while (!until.get()) {
+		while (!until.test(display)) {
 			try {
 				if (!display.readAndDispatch()) {
 					display.sleep();
@@ -124,7 +124,7 @@ public class SwtMisc {
 
 	/** Runs the display loop until the given widget has been disposed. */
 	public static void loopUntilDisposed(Widget widget) {
-		loopUntil(() -> widget.isDisposed());
+		loopUntil(display -> widget.isDisposed());
 	}
 
 	/** Runs the display loop until the given future has returned. */
@@ -133,7 +133,7 @@ public class SwtMisc {
 		Nullable<Throwable> error = Nullable.ofNull();
 		Rx.subscribe(future, Rx.onValueOrFailure(result::set, error::set));
 
-		loopUntil(() -> future.isDone());
+		loopUntil(display -> future.isDone());
 
 		if (error.get() != null) {
 			throw error.get();

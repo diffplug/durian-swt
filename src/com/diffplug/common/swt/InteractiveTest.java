@@ -174,7 +174,7 @@ public class InteractiveTest {
 			harness.accept(display);
 
 			// wait until this dialog is created
-			SwtMisc.loopUntil(() -> display.getShells().length > 0);
+			SwtMisc.loopUntil(d -> d.getShells().length > 0);
 
 			// return the dialog that was created
 			Shell[] shells = display.getShells();
