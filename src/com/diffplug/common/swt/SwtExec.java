@@ -28,7 +28,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.eclipse.swt.SWT;
@@ -48,8 +47,8 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import com.diffplug.common.base.Box.Nullable;
 import com.diffplug.common.base.Unhandled;
-import com.diffplug.common.rx.IObservable;
 import com.diffplug.common.rx.Rx;
+import com.diffplug.common.rx.RxSubscriber;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -238,7 +237,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 * </pre>
 	 * @see com.diffplug.common.rx.Rx
 	 */
-	public static class Guarded implements Executor {
+	public static class Guarded implements Executor, RxSubscriber {
 		private final SwtExec parent;
 		private final Widget guard;
 
@@ -272,9 +271,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 			};
 		}
 
-		////////////////
-		// Observable //
-		////////////////
+		@Override
 		public <T> Subscription subscribe(Observable<? extends T> observable, Rx<T> listener) {
 			if (!guard.isDisposed()) {
 				Subscription subscription = parent.rxExecutor.subscribe(observable, listener);
@@ -285,21 +282,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 			}
 		}
 
-		public <T> Subscription subscribe(Observable<? extends T> observable, Consumer<T> listener) {
-			return subscribe(observable, Rx.onValue(listener));
-		}
-
-		public <T> Subscription subscribe(IObservable<? extends T> observable, Rx<T> listener) {
-			return subscribe(observable.asObservable(), listener);
-		}
-
-		public <T> Subscription subscribe(IObservable<? extends T> observable, Consumer<T> listener) {
-			return subscribe(observable, Rx.onValue(listener));
-		}
-
-		//////////////////////
-		// ListenableFuture //
-		//////////////////////
+		@Override
 		public <T> Subscription subscribe(ListenableFuture<? extends T> future, Rx<T> listener) {
 			if (!guard.isDisposed()) {
 				Subscription subscription = parent.rxExecutor.subscribe(future, listener);
@@ -308,10 +291,6 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 			} else {
 				return Subscriptions.unsubscribed();
 			}
-		}
-
-		public <T> Subscription subscribe(ListenableFuture<? extends T> future, Consumer<T> listener) {
-			return subscribe(future, Rx.onValue(listener));
 		}
 	}
 
