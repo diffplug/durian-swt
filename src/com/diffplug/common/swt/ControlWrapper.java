@@ -34,32 +34,24 @@ import org.eclipse.swt.widgets.Control;
  * SWT Control that you're using as the base of your custom control, which allows you to only
  * expose the APIs that are appropriate.
  */
-public class ControlWrapper<T extends Control> {
-	/** The wrapped control. */
-	protected final T wrapped;
-
-	/** Creates a ControlWrapper which wraps the given control. */
-	public ControlWrapper(T wrapped) {
-		this.wrapped = wrapped;
-	}
-
+public interface ControlWrapper {
 	/** Sets the LayoutData for this control. */
-	public final void setLayoutData(Object layoutData) {
-		wrapped.setLayoutData(layoutData);
+	default void setLayoutData(Object layoutData) {
+		getRootControl().setLayoutData(layoutData);
 	}
 
 	/** Returns the LayoutData for this control. */
-	public final Object getLayoutData() {
-		return wrapped.getLayoutData();
+	default Object getLayoutData() {
+		return getRootControl().getLayoutData();
 	}
 
 	/** Returns the parent of this Control. */
-	public final Composite getParent() {
-		return wrapped.getParent();
+	default Composite getParent() {
+		return getRootControl().getParent();
 	}
 
 	/**
-	 * Returns the wrapped Control (only appropriate for limited purposes!).
+	 * Returns the wrapped {@link Control} (only appropriate for limited purposes!).
 	 * <p>
 	 * The implementor of this ControlWrapper is free to change the wrapped Control
 	 * as she sees fit, and she doesn't have to tell you about it!  You shouldn't rely
@@ -72,7 +64,37 @@ public class ControlWrapper<T extends Control> {
 	 * <p>
 	 * But that's all. If you use it for something else, it's on you when it breaks.
 	 */
-	public Control getRootControl() {
-		return wrapped;
+	public Control getRootControl();
+
+	/** Default implementation of a {@link ControlWrapper} which wraps a {@link Control}. */
+	public static class AroundControl<T extends Control> implements ControlWrapper {
+		/** The wrapped control. */
+		protected final T wrapped;
+
+		/** Creates a ControlWrapper which wraps the given control. */
+		public AroundControl(T wrapped) {
+			this.wrapped = wrapped;
+		}
+
+		@Override
+		public Control getRootControl() {
+			return wrapped;
+		}
+	}
+
+	/** Default implementation of a {@link ControlWrapper} which wraps some other form of {@code ControlWrapper} with a new interface. */
+	public static class AroundWrapper<T extends ControlWrapper> implements ControlWrapper {
+		/** The wrapped control. */
+		protected final T wrapped;
+
+		/** Creates a ControlWrapper which wraps the given control. */
+		public AroundWrapper(T wrapped) {
+			this.wrapped = wrapped;
+		}
+
+		@Override
+		public Control getRootControl() {
+			return wrapped.getRootControl();
+		}
 	}
 }

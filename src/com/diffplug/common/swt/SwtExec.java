@@ -223,7 +223,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	}
 
 	/** Returns an API for performing actions which are guarded on the given ControlWrapper. */
-	public Guarded guardOn(ControlWrapper<?> wrapper) {
+	public Guarded guardOn(ControlWrapper wrapper) {
 		return guardOn(wrapper.getRootControl());
 	}
 

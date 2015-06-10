@@ -102,7 +102,7 @@ public class Layouts {
 	}
 
 	/** Sets the layoutData on the ControlWrapper to a new GridData, and returns an API for modifying it. */
-	public static LayoutsGridData setGridData(ControlWrapper<?> wrapper) {
+	public static LayoutsGridData setGridData(ControlWrapper wrapper) {
 		GridData gridData = new GridData();
 		wrapper.setLayoutData(gridData);
 		return new LayoutsGridData(gridData);
@@ -114,7 +114,7 @@ public class Layouts {
 	}
 
 	/** Returns an API for modifying the already-existing GridData which has been set on the given ControlWrapper. */
-	public static LayoutsGridData modifyGridData(ControlWrapper<?> wrapper) {
+	public static LayoutsGridData modifyGridData(ControlWrapper wrapper) {
 		return modifyGridData(wrapper.getLayoutData());
 	}
 

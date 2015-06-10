@@ -25,7 +25,7 @@ import com.diffplug.common.rx.RxGetter;
 import com.diffplug.common.rx.RxOptional;
 
 /** A widget that switches between multiple {@code Coat}s. */
-public class CoatMux extends ControlWrapper<Composite> {
+public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 	/** The StackLayout for switching between layers. */
 	private StackLayout stack = new StackLayout();
 	/** The currently displayed layer (if any). */
