@@ -15,7 +15,9 @@
  */
 package com.diffplug.common.swt;
 
-import org.eclipse.jface.resource.FontRegistry;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -25,11 +27,13 @@ import com.google.common.base.Preconditions;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.swt.os.OS;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /** Registry of fonts, especially system fonts. */
 public class Fonts {
 	private static Fonts instance;
 
+	@SuppressFBWarnings(value = "LI_LAZY_INIT_STATIC", justification = "SwtMisc.assertUI() ensures it is only called from one thread.")
 	private static Fonts getInstance() {
 		Display display = SwtMisc.assertUI();
 		if (instance == null) {
@@ -38,18 +42,18 @@ public class Fonts {
 		return instance;
 	}
 
-	private final FontRegistry fontRegistry;
+	private final Display display;
+	private final Map<String, Font> map = new HashMap<>();
 
 	private Fonts(Display display) {
-		this.fontRegistry = new FontRegistry(display);
+		this.display = display;
 	}
 
 	private Font getFont(String name, int size, int style) {
 		String key = getFontKey(name, size, style);
-		if (!fontRegistry.hasValueFor(key)) {
-			fontRegistry.put(key, new FontData[]{new FontData(name, size, style)});
-		}
-		return fontRegistry.get(key);
+		return map.computeIfAbsent(key, unused -> {
+			return new Font(display, name, size, style);
+		});
 	}
 
 	private String getFontKey(String name, int size, int style) {
@@ -84,7 +88,9 @@ public class Fonts {
 	private static FontData bestSystemMonospaceFontData;
 
 	/** Calculates the best monospaced font available on this system, can be called from any thread. */
+	@SuppressFBWarnings(value = "LI_LAZY_INIT_STATIC", justification = "SwtMisc.assertUI() ensures it is only called from one thread.")
 	public static FontData getSystemMonospaceFontData() {
+		Display display = SwtMisc.assertUI();
 		if (bestSystemMonospaceFontData != null) {
 			return bestSystemMonospaceFontData;
 		}
@@ -95,7 +101,6 @@ public class Fonts {
 				"Monaco:11;Courier:12;Courier New:12",
 				"Monospace:10");
 
-		Display display = Display.getDefault();
 		String[] fonts = defaultFonts.split(";");
 		for (String font : fonts) {
 			// parse out each of the suggested fonts
