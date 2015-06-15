@@ -69,9 +69,9 @@ public class SwtMisc {
 
 	/**
 	 * Performs an asynchronous layout on the given composite.
-	 * 
+	 * <p>
 	 * Oftentimes, a layout will not be successful unless it is performed in
-	 * a Display.asyncExec() call, because the current list of events must be
+	 * a {@link Display#asyncExec(Runnable)} call, because the current list of events must be
 	 * processed before the layout can take place. 
 	 */
 	public static void asyncLayout(Composite cmp) {
@@ -80,11 +80,13 @@ public class SwtMisc {
 
 	/**
 	 * Performs an asynchronous layout on the given composite anytime that it is resized.
-	 * 
-	 * This can often fix graphical glitches with resize-to-fit layouts, such as a TableColumnLayout.
+	 * <p>
+	 * This can often fix graphical glitches with resize-to-fit layouts, such as a {@code TableColumnLayout}.
 	 */
 	public static void asyncLayoutOnResize(Composite cmp) {
 		cmp.addListener(SWT.Resize, e -> asyncLayout(cmp));
+		// trigger the first one by hand
+		asyncLayout(cmp);
 	}
 
 	/** Returns the Display instance, asserting that the method was called from the UI thread. */
