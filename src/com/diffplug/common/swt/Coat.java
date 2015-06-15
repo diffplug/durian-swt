@@ -17,6 +17,8 @@ package com.diffplug.common.swt;
 
 import org.eclipse.swt.widgets.Composite;
 
+import com.google.common.base.Preconditions;
+
 /**
  * A function that can be "put on" a blank {@link Composite}.
  * <p>
@@ -54,5 +56,11 @@ public interface Coat {
 				return returnValue;
 			};
 		}
+	}
+
+	/** Throws an {@link IllegalArgumentException} iff the given {@code Composite} is ready for a coat to be put on. */
+	public static void assertClean(Composite cmp) {
+		Preconditions.checkArgument(cmp.getChildren().length == 0, "The composite should have no children, this had %s.", cmp.getChildren().length);
+		Preconditions.checkArgument(cmp.getLayout() == null, "The composite should have no layout, this had %s.", cmp.getLayout());
 	}
 }
