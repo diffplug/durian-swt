@@ -30,7 +30,7 @@ import org.eclipse.swt.widgets.Widget;
  */
 public abstract class OnePerWidget<WidgetType extends Widget, T> {
 	/** Creates a OnePerWidget instance where objects are created using the given function. */
-	public static <WidgetType extends Widget, T> OnePerWidget<WidgetType, T> from(Function<WidgetType, T> creator) {
+	public static <WidgetType extends Widget, T> OnePerWidget<WidgetType, T> from(Function<? super WidgetType, ? extends T> creator) {
 		return new OnePerWidget<WidgetType, T>() {
 			@Override
 			protected T create(WidgetType widget) {
