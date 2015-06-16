@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
@@ -43,6 +44,7 @@ import rx.subscriptions.Subscriptions;
 
 import com.google.common.base.Preconditions;
 import com.google.common.primitives.Ints;
+import com.google.common.util.concurrent.AbstractFuture;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import com.diffplug.common.base.Box.Nullable;
@@ -237,7 +239,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 * </pre>
 	 * @see com.diffplug.common.rx.Rx
 	 */
-	public static class Guarded implements Executor, RxSubscriber {
+	public static class Guarded extends AbstractExecutorService implements ScheduledExecutorService, RxSubscriber {
 		private final SwtExec parent;
 		private final Widget guard;
 
@@ -290,6 +292,103 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 				return subscription;
 			} else {
 				return Subscriptions.unsubscribed();
+			}
+		}
+
+		@Override
+		public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
+			return parent.awaitTermination(timeout, unit);
+		}
+
+		@Override
+		public boolean isShutdown() {
+			return parent.isShutdown();
+		}
+
+		@Override
+		public boolean isTerminated() {
+			return parent.isTerminated();
+		}
+
+		@Override
+		public void shutdown() {
+			parent.shutdown();
+		}
+
+		@Override
+		public List<Runnable> shutdownNow() {
+			return parent.shutdownNow();
+		}
+
+		@Override
+		public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
+			return guardedFuture(() -> parent.schedule(guardedRunnable(command), delay, unit), delay, unit);
+		}
+
+		@Override
+		public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit) {
+			Callable<V> guarded = () -> {
+				if (guard.isDisposed()) {
+					return callable.call();
+				} else {
+					throw new IllegalArgumentException("Widget is disposed");
+				}
+			};
+			return guardedFuture(() -> parent.schedule(guarded, delay, unit), delay, unit);
+		}
+
+		@Override
+		public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit) {
+			return guardedFuture(() -> parent.scheduleAtFixedRate(guardedRunnable(command), initialDelay, period, unit), initialDelay, unit);
+		}
+
+		@Override
+		public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit) {
+			return guardedFuture(() -> parent.scheduleWithFixedDelay(guardedRunnable(command), initialDelay, delay, unit), initialDelay, unit);
+		}
+
+		private <T> ScheduledFuture<T> guardedFuture(Supplier<ScheduledFuture<T>> supplier, long delay, TimeUnit unit) {
+			if (guard.isDisposed()) {
+				return new CancelledScheduledFuture<T>(delay, unit);
+			} else {
+				ScheduledFuture<T> future = supplier.get();
+				guard.addListener(SWT.Dispose, e -> future.cancel(true));
+				return future;
+			}
+		}
+
+		/** An immediately cancelled scheduled future. */
+		private static class CancelledScheduledFuture<T> extends AbstractFuture<T>implements ScheduledFuture<T> {
+			private final long delay;
+			private final TimeUnit unit;
+
+			public CancelledScheduledFuture(long delay, TimeUnit unit) {
+				this.delay = delay;
+				this.unit = unit;
+			}
+
+			private final CancellationException thrown = new CancellationException("Immediate cancelled future.");
+
+			@Override
+			public boolean isCancelled() {
+				return true;
+			}
+
+			@Override
+			public T get() {
+				CancellationException exception = new CancellationException("Task was cancelled.");
+				exception.initCause(thrown);
+				throw exception;
+			}
+
+			@Override
+			public long getDelay(TimeUnit unit) {
+				return unit.convert(delay, this.unit);
+			}
+
+			@Override
+			public int compareTo(Delayed other) {
+				return Ints.saturatedCast(delay - other.getDelay(unit));
 			}
 		}
 	}
