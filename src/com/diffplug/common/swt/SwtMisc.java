@@ -50,9 +50,14 @@ public class SwtMisc {
 	/////////////////////
 	// True miscellany //
 	/////////////////////
-	/** Returns true if the flag is set in the given style value */
+	/** Returns true if {@code flag} is set in {@code style}. */
 	public static boolean flagIsSet(int flag, int style) {
 		return (style & flag) == flag;
+	}
+
+	/** Returns true if {@code flag} is set in the style value of {@code widget}. */
+	public static boolean flagIsSet(int flag, Widget widget) {
+		return flagIsSet(flag, widget.getStyle());
 	}
 
 	/** Disposes all children of the given composite. */
@@ -62,7 +67,7 @@ public class SwtMisc {
 		}
 	}
 
-	/** Converts a Runnable into a Listener. */
+	/** Converts a {@link Runnable} into a {@link Listener}. */
 	public static Listener asListener(Runnable runnable) {
 		return e -> runnable.run();
 	}
@@ -124,7 +129,7 @@ public class SwtMisc {
 		}
 	}
 
-	/** Runs the display loop until the given widget has been disposed. */
+	/** Runs the display loop until the {@code widget} has been disposed. */
 	public static void loopUntilDisposed(Widget widget) {
 		loopUntil(display -> widget.isDisposed());
 	}
@@ -339,7 +344,7 @@ public class SwtMisc {
 	//////////////////////
 	// Tree-based stuff //
 	//////////////////////
-	/** Sets the enabled status of every child of the given composite. */
+	/** Sets the enabled status of every child, grandchild, etc. of the given composite. */
 	public static void setEnabledDeep(Composite root, boolean enabled) {
 		TreeStream.depthFirst(SwtMisc.treeDefControl(), root)
 				// skip the root
