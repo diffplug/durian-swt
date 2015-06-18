@@ -358,6 +358,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 		}
 
 		/** An immediately cancelled scheduled future. */
+		@SuppressFBWarnings(value = "EQ_COMPARETO_USE_OBJECT_EQUALS", justification = "http://stackoverflow.com/questions/24353212/does-java-util-concurrent-delayed-really-force-me-to-violate-equals-compareto-co")
 		private static class CancelledScheduledFuture<T> extends AbstractFuture<T>implements ScheduledFuture<T> {
 			private final long delay;
 			private final TimeUnit unit;
