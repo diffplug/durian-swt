@@ -124,7 +124,7 @@ public class SwtMisc {
 					display.sleep();
 				}
 			} catch (Throwable e) {
-				Errors.log().handle(e);
+				Errors.log().accept(e);
 			}
 		}
 	}

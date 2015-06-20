@@ -70,7 +70,7 @@ public class ImageDescriptors {
 				if (imageGetter.get() != lastImg) {
 					// if someone else did mess with it, we can probably survive, so best to just
 					// log the failure and continue with setting the image
-					Errors.log().handle(new IllegalStateException("Setter must have exclusive control over the image field."));
+					Errors.log().accept(new IllegalStateException("Setter must have exclusive control over the image field."));
 				}
 
 				// set the new image

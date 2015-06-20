@@ -118,7 +118,7 @@ public class Fonts {
 		}
 
 		// our lists didn't work, so we'll fall back to the system font
-		Errors.log().handle(new IllegalArgumentException("Couldn't find a good monospaced font."));
+		Errors.log().accept(new IllegalArgumentException("Couldn't find a good monospaced font."));
 		bestSystemMonospaceFontData = display.getSystemFont().getFontData()[0];
 		return bestSystemMonospaceFontData;
 	}
