@@ -50,5 +50,10 @@ public class ColorPool {
 		return onePerWidget.forWidget(widget);
 	}
 
+	/** Returns a ColorPool for the given ControlWrapper, creating one if necessary. */
+	public static ColorPool forWidget(ControlWrapper wrapper) {
+		return onePerWidget.forWidget(wrapper.getRootControl());
+	}
+
 	private static OnePerWidget<Widget, ColorPool> onePerWidget = OnePerWidget.from(ColorPool::new);
 }
