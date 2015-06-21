@@ -60,16 +60,27 @@ public class SwtMisc {
 		return flagIsSet(flag, widget.getStyle());
 	}
 
-	/** Disposes all children of the given composite. */
-	public static void disposeChildren(Composite cmp) {
-		for (Control child : cmp.getChildren()) {
-			child.dispose();
-		}
-	}
-
 	/** Converts a {@link Runnable} into a {@link Listener}. */
 	public static Listener asListener(Runnable runnable) {
 		return e -> runnable.run();
+	}
+
+	/** Returns the Display instance, asserting that the method was called from the UI thread. */
+	public static Display assertUI() {
+		// returns the system display, creating it if necessary
+		synchronized (Device.class) {
+			// Display.getDefault() and display.getThread() both synchronize on
+			// Device.class.  By synchronizing ourselves, we minimize contention
+			Display display = Display.getDefault();
+			Preconditions.checkArgument(display.getThread() == Thread.currentThread(), "Must be called only from UI thread");
+			return display;
+		}
+	}
+
+	/** Asserts that the user didn't call this from the UI thread. */
+	public static void assertNotUI() {
+		Display current = Display.getCurrent();
+		Preconditions.checkArgument(current == null, "Must not be called from the UI thread.");
 	}
 
 	/**
@@ -94,22 +105,18 @@ public class SwtMisc {
 		asyncLayout(cmp);
 	}
 
-	/** Returns the Display instance, asserting that the method was called from the UI thread. */
-	public static Display assertUI() {
-		// returns the system display, creating it if necessary
-		synchronized (Device.class) {
-			// Display.getDefault() and display.getThread() both synchronize on
-			// Device.class.  By synchronizing ourselves, we minimize contention
-			Display display = Display.getDefault();
-			Preconditions.checkArgument(display.getThread() == Thread.currentThread(), "Must be called only from UI thread");
-			return display;
+	/** Disposes all children of the given composite, and sets the layout to null. */
+	public static void clean(Composite cmp) {
+		for (Control child : cmp.getChildren()) {
+			child.dispose();
 		}
+		cmp.setLayout(null);
 	}
 
-	/** Asserts that the user didn't call this from the UI thread. */
-	public static void assertNotUI() {
-		Display current = Display.getCurrent();
-		Preconditions.checkArgument(current == null, "Must not be called from the UI thread.");
+	/** Throws an {@link IllegalArgumentException} iff the given {@code Composite} has any children or a non-null layout. */
+	public static void assertClean(Composite cmp) {
+		Preconditions.checkArgument(cmp.getChildren().length == 0, "The composite should have no children, this had %s.", cmp.getChildren().length);
+		Preconditions.checkArgument(cmp.getLayout() == null, "The composite should have no layout, this had %s.", cmp.getLayout());
 	}
 
 	////////////////////////////////////////
