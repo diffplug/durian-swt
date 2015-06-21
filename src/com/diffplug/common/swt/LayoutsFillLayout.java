@@ -23,23 +23,16 @@ import org.eclipse.swt.layout.FillLayout;
  * 
  * Inspired by <a href="http://eclipsesource.com/blogs/2013/07/25/efficiently-dealing-with-swt-gridlayout-and-griddata/">Moritz Post's blog post.</a>.
  */
-public class LayoutsFillLayout implements LayoutWrapper {
-	private final FillLayout fillLayout;
-
+public class LayoutsFillLayout extends LayoutWrapper<FillLayout> {
 	LayoutsFillLayout(FillLayout fillLayout) {
-		this.fillLayout = fillLayout;
-	}
-
-	/** Returns the raw FillLayout. */
-	public FillLayout getRaw() {
-		return fillLayout;
+		super(fillLayout);
 	}
 
 	/** Sets all margins to the given value */
 	@Override
 	public LayoutsFillLayout margin(int margin) {
-		fillLayout.marginWidth = margin;
-		fillLayout.marginHeight = margin;
+		wrapped.marginWidth = margin;
+		wrapped.marginHeight = margin;
 		return this;
 	}
 
@@ -50,7 +43,7 @@ public class LayoutsFillLayout implements LayoutWrapper {
 
 	@Override
 	public LayoutsFillLayout spacing(int spacing) {
-		fillLayout.spacing = spacing;
+		wrapped.spacing = spacing;
 		return this;
 	}
 
@@ -60,22 +53,22 @@ public class LayoutsFillLayout implements LayoutWrapper {
 	}
 
 	public LayoutsFillLayout vertical() {
-		fillLayout.type = SWT.VERTICAL;
+		wrapped.type = SWT.VERTICAL;
 		return this;
 	}
 
 	public LayoutsFillLayout horizontal() {
-		fillLayout.type = SWT.HORIZONTAL;
+		wrapped.type = SWT.HORIZONTAL;
 		return this;
 	}
 
 	public LayoutsFillLayout marginWidth(int marginWidth) {
-		fillLayout.marginWidth = marginWidth;
+		wrapped.marginWidth = marginWidth;
 		return this;
 	}
 
 	public LayoutsFillLayout marginHeight(int marginHeight) {
-		fillLayout.marginHeight = marginHeight;
+		wrapped.marginHeight = marginHeight;
 		return this;
 	}
 }

@@ -22,27 +22,20 @@ import org.eclipse.swt.layout.GridLayout;
  * 
  * Inspired by <a href="http://eclipsesource.com/blogs/2013/07/25/efficiently-dealing-with-swt-gridlayout-and-griddata/">Moritz Post's blog post.</a>.
  */
-public class LayoutsGridLayout implements LayoutWrapper {
-	private final GridLayout gridLayout;
-
+public class LayoutsGridLayout extends LayoutWrapper<GridLayout> {
 	LayoutsGridLayout(GridLayout gridLayout) {
-		this.gridLayout = gridLayout;
-	}
-
-	/** Returns the raw GridLayout. */
-	public GridLayout getRaw() {
-		return gridLayout;
+		super(gridLayout);
 	}
 
 	/** Sets all margins to the given value. */
 	@Override
 	public LayoutsGridLayout margin(int margin) {
-		gridLayout.marginWidth = margin;
-		gridLayout.marginHeight = margin;
-		gridLayout.marginLeft = margin;
-		gridLayout.marginRight = margin;
-		gridLayout.marginTop = margin;
-		gridLayout.marginBottom = margin;
+		wrapped.marginWidth = margin;
+		wrapped.marginHeight = margin;
+		wrapped.marginLeft = margin;
+		wrapped.marginRight = margin;
+		wrapped.marginTop = margin;
+		wrapped.marginBottom = margin;
 		return this;
 	}
 
@@ -54,8 +47,8 @@ public class LayoutsGridLayout implements LayoutWrapper {
 	/** Sets all margins to the given value. */
 	@Override
 	public LayoutsGridLayout spacing(int spacing) {
-		gridLayout.verticalSpacing = spacing;
-		gridLayout.horizontalSpacing = spacing;
+		wrapped.verticalSpacing = spacing;
+		wrapped.horizontalSpacing = spacing;
 		return this;
 	}
 
@@ -65,52 +58,52 @@ public class LayoutsGridLayout implements LayoutWrapper {
 	}
 
 	public LayoutsGridLayout numColumns(int numColumns) {
-		gridLayout.numColumns = numColumns;
+		wrapped.numColumns = numColumns;
 		return this;
 	}
 
 	public LayoutsGridLayout columnsEqualWidth(boolean columnsEqualWidth) {
-		gridLayout.makeColumnsEqualWidth = columnsEqualWidth;
+		wrapped.makeColumnsEqualWidth = columnsEqualWidth;
 		return this;
 	}
 
 	public LayoutsGridLayout marginWidth(int marginWidth) {
-		gridLayout.marginWidth = marginWidth;
+		wrapped.marginWidth = marginWidth;
 		return this;
 	}
 
 	public LayoutsGridLayout marginHeight(int marginHeight) {
-		gridLayout.marginHeight = marginHeight;
+		wrapped.marginHeight = marginHeight;
 		return this;
 	}
 
 	public LayoutsGridLayout marginLeft(int marginLeft) {
-		gridLayout.marginLeft = marginLeft;
+		wrapped.marginLeft = marginLeft;
 		return this;
 	}
 
 	public LayoutsGridLayout marginTop(int marginTop) {
-		gridLayout.marginTop = marginTop;
+		wrapped.marginTop = marginTop;
 		return this;
 	}
 
 	public LayoutsGridLayout marginRight(int marginRight) {
-		gridLayout.marginRight = marginRight;
+		wrapped.marginRight = marginRight;
 		return this;
 	}
 
 	public LayoutsGridLayout marginBottom(int marginBottom) {
-		gridLayout.marginBottom = marginBottom;
+		wrapped.marginBottom = marginBottom;
 		return this;
 	}
 
 	public LayoutsGridLayout horizontalSpacing(int horizontalSpacing) {
-		gridLayout.horizontalSpacing = horizontalSpacing;
+		wrapped.horizontalSpacing = horizontalSpacing;
 		return this;
 	}
 
 	public LayoutsGridLayout verticalSpacing(int verticalSpacing) {
-		gridLayout.verticalSpacing = verticalSpacing;
+		wrapped.verticalSpacing = verticalSpacing;
 		return this;
 	}
 }

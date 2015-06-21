@@ -29,10 +29,13 @@ import org.eclipse.swt.widgets.Layout;
 import com.google.common.base.Preconditions;
 
 /**
- * Provides fluent utilities for manipulating SWT layouts.
+ * Provides fluent utilities for manipulating SWT layouts. Serves as the entry point to {@link LayoutsFillLayout},
+ * {@link LayoutsGridLayout}, {@link LayoutsGridData}, {@link LayoutsRowLayout}, and {@link LayoutsRowData}.
  * <p> 
- * Serves as the entry point to {@link LayoutsFillLayout}, {@link LayoutsGridLayout}, {@link LayoutsGridData},
- * {@link LayoutsRowLayout}, and {@link LayoutsRowData}. 
+ * SWT's layouts don't have consistent defaults for margin and spacing.  All layouts created
+ * by this class (via {@link #setFill(Composite)}, {@link #setGrid(Composite)}, and
+ * {@link #setRow(Composite)} have all of their margins and spacing values set to 
+ * {@link #defaultMargin()}.
  */
 public class Layouts {
 	private Layouts() {}
@@ -59,7 +62,9 @@ public class Layouts {
 	public static LayoutsFillLayout setFill(Composite composite) {
 		FillLayout fillLayout = new FillLayout();
 		composite.setLayout(fillLayout);
-		return new LayoutsFillLayout(fillLayout).margin(defaultMargin()).spacing(defaultMargin());
+		LayoutsFillLayout wrapper = new LayoutsFillLayout(fillLayout).margin(defaultMargin()).spacing(defaultMargin());
+		wrapper.setMarginAndSpacingToDefault();
+		return wrapper;
 	}
 
 	/** Returns an API for modifying the already-existing FillLayout on the given Composite. */
@@ -79,7 +84,9 @@ public class Layouts {
 	public static LayoutsGridLayout setGrid(Composite composite) {
 		GridLayout gridLayout = new GridLayout();
 		composite.setLayout(gridLayout);
-		return new LayoutsGridLayout(gridLayout).margin(defaultMargin()).spacing(defaultMargin());
+		LayoutsGridLayout wrapper = new LayoutsGridLayout(gridLayout);
+		wrapper.setMarginAndSpacingToDefault();
+		return wrapper;
 	}
 
 	/** Returns an API for modifying the already-existing GridLayout on the given Composite. */
@@ -141,7 +148,9 @@ public class Layouts {
 	public static LayoutsRowLayout setRow(Composite composite) {
 		RowLayout rowLayout = new RowLayout();
 		composite.setLayout(rowLayout);
-		return new LayoutsRowLayout(rowLayout).margin(defaultMargin()).spacing(defaultMargin());
+		LayoutsRowLayout wrapper = new LayoutsRowLayout(rowLayout);
+		wrapper.setMarginAndSpacingToDefault();
+		return wrapper;
 	}
 
 	/** Returns an API for modifying the already-existing RowLayout on the given Composite. */

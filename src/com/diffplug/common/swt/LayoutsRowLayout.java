@@ -23,27 +23,20 @@ import org.eclipse.swt.layout.RowLayout;
  * 
  * Inspired by <a href="http://eclipsesource.com/blogs/2013/07/25/efficiently-dealing-with-swt-gridlayout-and-griddata/">Moritz Post's blog post.</a>.
  */
-public class LayoutsRowLayout implements LayoutWrapper {
-	private final RowLayout rowLayout;
-
+public class LayoutsRowLayout extends LayoutWrapper<RowLayout> {
 	LayoutsRowLayout(RowLayout rowLayout) {
-		this.rowLayout = rowLayout;
-	}
-
-	/** Returns the raw GridLayout. */
-	public RowLayout getRaw() {
-		return rowLayout;
+		super(rowLayout);
 	}
 
 	/** Sets all margins to the given value. */
 	@Override
 	public LayoutsRowLayout margin(int margin) {
-		rowLayout.marginWidth = margin;
-		rowLayout.marginHeight = margin;
-		rowLayout.marginLeft = margin;
-		rowLayout.marginRight = margin;
-		rowLayout.marginTop = margin;
-		rowLayout.marginBottom = margin;
+		wrapped.marginWidth = margin;
+		wrapped.marginHeight = margin;
+		wrapped.marginLeft = margin;
+		wrapped.marginRight = margin;
+		wrapped.marginTop = margin;
+		wrapped.marginBottom = margin;
 		return this;
 	}
 
@@ -54,7 +47,7 @@ public class LayoutsRowLayout implements LayoutWrapper {
 
 	/** Sets the spacing to zero. */
 	public LayoutsRowLayout spacing(int spacing) {
-		rowLayout.spacing = spacing;
+		wrapped.spacing = spacing;
 		return this;
 	}
 
@@ -65,43 +58,43 @@ public class LayoutsRowLayout implements LayoutWrapper {
 
 	/** Makes this a vertical layout. */
 	public LayoutsRowLayout vertical() {
-		rowLayout.type = SWT.VERTICAL;
+		wrapped.type = SWT.VERTICAL;
 		return this;
 	}
 
 	/** Makes this a horizontal layout. */
 	public LayoutsRowLayout horizontal() {
-		rowLayout.type = SWT.HORIZONTAL;
+		wrapped.type = SWT.HORIZONTAL;
 		return this;
 	}
 
 	public LayoutsRowLayout marginWidth(int marginWidth) {
-		rowLayout.marginWidth = marginWidth;
+		wrapped.marginWidth = marginWidth;
 		return this;
 	}
 
 	public LayoutsRowLayout marginHeight(int marginHeight) {
-		rowLayout.marginHeight = marginHeight;
+		wrapped.marginHeight = marginHeight;
 		return this;
 	}
 
 	public LayoutsRowLayout marginLeft(int marginLeft) {
-		rowLayout.marginLeft = marginLeft;
+		wrapped.marginLeft = marginLeft;
 		return this;
 	}
 
 	public LayoutsRowLayout marginTop(int marginTop) {
-		rowLayout.marginTop = marginTop;
+		wrapped.marginTop = marginTop;
 		return this;
 	}
 
 	public LayoutsRowLayout marginRight(int marginRight) {
-		rowLayout.marginRight = marginRight;
+		wrapped.marginRight = marginRight;
 		return this;
 	}
 
 	public LayoutsRowLayout marginBottom(int marginBottom) {
-		rowLayout.marginBottom = marginBottom;
+		wrapped.marginBottom = marginBottom;
 		return this;
 	}
 
@@ -112,7 +105,7 @@ public class LayoutsRowLayout implements LayoutWrapper {
 	 * The default value is true.
 	 */
 	public LayoutsRowLayout wrap(boolean wrap) {
-		rowLayout.wrap = wrap;
+		wrapped.wrap = wrap;
 		return this;
 	}
 
@@ -126,7 +119,7 @@ public class LayoutsRowLayout implements LayoutWrapper {
 	 * The default value is true.
 	 */
 	public LayoutsRowLayout pack(boolean pack) {
-		rowLayout.pack = pack;
+		wrapped.pack = pack;
 		return this;
 	}
 
@@ -138,7 +131,7 @@ public class LayoutsRowLayout implements LayoutWrapper {
 	 * The default value is false.
 	 */
 	public LayoutsRowLayout fill(boolean fill) {
-		rowLayout.fill = fill;
+		wrapped.fill = fill;
 		return this;
 	}
 
@@ -150,7 +143,7 @@ public class LayoutsRowLayout implements LayoutWrapper {
 	 * The default value is false.
 	 */
 	public LayoutsRowLayout center(boolean center) {
-		rowLayout.center = center;
+		wrapped.center = center;
 		return this;
 	}
 
@@ -161,7 +154,7 @@ public class LayoutsRowLayout implements LayoutWrapper {
 	 * The default value is false.
 	 */
 	public LayoutsRowLayout justify(boolean justify) {
-		rowLayout.justify = justify;
+		wrapped.justify = justify;
 		return this;
 	}
 }
