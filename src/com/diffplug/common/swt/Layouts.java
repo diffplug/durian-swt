@@ -96,6 +96,7 @@ public class Layouts {
 	//////////////
 	/** Sets the layouData on the Control to a new GridData, and returns an API for modifying it. */
 	public static LayoutsGridData setGridData(Control control) {
+		checkParentLayout(control, GridLayout.class);
 		GridData gridData = new GridData();
 		control.setLayoutData(gridData);
 		return new LayoutsGridData(gridData);
@@ -103,9 +104,17 @@ public class Layouts {
 
 	/** Sets the layoutData on the ControlWrapper to a new GridData, and returns an API for modifying it. */
 	public static LayoutsGridData setGridData(ControlWrapper wrapper) {
+		checkParentLayout(wrapper.getRootControl(), GridLayout.class);
 		GridData gridData = new GridData();
 		wrapper.setLayoutData(gridData);
 		return new LayoutsGridData(gridData);
+	}
+
+	private static void checkParentLayout(Control control, Class<? extends Layout> clazz) {
+		Layout layout = control.getParent().getLayout();
+		if (layout == null || !clazz.isAssignableFrom(layout.getClass())) {
+			throw new IllegalArgumentException("Expected parent to have layout " + clazz.getName() + ", but was " + layout + ".");
+		}
 	}
 
 	/** Returns an API for modifying the already-existing GridData which has been set on the given Control. */
