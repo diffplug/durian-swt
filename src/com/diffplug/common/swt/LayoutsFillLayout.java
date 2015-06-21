@@ -23,7 +23,7 @@ import org.eclipse.swt.layout.FillLayout;
  * 
  * Inspired by <a href="http://eclipsesource.com/blogs/2013/07/25/efficiently-dealing-with-swt-gridlayout-and-griddata/">Moritz Post's blog post.</a>.
  */
-public class LayoutsFillLayout {
+public class LayoutsFillLayout implements LayoutWrapper {
 	private final FillLayout fillLayout;
 
 	LayoutsFillLayout(FillLayout fillLayout) {
@@ -35,17 +35,28 @@ public class LayoutsFillLayout {
 		return fillLayout;
 	}
 
+	/** Sets all margins to the given value */
+	@Override
+	public LayoutsFillLayout margin(int margin) {
+		fillLayout.marginWidth = margin;
+		fillLayout.marginHeight = margin;
+		return this;
+	}
+
 	/** Sets the margins to zero. */
 	public LayoutsFillLayout noMargin() {
-		fillLayout.marginWidth = 0;
-		fillLayout.marginHeight = 0;
+		return margin(0);
+	}
+
+	@Override
+	public LayoutsFillLayout spacing(int spacing) {
+		fillLayout.spacing = spacing;
 		return this;
 	}
 
 	/** Sets the spacing to zero. */
 	public LayoutsFillLayout noSpacing() {
-		fillLayout.spacing = 0;
-		return this;
+		return spacing(0);
 	}
 
 	public LayoutsFillLayout vertical() {
@@ -65,11 +76,6 @@ public class LayoutsFillLayout {
 
 	public LayoutsFillLayout marginHeight(int marginHeight) {
 		fillLayout.marginHeight = marginHeight;
-		return this;
-	}
-
-	public LayoutsFillLayout spacing(int spacing) {
-		fillLayout.spacing = spacing;
 		return this;
 	}
 }

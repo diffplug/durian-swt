@@ -19,6 +19,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowData;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -29,7 +31,8 @@ import com.google.common.base.Preconditions;
 /**
  * Provides fluent utilities for manipulating SWT layouts.
  * <p> 
- * Serves as the entry point to {@link LayoutsFillLayout}, {@link LayoutsGridLayout}, and {@link LayoutsGridData}.
+ * Serves as the entry point to {@link LayoutsFillLayout}, {@link LayoutsGridLayout}, {@link LayoutsGridData},
+ * {@link LayoutsRowLayout}, and {@link LayoutsRowData}. 
  */
 public class Layouts {
 	private Layouts() {}
@@ -39,25 +42,29 @@ public class Layouts {
 		return 5;
 	}
 
+	/** Checks that the layout of the composite has the proper class, then returns the cast layout. */
+	@SuppressWarnings("unchecked")
+	private static <T extends Layout> T getLayout(Composite composite, Class<T> clazz) {
+		Layout layout = composite.getLayout();
+		if (layout == null || !clazz.isAssignableFrom(layout.getClass())) {
+			throw new IllegalArgumentException("Expected parent to have layout " + clazz.getName() + ", but was " + layout + ".");
+		}
+		return (T) layout;
+	}
+
 	////////////////
 	// FillLayout //
 	////////////////
 	/** Sets the composite to have a standard FillLayout, and returns an API for modifying it. */
 	public static LayoutsFillLayout setFill(Composite composite) {
 		FillLayout fillLayout = new FillLayout();
-		fillLayout.type = SWT.HORIZONTAL;
-		fillLayout.marginHeight = defaultMargin();
-		fillLayout.marginWidth = defaultMargin();
-		fillLayout.spacing = defaultMargin();
 		composite.setLayout(fillLayout);
-		return new LayoutsFillLayout(fillLayout);
+		return new LayoutsFillLayout(fillLayout).margin(defaultMargin()).spacing(defaultMargin());
 	}
 
 	/** Returns an API for modifying the already-existing FillLayout on the given Composite. */
 	public static LayoutsFillLayout modifyFill(Composite composite) {
-		Layout layout = composite.getLayout();
-		Preconditions.checkArgument(layout instanceof FillLayout, "Composite must have FillLayout, but has %s.", layout);
-		return new LayoutsFillLayout((FillLayout) layout);
+		return new LayoutsFillLayout(getLayout(composite, FillLayout.class));
 	}
 
 	/** Returns an API for modifying the given FillLayout. */
@@ -71,19 +78,13 @@ public class Layouts {
 	/** Sets the composite to have a standard GridLayout, and returns an API for modifying it. */
 	public static LayoutsGridLayout setGrid(Composite composite) {
 		GridLayout gridLayout = new GridLayout();
-		gridLayout.marginHeight = defaultMargin();
-		gridLayout.marginWidth = defaultMargin();
-		gridLayout.horizontalSpacing = defaultMargin();
-		gridLayout.verticalSpacing = defaultMargin();
 		composite.setLayout(gridLayout);
-		return new LayoutsGridLayout(gridLayout);
+		return new LayoutsGridLayout(gridLayout).margin(defaultMargin()).spacing(defaultMargin());
 	}
 
 	/** Returns an API for modifying the already-existing GridLayout on the given Composite. */
 	public static LayoutsGridLayout modifyGrid(Composite composite) {
-		Layout layout = composite.getLayout();
-		Preconditions.checkArgument(layout instanceof GridLayout, "Composite must have GridLayout, but has %s.", layout);
-		return new LayoutsGridLayout((GridLayout) layout);
+		return new LayoutsGridLayout(getLayout(composite, GridLayout.class));
 	}
 
 	/** Returns an API for modifying the given GridLayout. */
@@ -96,7 +97,7 @@ public class Layouts {
 	//////////////
 	/** Sets the layouData on the Control to a new GridData, and returns an API for modifying it. */
 	public static LayoutsGridData setGridData(Control control) {
-		checkParentLayout(control, GridLayout.class);
+		getLayout(control.getParent(), GridLayout.class);
 		GridData gridData = new GridData();
 		control.setLayoutData(gridData);
 		return new LayoutsGridData(gridData);
@@ -104,17 +105,7 @@ public class Layouts {
 
 	/** Sets the layoutData on the ControlWrapper to a new GridData, and returns an API for modifying it. */
 	public static LayoutsGridData setGridData(ControlWrapper wrapper) {
-		checkParentLayout(wrapper.getRootControl(), GridLayout.class);
-		GridData gridData = new GridData();
-		wrapper.setLayoutData(gridData);
-		return new LayoutsGridData(gridData);
-	}
-
-	private static void checkParentLayout(Control control, Class<? extends Layout> clazz) {
-		Layout layout = control.getParent().getLayout();
-		if (layout == null || !clazz.isAssignableFrom(layout.getClass())) {
-			throw new IllegalArgumentException("Expected parent to have layout " + clazz.getName() + ", but was " + layout + ".");
-		}
+		return setGridData(wrapper.getRootControl());
 	}
 
 	/** Returns an API for modifying the already-existing GridData which has been set on the given Control. */
@@ -141,5 +132,67 @@ public class Layouts {
 	public static LayoutsGridData newGridPlaceholder(Composite parent) {
 		Label placeholder = new Label(parent, SWT.NONE);
 		return setGridData(placeholder);
+	}
+
+	///////////////
+	// RowLayout //
+	///////////////
+	/** Sets the composite to have a standard RowLayout, and returns an API for modifying it. */
+	public static LayoutsRowLayout setRow(Composite composite) {
+		RowLayout rowLayout = new RowLayout();
+		composite.setLayout(rowLayout);
+		return new LayoutsRowLayout(rowLayout).margin(defaultMargin()).spacing(defaultMargin());
+	}
+
+	/** Returns an API for modifying the already-existing RowLayout on the given Composite. */
+	public static LayoutsRowLayout modifyRow(Composite composite) {
+		return new LayoutsRowLayout(getLayout(composite, RowLayout.class));
+	}
+
+	/** Returns an API for modifying the given RowLayout. */
+	public static LayoutsRowLayout wrap(RowLayout rowLayout) {
+		return new LayoutsRowLayout(rowLayout);
+	}
+
+	/////////////
+	// RowData //
+	/////////////
+	/** Sets the layouData on the Control to a new GridData, and returns an API for modifying it. */
+	public static LayoutsRowData setRowData(Control control) {
+		getLayout(control.getParent(), RowLayout.class);
+		RowData rowData = new RowData();
+		control.setLayoutData(rowData);
+		return new LayoutsRowData(rowData);
+	}
+
+	/** Sets the layoutData on the ControlWrapper to a new RowData, and returns an API for modifying it. */
+	public static LayoutsRowData setRowData(ControlWrapper wrapper) {
+		return setRowData(wrapper.getRootControl());
+	}
+
+	/** Returns an API for modifying the already-existing RowData which has been set on the given Control. */
+	public static LayoutsRowData modifyRowData(Control control) {
+		return modifyRowData(control.getLayoutData());
+	}
+
+	/** Returns an API for modifying the already-existing RowData which has been set on the given ControlWrapper. */
+	public static LayoutsRowData modifyRowData(ControlWrapper wrapper) {
+		return modifyRowData(wrapper.getLayoutData());
+	}
+
+	private static LayoutsRowData modifyRowData(Object layoutData) {
+		Preconditions.checkArgument(layoutData instanceof RowData, "Control must have RowData, but has %s.", layoutData);
+		return new LayoutsRowData((RowData) layoutData);
+	}
+
+	/** Returns an API for modifying the given RowData. */
+	public static LayoutsRowData wrap(RowData gridData) {
+		return new LayoutsRowData(gridData);
+	}
+
+	/** Creates an invisible {@code org.eclipse.swt.widgets.Label}, and returns an API for setting its RowData. Useful for filling spots in a RowLayout. */
+	public static LayoutsRowData newRowPlaceholder(Composite parent) {
+		Label placeholder = new Label(parent, SWT.NONE);
+		return setRowData(placeholder);
 	}
 }

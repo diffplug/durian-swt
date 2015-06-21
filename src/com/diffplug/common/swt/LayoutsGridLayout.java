@@ -22,7 +22,7 @@ import org.eclipse.swt.layout.GridLayout;
  * 
  * Inspired by <a href="http://eclipsesource.com/blogs/2013/07/25/efficiently-dealing-with-swt-gridlayout-and-griddata/">Moritz Post's blog post.</a>.
  */
-public class LayoutsGridLayout {
+public class LayoutsGridLayout implements LayoutWrapper {
 	private final GridLayout gridLayout;
 
 	LayoutsGridLayout(GridLayout gridLayout) {
@@ -34,22 +34,34 @@ public class LayoutsGridLayout {
 		return gridLayout;
 	}
 
+	/** Sets all margins to the given value. */
+	@Override
+	public LayoutsGridLayout margin(int margin) {
+		gridLayout.marginWidth = margin;
+		gridLayout.marginHeight = margin;
+		gridLayout.marginLeft = margin;
+		gridLayout.marginRight = margin;
+		gridLayout.marginTop = margin;
+		gridLayout.marginBottom = margin;
+		return this;
+	}
+
 	/** Sets the margins to zero. */
 	public LayoutsGridLayout noMargin() {
-		gridLayout.marginWidth = 0;
-		gridLayout.marginHeight = 0;
-		gridLayout.marginLeft = 0;
-		gridLayout.marginRight = 0;
-		gridLayout.marginTop = 0;
-		gridLayout.marginBottom = 0;
+		return margin(0);
+	}
+
+	/** Sets all margins to the given value. */
+	@Override
+	public LayoutsGridLayout spacing(int spacing) {
+		gridLayout.verticalSpacing = spacing;
+		gridLayout.horizontalSpacing = spacing;
 		return this;
 	}
 
 	/** Sets the spacing to zero. */
 	public LayoutsGridLayout noSpacing() {
-		gridLayout.verticalSpacing = 0;
-		gridLayout.horizontalSpacing = 0;
-		return this;
+		return spacing(0);
 	}
 
 	public LayoutsGridLayout numColumns(int numColumns) {
