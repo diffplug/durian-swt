@@ -28,15 +28,31 @@ public class LayoutsRowLayout extends LayoutWrapper<RowLayout> {
 		super(rowLayout);
 	}
 
-	/** Sets all margins to the given value. */
+	/** Sets marginWidth and marginHeight to the given value, and left/right/top/bottom to 0. */
 	@Override
 	public LayoutsRowLayout margin(int margin) {
 		wrapped.marginWidth = margin;
 		wrapped.marginHeight = margin;
-		wrapped.marginLeft = margin;
-		wrapped.marginRight = margin;
-		wrapped.marginTop = margin;
-		wrapped.marginBottom = margin;
+		wrapped.marginLeft = 0;
+		wrapped.marginRight = 0;
+		wrapped.marginTop = 0;
+		wrapped.marginBottom = 0;
+		return this;
+	}
+
+	/** Sets marginHeight to 0, and top / bottom to the given values. */
+	public LayoutsRowLayout marginTopBottom(int top, int bottom) {
+		wrapped.marginHeight = 0;
+		wrapped.marginTop = top;
+		wrapped.marginBottom = bottom;
+		return this;
+	}
+
+	/** Sets marginWidth to 0, and left / right to the given values. */
+	public LayoutsRowLayout marginLeftRight(int left, int right) {
+		wrapped.marginWidth = 0;
+		wrapped.marginLeft = left;
+		wrapped.marginRight = right;
 		return this;
 	}
 

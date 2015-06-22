@@ -36,6 +36,12 @@ import com.google.common.base.Preconditions;
  * by this class (via {@link #setFill(Composite)}, {@link #setGrid(Composite)}, and
  * {@link #setRow(Composite)} have all of their margins and spacing values set to 
  * {@link #defaultMargin()}.
+ * <p>
+ * {@code FillLayout} only supports {@code marginHeight} and {@code marginWidth}, but {@code GridLayout} and
+ * {@code RowLayout} also support {@code marginTop/Bottom/Left/Right}.  These are additive - the margin on the
+ * top side will be {@code marginHeight + marginTop}.  When setting all margins at once using
+ * {@link LayoutWrapper#margin(int)}, height/width are set to the given value, and top/bottom/left/right are all
+ * set to 0.
  */
 public class Layouts {
 	private Layouts() {}

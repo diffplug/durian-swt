@@ -28,7 +28,7 @@ public class LayoutsFillLayout extends LayoutWrapper<FillLayout> {
 		super(fillLayout);
 	}
 
-	/** Sets all margins to the given value */
+	/** Sets marginWidth and marginHeight to the given value. */
 	@Override
 	public LayoutsFillLayout margin(int margin) {
 		wrapped.marginWidth = margin;
