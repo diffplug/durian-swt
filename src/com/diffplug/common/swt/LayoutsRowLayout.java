@@ -56,20 +56,10 @@ public class LayoutsRowLayout extends LayoutWrapper<RowLayout> {
 		return this;
 	}
 
-	/** Sets the margins to zero. */
-	public LayoutsRowLayout noMargin() {
-		return margin(0);
-	}
-
 	/** Sets the spacing to zero. */
 	public LayoutsRowLayout spacing(int spacing) {
 		wrapped.spacing = spacing;
 		return this;
-	}
-
-	/** Sets the spacing to zero. */
-	public LayoutsRowLayout noSpacing() {
-		return spacing(0);
 	}
 
 	/** Makes this a vertical layout. */

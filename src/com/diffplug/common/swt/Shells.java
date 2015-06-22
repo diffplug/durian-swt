@@ -137,7 +137,7 @@ public class Shells {
 		} else {
 			// if there's a specific size, then we'll create a fake one
 			// and set its size appropriately
-			Layouts.setGrid(shell).noMargin();
+			Layouts.setGrid(shell).margin(0);
 			userCmp = new Composite(shell, SWT.NONE);
 			LayoutsGridData gdUtil = Layouts.setGridData(userCmp).grabAll();
 			if (size.x > 0) {

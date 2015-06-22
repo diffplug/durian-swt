@@ -55,22 +55,12 @@ public class LayoutsGridLayout extends LayoutWrapper<GridLayout> {
 		return this;
 	}
 
-	/** Sets the margins to zero. */
-	public LayoutsGridLayout noMargin() {
-		return margin(0);
-	}
-
 	/** Sets all margins to the given value. */
 	@Override
 	public LayoutsGridLayout spacing(int spacing) {
 		wrapped.verticalSpacing = spacing;
 		wrapped.horizontalSpacing = spacing;
 		return this;
-	}
-
-	/** Sets the spacing to zero. */
-	public LayoutsGridLayout noSpacing() {
-		return spacing(0);
 	}
 
 	public LayoutsGridLayout numColumns(int numColumns) {

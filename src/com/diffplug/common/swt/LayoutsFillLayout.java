@@ -36,20 +36,10 @@ public class LayoutsFillLayout extends LayoutWrapper<FillLayout> {
 		return this;
 	}
 
-	/** Sets the margins to zero. */
-	public LayoutsFillLayout noMargin() {
-		return margin(0);
-	}
-
 	@Override
 	public LayoutsFillLayout spacing(int spacing) {
 		wrapped.spacing = spacing;
 		return this;
-	}
-
-	/** Sets the spacing to zero. */
-	public LayoutsFillLayout noSpacing() {
-		return spacing(0);
 	}
 
 	public LayoutsFillLayout vertical() {
