@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
@@ -92,6 +93,11 @@ public class SwtMisc {
 	 */
 	public static void asyncLayout(Composite cmp) {
 		SwtExec.async().guardOn(cmp).execute(() -> cmp.layout(true, true));
+	}
+
+	/** Returns the given system color. */
+	public static Color getSystemColor(int code) {
+		return SwtMisc.assertUI().getSystemColor(code);
 	}
 
 	/**
