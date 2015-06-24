@@ -35,8 +35,10 @@ public interface Coat {
 
 	/** A Coat which does nothing. */
 	public static Coat empty() {
-		return cmp -> {};
+		return EMPTY;
 	}
+
+	static final Coat EMPTY = cmp -> {};
 
 	/** A Coat which returns a handle to the content it created. */
 	@FunctionalInterface
