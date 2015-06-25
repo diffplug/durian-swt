@@ -14,8 +14,10 @@
 
 * [`ControlWrapper`](http://diffplug.github.io/durian-swt/javadoc/snapshot/com/diffplug/common/swt/ControlWrapper.html) - create custom widgets which properly encapsulate their base control.
 * [`Coat`](http://diffplug.github.io/durian-swt/javadoc/snapshot/com/diffplug/common/swt/Coat.html) - a functional interface for populating an empty Composite.
+* [`CoatMux`](http://diffplug.github.io/durian-swt/javadoc/snapshot/com/diffplug/common/swt/CoatMux.html) - a mechanism for layering and swapping Coats.
 * [`SwtExec`](http://diffplug.github.io/durian-swt/javadoc/snapshot/com/diffplug/common/swt/SwtExec.html) - an `ExecutorService` which executes on the SWT thread.
-* [`SwtExec.Guarded`](http://diffplug.github.io/durian-swt/javadoc/snapshot/com/diffplug/common/swt/SwtExec.Guarded.html) - an `Executor` which is tied to the lifetime of an SWT widget. Say goodbye to `SWTException: Widget is disposed` forever! It can also subscribe to any kind of observable (Guava's ListenableFuture or RxJava's Observable), see [DurianRx](https://github.com/diffplug/durian-rx) for more info.
+* [`SwtExec.Guarded`](http://diffplug.github.io/durian-swt/javadoc/snapshot/com/diffplug/common/swt/SwtExec.Guarded.html) - an `ExecutorService` which is tied to the lifetime of an SWT widget. Say goodbye to `SWTException: Widget is disposed` forever! It can also subscribe to any kind of observable (Guava's ListenableFuture or RxJava's Observable), see [DurianRx](https://github.com/diffplug/durian-rx) for more info.
+
 ```java
 SwtExec.async().guardOn(textBox).subscribe(serverResponse, txt -> {
 	textBox.setText(txt);
@@ -46,17 +48,68 @@ void textOkCanel(Composite cmp) {
 * [`Shells`](http://diffplug.github.io/durian-swt/javadoc/snapshot/com/diffplug/common/swt/Shells.html) - dialogs without boilerplate
 
 ```java
-Shells.create(SWT.DIALOG_TRIM, this::textOkCanel)
+Shells.builder(SWT.DIALOG_TRIM, this::textOkCanel)
 	.setTitle("Confirm operation")
 	.setSize(SwtMisc.defaultDialogWidth(), 0) // set the width, pack height to fit contents
 	.openOnDisplayBlocking();
+```
+
+* [`Actions`](http://diffplug.github.io/durian-swt/javadoc/snapshot/com/diffplug/common/swt/jface/Actions.html) - builder and one-liner:
+`Actions.create("Redo", this::redo);`
+
+* [`LabelProviders`](http://diffplug.github.io/durian-swt/javadoc/snapshot/com/diffplug/common/swt/jface/LabelProviders.html) - builder and one-liner:
+`LabelProviders.createWithText(Person::getName)`
+
+* [`ColumnFormat`](http://diffplug.github.io/durian-swt/javadoc/snapshot/com/diffplug/common/swt/ColumnFormat.html) and [`ColumnViewerFormat`](http://diffplug.github.io/durian-swt/javadoc/snapshot/com/diffplug/common/swt/jface/ColumnViewerFormat.html) - dialogs without boilerplate 
+
+```java
+ColumnViewerFormat<Person> format = ColumnViewerFormat.createWithStyle(style | SWT.FULL_SELECTION);
+format.addColumn().setText("First").setLabelProviderText(Person::getFirstName);
+format.addColumn().setText("Last").setLabelProviderText(Person::getLastName);
+format.addColumn().setText("Age").setLabelProviderText(p -> Integer.toString(p.getAge())).setLayoutPixel(3 * SwtMisc.systemFontWidth());
+TableViewer table = format.buildTable(parent);
+TreeViewer tree = format.buildTree(parent);
 ```
 
 ### Resource management
 
 * [`OnePerWidget`](http://diffplug.github.io/durian-swt/javadoc/snapshot/com/diffplug/common/swt/OnePerWidget.html) - a cache tied to the lifetime of an SWT Widget.
 * [`ColorPool`](http://diffplug.github.io/durian-swt/javadoc/snapshot/com/diffplug/common/swt/ColorPool.html) - a pool of colors tied to the lifetime of a widget. `ColorPool.forWidget(widget).getColor(rgbValue)`
-* [`ImageDescriptors`](http://diffplug.github.io/durian-swt/javadoc/snapshot/com/diffplug/common/swt/ImageDescriptors.html) - use ImageDescriptors with proper resource sharing. `ImageDescriptors.set(btn, imageDescriptor)`
+* [`ImageDescriptors`](http://diffplug.github.io/durian-swt/javadoc/snapshot/com/diffplug/common/swt/jface/ImageDescriptors.html) - use ImageDescriptors with proper resource sharing. `ImageDescriptors.set(btn, imageDescriptor)`
+
+### Interactive testing
+
+Ideally, all UI code would have fully automated UI testing, but
+such tests are time-consuming to write, so they often just don't
+get written at all. [`InteractiveTest`](http://diffplug.github.io/durian-swt/javadoc/snapshot/com/diffplug/common/swt/InteractiveTest.html)
+bridges the gap by making it easy to write user-in-the-loop guided tests. Furthermore,
+these tests can even be run in a [headless enviroment on a CI server](https://github.com/diffplug/durian-swt/blob/master/build.gradle#L66-L93), where the test UI
+will be opened, then automatically closed after a timeout.  This ensures that the tests
+are all in working order and ready for a human tester to do final validation.
+
+![InteractiveTest](interactive-test.png)
+
+From [`ViewerMiscTest.java`](https://github.com/diffplug/durian-swt/blob/master/test/com/diffplug/common/swt/jface/ViewerMiscTest.java):
+
+```java
+String message = StringPrinter.buildStringFromLines(
+	"- The table and the tree should keep their selection in sync.",
+	"- The table and the tree should not allow multi-selection.",
+	"- The categories in the tree should not be selectable.");
+nteractiveTest.testCoat(message, cmp -> {
+	TableAndTree tableAndTree = new TableAndTree(cmp, SWT.SINGLE);
+
+	// get the selection of the tree
+	RxBox<Optional<TreeNode<String>>> treeSelection = ViewerMisc.<TreeNode<String>> singleSelection(tableAndTree.tree)
+			// only names can be selected - not categories
+			.enforce(opt -> opt.map(val -> isName(val) ? val : null));
+
+	// sync the tree and the table
+	RxOptional<TreeNode<String>> tableSelection = ViewerMisc.singleSelection(tableAndTree.table);
+	Rx.subscribe(treeSelection, tableSelection::set);
+	Rx.subscribe(tableSelection, treeSelection::set);
+});
+```
 
 ### Miscellaneous stuff
 
@@ -66,7 +119,8 @@ Shells.create(SWT.DIALOG_TRIM, this::textOkCanel)
 	+ `systemFontHeight/Width`, `scaleByFont`, `scaleByFontHeight` - resolution-independent sizes.
 	+ `treeDefControl`, `treeDefComposite` - a [`TreeDef`](http://diffplug.github.io/durian/javadoc/snapshot/com/diffplug/common/base/TreeDef.html) for traversing UI elements.
 	+ `setEnabledDeep` - sets the enabled status of every child, grandchild, etc. of the given composite.
-
+* [`SwtRx`](http://diffplug.github.io/durian-swt/javadoc/snapshot/com/diffplug/common/swt/SwtRx.html) - methods for converting SWT events and models to RxJava Observables.
+* [`SwtDebug`](http://diffplug.github.io/durian-swt/javadoc/snapshot/com/diffplug/common/swt/SwtDebug.html) - utilities for debugging SWT events.
 * [`OS`](http://diffplug.github.io/durian-swt/javadoc/snapshot/com/diffplug/common/swt/os/OS.html), [`Arch`](http://diffplug.github.io/durian-swt/javadoc/snapshot/com/diffplug/common/swt/os/Arch.html), and [`SwtPlatform`](http://diffplug.github.io/durian-swt/javadoc/snapshot/com/diffplug/common/swt/os/SwtPlatform.html) - detect things about the running system, and manipulate the SWT jars for build tools.
 	+ These do not require SWT or JFace, so you can add DurianSwt to your gradle or maven dependencies without needing to also figure out the SWT messiness.
 	+ You can also just copy-paste these straight into your own code - they have no external dependencies.
@@ -75,6 +129,9 @@ String installerExtension = OS.getNative().winMacLinux("exe","dmg","sh");
 String helperBinary = "driver_" + Arch.getNative().x86x64("", "_64") + ".dll";
 String swtJarName = "org.eclipse.swt." + SwtPlatform.getRunning();
 ```
+* [`ViewerMisc`](http://diffplug.github.io/durian-swt/javadoc/snapshot/com/diffplug/common/swt/jface/ViewerMisc.html) - useful static methods for JFace viewers.
+	+ `singleSelection`, `multiSelection` - returns an RxBox for listening to and setting the selection of a viewer.
+	+ `setTreeContentProvider`, `setLazyTreeContentProvider` - uses a TreeDef to provide the content of a TreeViewer.
 
 ## Requirements
 
