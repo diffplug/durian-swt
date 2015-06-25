@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.common.swt;
+package com.diffplug.common.swt.jface;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Widget;
 import com.diffplug.common.base.Box;
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.Unhandled;
+import com.diffplug.common.swt.OnePerWidget;
 
 /** Utilities for using {@link ImageDescriptor}s correctly. */
 public class ImageDescriptors {
