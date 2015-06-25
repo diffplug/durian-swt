@@ -44,7 +44,7 @@ public class Shells {
 	}
 
 	/** Creates a new Shells for this Coat. */
-	public static Shells create(int style, Coat coat) {
+	public static Shells builder(int style, Coat coat) {
 		return new Shells(style, coat);
 	}
 

@@ -36,22 +36,22 @@ public class LabelProviders {
 	/** Creates a {@link ColumnLabelProvider} for text. */
 	public static <T> ColumnLabelProvider createWithText(Function<? super T, ? extends String> text) {
 		Builder<T> builder = builder();
-		builder.withText(text);
+		builder.setText(text);
 		return builder.build();
 	}
 
 	/** Creates a {@link ColumnLabelProvider} for images. */
 	public static <T> ColumnLabelProvider createWithImage(Function<? super T, ? extends Image> image) {
 		Builder<T> builder = builder();
-		builder.withImage(image);
+		builder.setImage(image);
 		return builder.build();
 	}
 
 	/** Creates a {@link ColumnLabelProvider} for text and images. */
 	public static <T> ColumnLabelProvider createWithTextAndImage(Function<? super T, ? extends String> text, Function<? super T, ? extends Image> image) {
 		Builder<T> builder = builder();
-		builder.withText(text);
-		builder.withImage(image);
+		builder.setText(text);
+		builder.setImage(image);
 		return builder.build();
 	}
 
@@ -109,31 +109,31 @@ public class LabelProviders {
 		private Builder() {}
 
 		/** Sets the function used to determine the text. */
-		public Builder<T> withText(Function<? super T, ? extends String> text) {
+		public Builder<T> setText(Function<? super T, ? extends String> text) {
 			this.text = text;
 			return this;
 		}
 
 		/** Sets the function used to determine the image. */
-		public Builder<T> withImage(Function<? super T, ? extends Image> image) {
+		public Builder<T> setImage(Function<? super T, ? extends Image> image) {
 			this.image = image;
 			return this;
 		}
 
 		/** Sets the function used to determine the background color. */
-		public Builder<T> withBackground(Function<? super T, ? extends Color> background) {
+		public Builder<T> setBackground(Function<? super T, ? extends Color> background) {
 			this.background = background;
 			return this;
 		}
 
 		/** Sets the function used to determine the foreground color. */
-		public Builder<T> withForeground(Function<? super T, ? extends Color> foreground) {
+		public Builder<T> setForeground(Function<? super T, ? extends Color> foreground) {
 			this.foreground = foreground;
 			return this;
 		}
 
 		/** Sets the function used to determine the font. */
-		public Builder<T> withFont(Function<? super T, ? extends Font> font) {
+		public Builder<T> setFont(Function<? super T, ? extends Font> font) {
 			this.font = font;
 			return this;
 		}

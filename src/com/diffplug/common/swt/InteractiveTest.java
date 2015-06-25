@@ -101,7 +101,7 @@ public class InteractiveTest {
 	 */
 	public static void testCoat(String instructions, Point size, Coat coat) {
 		testShell(instructions, display -> {
-			return Shells.create(SWT.SHELL_TRIM, coat)
+			return Shells.builder(SWT.SHELL_TRIM, coat)
 					.setTitle("UnderTest")
 					.setSize(size)
 					.openOnDisplay();
@@ -193,7 +193,7 @@ public class InteractiveTest {
 
 	/** Opens the instructions dialog. */
 	private static Shell openInstructions(Shell underTest, String instructions, Box<TestResult> result) {
-		Shell instructionsShell = Shells.create(SWT.TITLE | SWT.BORDER, cmp -> {
+		Shell instructionsShell = Shells.builder(SWT.TITLE | SWT.BORDER, cmp -> {
 			Layouts.setGrid(cmp).numColumns(3);
 
 			// show the instructions

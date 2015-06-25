@@ -67,20 +67,20 @@ public class Fonts {
 	}
 
 	/** Returns the default font for this system. */
-	public static Font getSystem() {
+	public static Font system() {
 		FontData font = SwtMisc.assertUI().getSystemFont().getFontData()[0];
 		return get(font.getName(), font.getHeight(), SWT.NONE);
 	}
 
 	/** Returns the default bold font for this system. */
-	public static Font getSystemBold() {
+	public static Font systemBold() {
 		FontData font = SwtMisc.assertUI().getSystemFont().getFontData()[0];
 		return get(font.getName(), font.getHeight(), SWT.BOLD);
 	}
 
 	/** Returns a monospace font for this system. */
-	public static Font getSystemMonospace() {
-		FontData monospace = getSystemMonospaceFontData();
+	public static Font systemMonospace() {
+		FontData monospace = systemMonospaceFontData();
 		return get(monospace.getName(), monospace.getHeight(), SWT.NONE);
 	}
 
@@ -89,7 +89,7 @@ public class Fonts {
 
 	/** Calculates the best monospaced font available on this system, can be called from any thread. */
 	@SuppressFBWarnings(value = "LI_LAZY_INIT_STATIC", justification = "SwtMisc.assertUI() ensures it is only called from one thread.")
-	public static FontData getSystemMonospaceFontData() {
+	public static FontData systemMonospaceFontData() {
 		Display display = SwtMisc.assertUI();
 		if (bestSystemMonospaceFontData != null) {
 			return bestSystemMonospaceFontData;

@@ -60,7 +60,7 @@ public class ShellsTest {
 
 	private void testCase(String instructions, Consumer<Shells> setSize) {
 		InteractiveTest.testShell(instructions, display -> {
-			Shells underTest = Shells.create(SWT.DIALOG_TRIM, this::longText);
+			Shells underTest = Shells.builder(SWT.DIALOG_TRIM, this::longText);
 			setSize.accept(underTest);
 			return underTest.openOnDisplay();
 		});

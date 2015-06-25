@@ -51,7 +51,7 @@ public class InteractiveTestTest {
 	@Test
 	public void testShell() {
 		InteractiveTest.testShell("A blank dialog should be open to the left, press Pass", display -> {
-			return Shells.create(SWT.SHELL_TRIM, this::dummyCoat).setSize(SwtMisc.scaleByFontHeight(30, 0)).openOnDisplay();
+			return Shells.builder(SWT.SHELL_TRIM, this::dummyCoat).setSize(SwtMisc.scaleByFontHeight(30, 0)).openOnDisplay();
 		});
 	}
 
@@ -63,7 +63,7 @@ public class InteractiveTestTest {
 				Uninterruptibles.sleepUninterruptibly(250, TimeUnit.MILLISECONDS);
 				// now we'll open it
 				SwtExec.async().execute(() -> {
-					Shells.create(SWT.SHELL_TRIM, this::dummyCoat).setSize(SwtMisc.scaleByFontHeight(30, 0)).openOnDisplay();
+					Shells.builder(SWT.SHELL_TRIM, this::dummyCoat).setSize(SwtMisc.scaleByFontHeight(30, 0)).openOnDisplay();
 				});
 			}, "testShellWithoutHandle").start();
 		});
