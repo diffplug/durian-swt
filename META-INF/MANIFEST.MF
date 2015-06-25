@@ -13,7 +13,8 @@ Created-By: 1.8.0_40 (Oracle Corporation)
 Export-Package: com.diffplug.common.swt;version="1.0.0",
  com.diffplug.common.swt.os;version="1.0.0"
 Require-Bundle: org.eclipse.swt,
- org.eclipse.jface
+ org.eclipse.jface,
+ org.eclipse.core.commands
 Import-Package: com.diffplug.common.base;version="[3.0.0,4.0.0)",
  com.diffplug.common.rx;version="[1.0.0,2)",
  com.google.common.base;version="[18.0,19)",
