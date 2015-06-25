@@ -11,6 +11,7 @@ Bundle-Vendor: DiffPlug
 Bundle-Version: 1.0.0.SNAPSHOT
 Created-By: 1.8.0_40 (Oracle Corporation)
 Export-Package: com.diffplug.common.swt;version="1.0.0",
+ com.diffplug.common.swt.jface;version="1.0.0",
  com.diffplug.common.swt.os;version="1.0.0"
 Require-Bundle: org.eclipse.swt,
  org.eclipse.jface,
