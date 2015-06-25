@@ -54,6 +54,7 @@ dependencies {
 	compile "p2:org.eclipse.swt.${com.diffplug.common.swt.os.SwtPlatform.getRunning()}:${VER_SWT_PLATFORM}"
 	compile "p2:org.eclipse.jface:${VER_JFACE}"
 	compile "p2:org.eclipse.core.commands:${VER_CORE_COMMANDS}"
+	compile "p2:org.eclipse.equinox.common:${VER_EQUINOX_COMMON}"
 
 	testCompile "junit:junit:${VER_JUNIT}"
 }
