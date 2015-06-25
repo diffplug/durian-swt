@@ -86,7 +86,8 @@ public class ViewerMiscTest {
 		TableAndTree(Composite cmp, int style) {
 			Layouts.setFill(cmp);
 
-			ColumnViewerFormat<TreeNode<String>> format = ColumnViewerFormat.createWithStyle(style | SWT.FULL_SELECTION);
+			ColumnViewerFormat<TreeNode<String>> format = ColumnViewerFormat.builder();
+			format.setStyle(style | SWT.FULL_SELECTION);
 			format.addColumn().setText("First").setLabelProviderText(getPlace(0));
 			format.addColumn().setText("Last").setLabelProviderText(getPlace(1));
 
@@ -151,7 +152,8 @@ public class ViewerMiscTest {
 	public void testLazyContentProviderFile() {
 		InteractiveTest.testCoat("You should be able to browse the filesystem.", cmp -> {
 			// define the format of the tree
-			ColumnViewerFormat<File> format = ColumnViewerFormat.createWithStyle(SWT.VIRTUAL);
+			ColumnViewerFormat<File> format = ColumnViewerFormat.builder();
+			format.setStyle(SWT.VIRTUAL);
 			format.addColumn().setText("Name")
 					.setLabelProviderText(File::getName);
 			format.addColumn().setText("Last Modified")
@@ -178,7 +180,8 @@ public class ViewerMiscTest {
 	public void testLazyContentProviderPath() {
 		InteractiveTest.testCoat("You should be able to browse the filesystem.", cmp -> {
 			// define the format of the tree
-			ColumnViewerFormat<Path> format = ColumnViewerFormat.createWithStyle(SWT.VIRTUAL);
+			ColumnViewerFormat<Path> format = ColumnViewerFormat.builder();
+			format.setStyle(SWT.VIRTUAL);
 			format.addColumn().setText("Name")
 					.setLabelProviderText(path -> path.getFileName().toString());
 			format.addColumn().setText("Last Modified")

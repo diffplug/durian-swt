@@ -63,7 +63,8 @@ Shells.builder(SWT.DIALOG_TRIM, this::textOkCanel)
 * [`ColumnFormat`](http://diffplug.github.io/durian-swt/javadoc/snapshot/com/diffplug/common/swt/ColumnFormat.html) and [`ColumnViewerFormat`](http://diffplug.github.io/durian-swt/javadoc/snapshot/com/diffplug/common/swt/jface/ColumnViewerFormat.html) - dialogs without boilerplate
 
 ```java
-ColumnViewerFormat<Person> format = ColumnViewerFormat.createWithStyle(style | SWT.FULL_SELECTION);
+ColumnViewerFormat<Person> format = ColumnViewerFormat.builder();
+format.setStyle(SWT.SINGLE | SWT.FULL_SELECTION);
 format.addColumn().setText("First").setLabelProviderText(Person::getFirstName);
 format.addColumn().setText("Last").setLabelProviderText(Person::getLastName);
 format.addColumn().setText("Age").setLabelProviderText(p -> Integer.toString(p.getAge())).setLayoutPixel(3 * SwtMisc.systemFontWidth());
@@ -96,7 +97,7 @@ String message = StringPrinter.buildStringFromLines(
 	"- The table and the tree should keep their selection in sync.",
 	"- The table and the tree should not allow multi-selection.",
 	"- The categories in the tree should not be selectable.");
-nteractiveTest.testCoat(message, cmp -> {
+InteractiveTest.testCoat(message, cmp -> {
 	TableAndTree tableAndTree = new TableAndTree(cmp, SWT.SINGLE);
 
 	// get the selection of the tree

@@ -29,31 +29,33 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.ViewerColumn;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Tree;
 
-import com.diffplug.common.base.Unhandled;
 import com.diffplug.common.swt.ColumnFormat;
 
 /** Fluent API for creating {@link TableViewer}s and {@link TreeViewer}s with a certain format. */
 public class ColumnViewerFormat<T> {
 	/** Creates a {@code TableFormat} with the given style bits. */
-	public static <T> ColumnViewerFormat<T> createWithStyle(int style) {
-		return new ColumnViewerFormat<T>(style);
+	public static <T> ColumnViewerFormat<T> builder() {
+		return new ColumnViewerFormat<T>();
 	}
 
-	private final int style;
+	private int style;
 	private boolean linesVisible = true;
 	private boolean headerVisible = true;
 	private boolean useHashLookup = true;
 	private final List<ColumnBuilder<T>> columnBuilders = new ArrayList<>();
 
-	private ColumnViewerFormat(int style) {
+	private ColumnViewerFormat() {}
+
+	/** Sets the SWT style flags. */
+	public ColumnViewerFormat<T> setStyle(int style) {
 		this.style = style;
+		return this;
 	}
 
 	/** Sets the lines to be visible, defaults to true. */
@@ -97,13 +99,8 @@ public class ColumnViewerFormat<T> {
 		return buildViewer(new TreeViewer(control), Arrays.asList(control.getColumns()), TreeViewerColumn::new);
 	}
 
-	/** Provides a portal to the static methods in ColumnFormat. */
+	/** Provides a portal to the protected static methods in ColumnFormat. */
 	private static class Portal extends ColumnFormat {
-		protected Portal() {
-			super(SWT.NONE);
-			throw Unhandled.operationException();
-		}
-
 		protected static Table buildTable(Composite parent, int style, boolean linesVisible, boolean headerVisible, List<? extends ColumnBuilder> columnBuilders) {
 			return ColumnFormat.buildTable(parent, style, linesVisible, headerVisible, columnBuilders);
 		}

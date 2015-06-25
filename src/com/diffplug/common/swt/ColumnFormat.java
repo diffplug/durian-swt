@@ -41,22 +41,26 @@ import org.eclipse.swt.widgets.Widget;
 /** Fluent API for creating {@link Table}s and {@link Tree}s with the specified columns and layout. */
 public class ColumnFormat {
 	/** Creates a {@code TableFormat} with the given style bits. */
-	public static ColumnFormat createWithStyle(int style) {
-		return new ColumnFormat(style);
+	public static ColumnFormat builder() {
+		return new ColumnFormat();
 	}
 
-	private final int style;
+	private int style;
 	private boolean linesVisible = true;
 	private boolean headerVisible = true;
 	private final List<ColumnBuilder> columnBuilders = new ArrayList<>();
 
-	protected ColumnFormat(int style) {
-		this.style = style;
-	}
+	protected ColumnFormat() {}
 
 	/** Returns the style of this format.  Allows utilities that require a certain flag (e.g. SWT.VIRTUAL) to do error-checking. */
 	public int getStyle() {
 		return style;
+	}
+
+	/** Sets the SWT style flags. */
+	public ColumnFormat setStyle(int style) {
+		this.style = style;
+		return this;
 	}
 
 	/** Sets the lines to be visible, defaults to true. */
