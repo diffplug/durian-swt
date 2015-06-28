@@ -151,7 +151,7 @@ public class SwtMisc {
 	public static <T> T loopUntilGet(ListenableFuture<T> future) throws Throwable {
 		Nullable<T> result = Nullable.ofNull();
 		Nullable<Throwable> error = Nullable.ofNull();
-		Rx.subscribe(future, Rx.onValueOrFailure(result::set, error::set));
+		Rx.subscribe(future, Rx.onValueOnFailure(result::set, error::set));
 
 		loopUntil(display -> future.isDone());
 
