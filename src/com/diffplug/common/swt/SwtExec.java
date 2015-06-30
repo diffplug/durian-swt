@@ -280,20 +280,24 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 
 		@Override
 		public <T> Subscription subscribe(Observable<? extends T> observable, Rx<T> listener) {
-			if (!guard.isDisposed()) {
-				Subscription subscription = parent.rxExecutor.subscribe(observable, listener);
-				guard.addListener(SWT.Dispose, e -> subscription.unsubscribe());
-				return subscription;
-			} else {
-				return Subscriptions.unsubscribed();
-			}
+			return subscribe(() -> parent.rxExecutor.subscribe(observable, listener));
 		}
 
 		@Override
 		public <T> Subscription subscribe(ListenableFuture<? extends T> future, Rx<T> listener) {
+			return subscribe(() -> parent.rxExecutor.subscribe(future, listener));
+		}
+
+		private Subscription subscribe(Supplier<Subscription> subscriber) {
 			if (!guard.isDisposed()) {
-				Subscription subscription = parent.rxExecutor.subscribe(future, listener);
-				guard.addListener(SWT.Dispose, e -> subscription.unsubscribe());
+				Subscription subscription = subscriber.get();
+				SwtExec.immediate().execute(() -> {
+					if (!guard.isDisposed()) {
+						guard.addListener(SWT.Dispose, e -> subscription.unsubscribe());
+					} else {
+						subscription.unsubscribe();
+					}
+				});
 				return subscription;
 			} else {
 				return Subscriptions.unsubscribed();
