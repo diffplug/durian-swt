@@ -27,10 +27,14 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
 import com.diffplug.common.base.TreeDef;
+import com.diffplug.common.rx.RxBox;
 import com.diffplug.common.rx.RxList;
 import com.diffplug.common.rx.RxOptional;
+import com.diffplug.common.rx.RxSet;
 import com.diffplug.common.swt.SwtExec;
 import com.diffplug.common.swt.SwtMisc;
 
@@ -38,8 +42,14 @@ import com.diffplug.common.swt.SwtMisc;
 public class ViewerMisc {
 	/** Returns a thread-safe {@link RxOptional} for manipulating the selection of a {@link StructuredViewer} created with {@link SWT#SINGLE}. */
 	public static <T> RxOptional<T> singleSelection(StructuredViewer viewer) {
-		Preconditions.checkArgument(SwtMisc.flagIsSet(SWT.SINGLE, viewer.getControl()), "Control style does not have SWT.SINGLE set.");
 		RxOptional<T> box = RxOptional.ofEmpty();
+		singleSelection(viewer, box);
+		return box;
+	}
+
+	/** Returns a thread-safe {@link RxOptional} for manipulating the selection of a {@link StructuredViewer} created with {@link SWT#SINGLE}. */
+	public static <T> void singleSelection(StructuredViewer viewer, RxBox<Optional<T>> box) {
+		Preconditions.checkArgument(SwtMisc.flagIsSet(SWT.SINGLE, viewer.getControl()), "Control style does not have SWT.SINGLE set.");
 		// set the box when the selection changes
 		viewer.addSelectionChangedListener(event -> {
 			IStructuredSelection selection = (IStructuredSelection) event.getSelection();
@@ -55,24 +65,39 @@ public class ViewerMisc {
 				viewer.setSelection(StructuredSelection.EMPTY);
 			}
 		});
+	}
+
+	/** Returns a thread-safe {@link RxSet} for manipulating the selection of a {@link StructuredViewer} created with {@link SWT#MULTI}. */
+	public static <T> RxSet<T> multiSelectionSet(StructuredViewer viewer) {
+		RxSet<T> box = RxSet.ofEmpty();
+		multiSelectionSet(viewer, box);
 		return box;
 	}
 
+	/** Manipulates the selection of the given viewer with the given RxSet. */
+	public static <T> void multiSelectionSet(StructuredViewer viewer, RxBox<ImmutableSet<T>> box) {
+		multiSelectionList(viewer, box.map(ImmutableSet::asList, list -> ImmutableSet.copyOf(list)));
+	}
+
 	/** Returns a thread-safe {@link RxList} for manipulating the selection of a {@link StructuredViewer} created with {@link SWT#MULTI}. */
-	@SuppressWarnings("unchecked")
-	public static <T> RxList<T> multiSelection(StructuredViewer viewer) {
-		Preconditions.checkArgument(SwtMisc.flagIsSet(SWT.MULTI, viewer.getControl()), "Control style does not have SWT.MULTI set.");
+	public static <T> RxList<T> multiSelectionList(StructuredViewer viewer) {
 		RxList<T> box = RxList.ofEmpty();
+		multiSelectionList(viewer, box);
+		return box;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> void multiSelectionList(StructuredViewer viewer, RxBox<ImmutableList<T>> box) {
+		Preconditions.checkArgument(SwtMisc.flagIsSet(SWT.MULTI, viewer.getControl()), "Control style does not have SWT.MULTI set.");
 		// set the box when the selection changes
 		viewer.addSelectionChangedListener(event -> {
 			IStructuredSelection selection = (IStructuredSelection) event.getSelection();
-			box.set(selection.toList());
+			box.set(ImmutableList.copyOf(selection.toList()));
 		});
 		// set the selection when the box changes
 		SwtExec.immediate().guardOn(viewer.getControl()).subscribe(box, list -> {
 			viewer.setSelection(new StructuredSelection(list));
 		});
-		return box;
 	}
 
 	/** Sets an {@link ITreeContentProvider} implemented by the given {@link TreeDef.Parented}. */

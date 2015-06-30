@@ -137,12 +137,12 @@ public class ViewerMiscTest {
 			TableAndTree tableAndTree = new TableAndTree(cmp, SWT.MULTI);
 
 			// ensure the tree only supports selecting names
-			RxBox<ImmutableList<TreeNode<String>>> treeSelection = ViewerMisc.<TreeNode<String>> multiSelection(tableAndTree.tree)
+			RxBox<ImmutableList<TreeNode<String>>> treeSelection = ViewerMisc.<TreeNode<String>> multiSelectionList(tableAndTree.tree)
 					// remove any nodes that aren't a name
 					.enforce(Immutables.mutatorList(mutable -> mutable.removeIf(node -> !isName(node))));
 
 			// sync the tree and the table
-			RxBox<ImmutableList<TreeNode<String>>> tableSelection = ViewerMisc.multiSelection(tableAndTree.table);
+			RxBox<ImmutableList<TreeNode<String>>> tableSelection = ViewerMisc.multiSelectionList(tableAndTree.table);
 			Rx.subscribe(treeSelection, tableSelection::set);
 			Rx.subscribe(tableSelection, treeSelection::set);
 		});
