@@ -313,6 +313,11 @@ public class SwtMisc {
 		return systemFontWidth;
 	}
 
+	/** Returns a distance which is a snug fit for a line of text in the system font. */
+	public static int systemFontSnug() {
+		return systemFontHeight() + Layouts.defaultMargin();
+	}
+
 	/** Returns the default width of a button, scaled for the system font. */
 	public static int defaultButtonWidth() {
 		return systemFontWidth() * "   Cancel   ".length();
