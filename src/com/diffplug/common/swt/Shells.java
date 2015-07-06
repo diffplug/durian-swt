@@ -78,12 +78,27 @@ public class Shells {
 		return this;
 	}
 
-	/**
-	 * @see #setSize(Point)
-	 */
+	/** @see #setSize(Point) */
 	public Shells setSize(int x, int y) {
-		setSize(new Point(x, y));
+		return setSize(new Point(x, y));
+	}
+
+	/**
+	 * Sets the absolute location of the top-left of this shell. If the value
+	 * is null, the shell will open:
+	 * <ul>
+	 * <li>if there is a parent shell, below and to the right of the parent</li>
+	 * <li>if there isn't a parent shell, at the current cursor position</li>
+	 * </ul>
+	 */
+	public Shells setLocation(Point openPosition) {
+		this.openPosition = openPosition;
 		return this;
+	}
+
+	/** @see #setLocation(Point) */
+	public Shells setLocation(int x, int y) {
+		return setLocation(new Point(x, y));
 	}
 
 	/** Opens the shell on this parent shell. */
