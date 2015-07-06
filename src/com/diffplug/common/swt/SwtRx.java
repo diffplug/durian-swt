@@ -23,6 +23,8 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
 
 import rx.Observable;
@@ -62,6 +64,40 @@ public class SwtRx {
 			}
 		});
 		return observable;
+	}
+
+	/** Returns an RxBox<String> which contains the content of the text box. */
+	public static RxBox<String> textImmediate(Text text) {
+		return textImp(text, SWT.Modify);
+	}
+
+	/**
+	 * Returns an RxBox<String> which contains the content of the text box
+	 * only when it has been confirmed by:
+	 * <ul>
+	 * <li>programmer setting the RxBox</li>
+	 * <li>user hitting enter</li>
+	 * <li>focus leaving the text</li>
+	 * </ul>
+	 */
+	public static RxBox<String> textConfirmed(Text text) {
+		return textImp(text, SWT.DefaultSelection, SWT.FocusOut);
+	}
+
+	private static RxBox<String> textImp(Text text, int... events) {
+		RxBox<String> box = RxBox.of(text.getText());
+		// set the text when the box changes
+		SwtExec.immediate().guardOn(text).subscribe(box, str -> {
+			Point selection = text.getSelection();
+			text.setText(str);
+			text.setSelection(selection);
+		});
+		// set the box when the text changes
+		Listener listener = e -> box.set(text.getText());
+		for (int event : events) {
+			text.addListener(event, listener);
+		}
+		return box;
 	}
 
 	/** Returns an {@code RxBox<Boolean>} for the toggle state of the given button as an RxBox. */
