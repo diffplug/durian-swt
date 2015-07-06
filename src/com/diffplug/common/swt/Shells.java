@@ -78,6 +78,14 @@ public class Shells {
 		return this;
 	}
 
+	/**
+	 * @see #setSize(Point)
+	 */
+	public Shells setSize(int x, int y) {
+		setSize(new Point(x, y));
+		return this;
+	}
+
 	/** Opens the shell on this parent shell. */
 	public Shell openOn(Shell parent) {
 		Preconditions.checkNotNull(parent);
