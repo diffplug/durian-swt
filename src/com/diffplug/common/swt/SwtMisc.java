@@ -45,6 +45,7 @@ import com.diffplug.common.base.TreeDef;
 import com.diffplug.common.base.TreeStream;
 import com.diffplug.common.rx.Rx;
 import com.diffplug.common.swt.os.OS;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /** Miscellaneous SWT functions. */
 public class SwtMisc {
@@ -381,6 +382,11 @@ public class SwtMisc {
 		return CONTROL_TREE_DEF;
 	}
 
+	/** {@link TreeDef} for {@link Shell}s. */
+	public static TreeDef.Parented<Shell> treeDefShell() {
+		return SHELL_TREE_DEF;
+	}
+
 	private static final TreeDef.Parented<Composite> COMPOSITE_TREE_DEF = new TreeDef.Parented<Composite>() {
 		@Override
 		public List<Composite> childrenOf(Composite node) {
@@ -413,6 +419,19 @@ public class SwtMisc {
 		@Override
 		public Control parentOf(Control node) {
 			return node.getParent();
+		}
+	};
+
+	private static final TreeDef.Parented<Shell> SHELL_TREE_DEF = new TreeDef.Parented<Shell>() {
+		@Override
+		public List<Shell> childrenOf(Shell node) {
+			return Arrays.asList(node.getShells());
+		}
+
+		@SuppressFBWarnings(value = "BC_UNCONFIRMED_CAST_OF_RETURN_VALUE", justification = "Parent of a shell is guaranteed to be either a Shell or null.")
+		@Override
+		public Shell parentOf(Shell node) {
+			return (Shell) node.getParent();
 		}
 	};
 }
