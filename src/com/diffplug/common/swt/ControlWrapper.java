@@ -17,6 +17,7 @@ package com.diffplug.common.swt;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Shell;
 
 /**
  * Wraps an SWT {@link Control} to encapsulate its API.
@@ -48,6 +49,11 @@ public interface ControlWrapper {
 	/** Returns the parent of this Control. */
 	default Composite getParent() {
 		return getRootControl().getParent();
+	}
+
+	/** Returns the parent Shell of this Control. */
+	default Shell getShell() {
+		return getRootControl().getShell();
 	}
 
 	/**
