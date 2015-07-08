@@ -102,7 +102,7 @@ public class SwtRx {
 
 	/** Returns an {@code RxBox<Boolean>} for the toggle state of the given button as an RxBox. */
 	public static RxBox<Boolean> toggle(Button btn) {
-		Preconditions.checkArgument(SwtMisc.flagIsSet(SWT.TOGGLE, btn));
+		Preconditions.checkArgument(SwtMisc.flagIsSet(SWT.TOGGLE, btn) || SwtMisc.flagIsSet(SWT.CHECK, btn));
 		RxBox<Boolean> box = RxBox.of(btn.getSelection());
 		// update the box when a click happens
 		btn.addListener(SWT.Selection, e -> {
