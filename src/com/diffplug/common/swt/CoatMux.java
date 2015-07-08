@@ -32,7 +32,11 @@ public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 	private RxOptional<Layer<?>> currentLayer = RxOptional.ofEmpty();
 
 	public CoatMux(Composite parent) {
-		super(new Composite(parent, SWT.NONE));
+		this(parent, SWT.NONE);
+	}
+
+	public CoatMux(Composite parent, int style) {
+		super(new Composite(parent, style));
 		wrapped.setLayout(stack);
 		// when the current layer changes, set the topControl appropriately
 		SwtExec.immediate().guardOn(wrapped).subscribe(currentLayer, opt -> {
@@ -79,6 +83,11 @@ public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 	/** Adds a persistent {@link Layer} which will be populated immediately by the given {@code Coat}. */
 	public <T> Layer<T> add(Coat.Returning<T> coat) {
 		return new Layer<T>(coat);
+	}
+
+	/** Adds a persistent {@link Layer} which will be populated immediately by the given {@code Coat}, with the layer containing the given value. */
+	public <T> Layer<T> add(Coat coat, T value) {
+		return add(Coat.Returning.fromNonReturning(coat, value));
 	}
 
 	/** Sets the current content of this {@code CoatMux}, gets disposed as soon as anything else becomes the top layer. */
