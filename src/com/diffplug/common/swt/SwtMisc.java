@@ -98,7 +98,7 @@ public class SwtMisc {
 
 	/** Returns the given system color. */
 	public static Color getSystemColor(int code) {
-		return SwtMisc.assertUI().getSystemColor(code);
+		return assertUI().getSystemColor(code);
 	}
 
 	/**
@@ -182,7 +182,7 @@ public class SwtMisc {
 	////////////////////////////////////////
 	/** Blocks to notify about a success. Can be called from any thread. */
 	public static void blockForSuccess(String title, String msg, Shell parent) {
-		SwtMisc.blockForMessageBox(title, msg, parent, SWT.ICON_INFORMATION | SWT.OK);
+		blockForMessageBox(title, msg, parent, SWT.ICON_INFORMATION | SWT.OK);
 	}
 
 	/** Blocks to notify about a success. Can be called from any thread. */
@@ -192,7 +192,7 @@ public class SwtMisc {
 
 	/** Blocks to notify about an error. Can be called from any thread. */
 	public static void blockForError(String title, String msg, Shell parent) {
-		SwtMisc.blockForMessageBox(title, msg, parent, SWT.ICON_ERROR | SWT.OK);
+		blockForMessageBox(title, msg, parent, SWT.ICON_ERROR | SWT.OK);
 	}
 
 	/** Blocks to notify about an error. Can be called from any thread. */
@@ -202,7 +202,7 @@ public class SwtMisc {
 
 	/** Blocks to ask a yes/no question.  Can be called from any thread. */
 	public static boolean blockForQuestion(String title, String message, Shell parent) {
-		return SwtMisc.blockForMessageBox(title, message, parent, SWT.ICON_QUESTION | SWT.YES | SWT.NO) == SWT.YES;
+		return blockForMessageBox(title, message, parent, SWT.ICON_QUESTION | SWT.YES | SWT.NO) == SWT.YES;
 	}
 
 	/** Blocks to ask a yes/no question.  Can be called from any thread. */
@@ -212,7 +212,7 @@ public class SwtMisc {
 
 	/** Blocks to ask an Ok/Cancel question. Can be called from any thread. */
 	public static boolean blockForOkCancel(String title, String message, Shell parent) {
-		return SwtMisc.blockForMessageBox(title, message, parent, SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL) == SWT.OK;
+		return blockForMessageBox(title, message, parent, SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL) == SWT.OK;
 	}
 
 	/** Blocks to ask an Ok/Cancel question. Can be called from any thread. */
@@ -365,7 +365,7 @@ public class SwtMisc {
 	//////////////////////
 	/** Sets the enabled status of every child, grandchild, etc. of the given composite. */
 	public static void setEnabledDeep(Composite root, boolean enabled) {
-		TreeStream.depthFirst(SwtMisc.treeDefControl(), root)
+		TreeStream.depthFirst(treeDefControl(), root)
 				// skip the root
 				.filter(ctl -> ctl != root)
 				// set the enabled flag
