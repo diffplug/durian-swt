@@ -304,6 +304,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	}
 
 	protected final Display display;
+	protected final Scheduler scheduler;
 	protected final Rx.RxExecutor rxExecutor;
 
 	/** Returns an instance of {@link com.diffplug.common.rx.Rx.RxExecutor}. */
@@ -312,9 +313,14 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 		return rxExecutor;
 	}
 
+	/** Returns a Scheduler appropriate for Rx. */
+	public Scheduler getRxScheduler() {
+		return scheduler;
+	}
+
 	private SwtExec(Display display) {
 		this.display = display;
-		this.rxExecutor = Rx.on(this, new Scheduler() {
+		this.scheduler = new Scheduler() {
 			@Override
 			public Worker createWorker() {
 				return new Worker() {
@@ -365,7 +371,8 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 					}
 				};
 			}
-		});
+		};
+		this.rxExecutor = Rx.on(this, scheduler);
 	}
 
 	//////////////
