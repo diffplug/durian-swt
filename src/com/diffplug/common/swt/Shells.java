@@ -15,6 +15,8 @@
  */
 package com.diffplug.common.swt;
 
+import java.util.Objects;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -37,6 +39,7 @@ public class Shells {
 	private Image image;
 	private Point size;
 	private Point openPosition;
+	private Corner openCorner;
 
 	private Shells(int style, Coat coat) {
 		this.style = style;
@@ -92,13 +95,21 @@ public class Shells {
 	 * </ul>
 	 */
 	public Shells setLocation(Point openPosition) {
-		this.openPosition = openPosition;
-		return this;
+		return setLocation(Corner.TOP_LEFT, openPosition);
 	}
 
-	/** @see #setLocation(Point) */
-	public Shells setLocation(int x, int y) {
-		return setLocation(new Point(x, y));
+	/**
+	 * Sets the absolute location of the the given corner of this shell. If the value
+	 * is null, the shell will open:
+	 * <ul>
+	 * <li>if there is a parent shell, below and to the right of the parent</li>
+	 * <li>if there isn't a parent shell, at the current cursor position</li>
+	 * </ul>
+	 */
+	public Shells setLocation(Corner corner, Point position) {
+		this.openCorner = Objects.requireNonNull(corner);
+		this.openPosition = Objects.requireNonNull(position);
+		return this;
 	}
 
 	/** Opens the shell on this parent shell. */
@@ -172,22 +183,24 @@ public class Shells {
 		}
 		// draw the composite
 		coat.putOn(userCmp);
+		shell.pack(true);
 
 		// set the opening position
-		if (openPosition == null) {
+		if (openCorner == null) {
 			if (shell.getParent() != null) {
 				openPosition = shell.getParent().getLocation();
 				final int SHELL_MARGIN = SwtMisc.systemFontHeight();
 				openPosition.x += SHELL_MARGIN;
 				openPosition.y += SHELL_MARGIN;
 			} else {
-				openPosition = Display.getCurrent().getCursorLocation();
+				openPosition = shell.getDisplay().getCursorLocation();
 			}
+		} else {
+			openPosition = openCorner.topLeftRequiredFor(shell.getBounds(), openPosition);
 		}
-		shell.pack(true);
 
 		// constrain the position by the Display's bounds
-		Rectangle bounds = Display.getCurrent().getBounds();
+		Rectangle bounds = shell.getDisplay().getBounds();
 		openPosition.x = Math.max(openPosition.x, bounds.x);
 		openPosition.y = Math.max(openPosition.y, bounds.y);
 		openPosition.x = Math.min(openPosition.x + size.x, bounds.x + bounds.width) - size.x;
