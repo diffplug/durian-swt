@@ -54,13 +54,17 @@ public class SwtRx {
 		return subject.asObservable();
 	}
 
-	/** Returns an {@link Observable}<{@link Point}> of the right-click mouse-up on the given control, in global co-ordinates. */
-	public static Observable<Point> rightClick(Control ctl) {
+	/** Returns an {@link Observable}<{@link Point}> of the right-click mouse-up on the given control, in global coordinates. */
+	public static Observable<Point> rightClickGlobal(Control ctl) {
+		return rightClickLocal(ctl).map(ctl::toDisplay);
+	}
+
+	/** Returns an {@link Observable}<{@link Point}> of the right-click mouse-up on the given control, in local coordinates. */
+	public static Observable<Point> rightClickLocal(Control ctl) {
 		PublishSubject<Point> observable = PublishSubject.create();
 		ctl.addListener(SWT.MouseUp, e -> {
 			if (e.button == 3) {
-				Point globalCoord = ctl.toDisplay(e.x, e.y);
-				observable.onNext(globalCoord);
+				observable.onNext(new Point(e.x, e.y));
 			}
 		});
 		return observable;
