@@ -78,6 +78,12 @@ public class Fonts {
 		return get(font.getName(), font.getHeight(), SWT.BOLD);
 	}
 
+	/** Returns a largish system font appropriate for dialog headers. */
+	public static Font systemLarge() {
+		FontData font = SwtMisc.assertUI().getSystemFont().getFontData()[0];
+		return get(font.getName(), 12, SWT.NORMAL);
+	}
+
 	/** Returns a monospace font for this system. */
 	public static Font systemMonospace() {
 		FontData monospace = systemMonospaceFontData();
