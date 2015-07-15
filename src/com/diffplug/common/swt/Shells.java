@@ -15,6 +15,7 @@
  */
 package com.diffplug.common.swt;
 
+import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.swt.SWT;
@@ -30,6 +31,7 @@ import rx.Subscription;
 import rx.subscriptions.BooleanSubscription;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
 
 /** A fluent builder for creating SWT {@link Shell}s. */
 public class Shells {
@@ -38,8 +40,7 @@ public class Shells {
 	private String title = "";
 	private Image image;
 	private Point size;
-	private Point openPosition;
-	private Corner openCorner;
+	private Map.Entry<Corner, Point> location = null;
 
 	private Shells(int style, Coat coat) {
 		this.style = style;
@@ -107,8 +108,7 @@ public class Shells {
 	 * </ul>
 	 */
 	public Shells setLocation(Corner corner, Point position) {
-		this.openCorner = Objects.requireNonNull(corner);
-		this.openPosition = Objects.requireNonNull(position);
+		this.location = Maps.immutableEntry(Objects.requireNonNull(corner), Objects.requireNonNull(position));
 		return this;
 	}
 
@@ -116,6 +116,13 @@ public class Shells {
 	public Shell openOn(Shell parent) {
 		Preconditions.checkNotNull(parent);
 		Shell shell = new Shell(parent, style);
+		if (location == null) {
+			Point parentPos = shell.getParent().getLocation();
+			int SHELL_MARGIN = SwtMisc.systemFontHeight();
+			parentPos.x += SHELL_MARGIN;
+			parentPos.y += SHELL_MARGIN;
+			location = Maps.immutableEntry(Corner.TOP_LEFT, parentPos);
+		}
 		setupShell(shell);
 		return shell;
 	}
@@ -128,11 +135,14 @@ public class Shells {
 	/** Opens the shell on the currently active shell. */
 	public Shell openOnActive() {
 		Shell shell;
-		Shell parent = Display.getCurrent().getActiveShell();
+		Shell parent = SwtMisc.assertUI().getActiveShell();
 		if (parent == null) {
 			shell = new Shell(Display.getCurrent(), style);
 		} else {
 			shell = new Shell(parent, style);
+		}
+		if (location == null) {
+			location = Maps.immutableEntry(Corner.CENTER, parent.getDisplay().getCursorLocation());
 		}
 		setupShell(shell);
 		return shell;
@@ -145,7 +155,11 @@ public class Shells {
 
 	/** Opens the shell as a root shell. */
 	public Shell openOnDisplay() {
-		Shell shell = new Shell(Display.getCurrent(), style);
+		Display display = SwtMisc.assertUI();
+		if (location == null) {
+			location = Maps.immutableEntry(Corner.CENTER, display.getCursorLocation());
+		}
+		Shell shell = new Shell(display, style);
 		setupShell(shell);
 		return shell;
 	}
@@ -186,28 +200,17 @@ public class Shells {
 		shell.pack(true);
 
 		// set the opening position
-		if (openCorner == null) {
-			if (shell.getParent() != null) {
-				openPosition = shell.getParent().getLocation();
-				final int SHELL_MARGIN = SwtMisc.systemFontHeight();
-				openPosition.x += SHELL_MARGIN;
-				openPosition.y += SHELL_MARGIN;
-			} else {
-				openPosition = shell.getDisplay().getCursorLocation();
-			}
-		} else {
-			openPosition = openCorner.topLeftRequiredFor(shell.getBounds(), openPosition);
-		}
+		Point topLeft = location.getKey().topLeftRequiredFor(shell.getBounds(), location.getValue());
 
 		// constrain the position by the Display's bounds
 		Rectangle bounds = shell.getDisplay().getBounds();
-		openPosition.x = Math.max(openPosition.x, bounds.x);
-		openPosition.y = Math.max(openPosition.y, bounds.y);
-		openPosition.x = Math.min(openPosition.x + size.x, bounds.x + bounds.width) - size.x;
-		openPosition.y = Math.min(openPosition.y + size.y, bounds.y + bounds.height) - size.y;
+		topLeft.x = Math.max(topLeft.x, bounds.x);
+		topLeft.y = Math.max(topLeft.y, bounds.y);
+		topLeft.x = Math.min(topLeft.x + size.x, bounds.x + bounds.width) - size.x;
+		topLeft.y = Math.min(topLeft.y + size.y, bounds.y + bounds.height) - size.y;
 
 		// set the location and open it up!
-		shell.setLocation(openPosition);
+		shell.setLocation(topLeft);
 		shell.open();
 	}
 
