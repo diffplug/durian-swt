@@ -200,14 +200,15 @@ public class Shells {
 		shell.pack(true);
 
 		// set the opening position
-		Point topLeft = location.getKey().topLeftRequiredFor(shell.getBounds(), location.getValue());
+		Rectangle bounds = shell.getBounds();
+		Point topLeft = location.getKey().topLeftRequiredFor(bounds, location.getValue());
 
 		// constrain the position by the Display's bounds
-		Rectangle bounds = shell.getDisplay().getBounds();
-		topLeft.x = Math.max(topLeft.x, bounds.x);
-		topLeft.y = Math.max(topLeft.y, bounds.y);
-		topLeft.x = Math.min(topLeft.x + size.x, bounds.x + bounds.width) - size.x;
-		topLeft.y = Math.min(topLeft.y + size.y, bounds.y + bounds.height) - size.y;
+		Rectangle monitorBounds = shell.getDisplay().getBounds();
+		topLeft.x = Math.max(topLeft.x, monitorBounds.x);
+		topLeft.y = Math.max(topLeft.y, monitorBounds.y);
+		topLeft.x = Math.min(topLeft.x + bounds.x, monitorBounds.x + monitorBounds.width) - bounds.x;
+		topLeft.y = Math.min(topLeft.y + bounds.y, monitorBounds.y + monitorBounds.height) - bounds.y;
 
 		// set the location and open it up!
 		shell.setLocation(topLeft);
