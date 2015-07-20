@@ -58,7 +58,7 @@ Shells.builder(SWT.DIALOG_TRIM, this::textOkCanel)
 * [`LabelProviders`](http://diffplug.github.io/durian-swt/javadoc/snapshot/com/diffplug/common/swt/jface/LabelProviders.html) - builder and one-liner:
 `LabelProviders.createWithText(Person::getName)`
 
-* [`ColumnFormat`](http://diffplug.github.io/durian-swt/javadoc/snapshot/com/diffplug/common/swt/ColumnFormat.html) and [`ColumnViewerFormat`](http://diffplug.github.io/durian-swt/javadoc/snapshot/com/diffplug/common/swt/jface/ColumnViewerFormat.html) - dialogs without boilerplate
+* [`ColumnFormat`](http://diffplug.github.io/durian-swt/javadoc/snapshot/com/diffplug/common/swt/ColumnFormat.html) and [`ColumnViewerFormat`](http://diffplug.github.io/durian-swt/javadoc/snapshot/com/diffplug/common/swt/jface/ColumnViewerFormat.html) - tables and trees without boilerplate
 
 ```java
 ColumnViewerFormat<Person> format = ColumnViewerFormat.builder();
