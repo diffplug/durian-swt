@@ -1,8 +1,8 @@
 # <img align="left" src="durian-swt.png"> DurianSwt: Reactive utilities and fluent builders for SWT
 
 [![Maven artifact](https://img.shields.io/badge/mavenCentral-com.diffplug.durian%3Adurian--swt-blue.svg)](https://bintray.com/diffplug/opensource/durian-swt/view)
-[![Latest version](http://img.shields.io/badge/latest-1.1-blue.svg)](https://github.com/diffplug/durian-swt/releases/latest)
-[![Javadoc](http://img.shields.io/badge/javadoc-OK-blue.svg)](https://diffplug.github.io/durian-swt/javadoc/1.1/)
+[![Latest version](http://img.shields.io/badge/latest-1.1.1-blue.svg)](https://github.com/diffplug/durian-swt/releases/latest)
+[![Javadoc](http://img.shields.io/badge/javadoc-OK-blue.svg)](https://diffplug.github.io/durian-swt/javadoc/1.1.1/)
 [![License](https://img.shields.io/badge/license-Apache-blue.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
 
 [![Changelog](http://img.shields.io/badge/changelog-1.2--SNAPSHOT-brightgreen.svg)](CHANGES.md)
