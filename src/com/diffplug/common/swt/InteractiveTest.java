@@ -178,10 +178,10 @@ public class InteractiveTest {
 
 			// return the dialog that was created
 			Shell[] shells = display.getShells();
-			if (shells.length == 1) {
+			if (shells.length >= 1) {
 				return shells[0];
 			} else {
-				throw new IllegalArgumentException("The test harness created multiple shells.");
+				throw new IllegalArgumentException("The test harness didn't create a shell.");
 			}
 		});
 	}
