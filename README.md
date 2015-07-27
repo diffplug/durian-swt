@@ -5,7 +5,7 @@
 [![Javadoc](http://img.shields.io/badge/javadoc-OK-blue.svg)](https://diffplug.github.io/durian-swt/javadoc/1.1.1/)
 [![License](https://img.shields.io/badge/license-Apache-blue.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
 
-[![Changelog](http://img.shields.io/badge/changelog-1.2--SNAPSHOT-brightgreen.svg)](CHANGES.md)
+[![Changelog](http://img.shields.io/badge/changelog-1.2.0--SNAPSHOT-brightgreen.svg)](CHANGES.md)
 [![Travis CI](https://travis-ci.org/diffplug/durian-swt.svg?branch=master)](https://travis-ci.org/diffplug/durian-swt)
 
 ### Infrastructure

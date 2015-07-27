@@ -1,6 +1,6 @@
 # DuriansSwt releases
 
-### Version 1.2 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/))
+### Version 1.2.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/))
 
 ### Version 1.1.1 - July 27th 2015 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/1.1.1/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/1.1.1/view))
 
