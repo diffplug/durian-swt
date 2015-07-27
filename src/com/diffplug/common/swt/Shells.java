@@ -134,8 +134,8 @@ public class Shells {
 
 	/** Opens the shell on the currently active shell. */
 	public Shell openOnActive() {
-		Shell shell;
-		Shell parent = SwtMisc.assertUI().getActiveShell();
+		Display display = SwtMisc.assertUI();
+		Shell parent = display.getActiveShell();
 		// on Windows and OS X, the active shell is the one that currently has user focus
 		// on Linux, the last created shell (even if it is invisible) will count as the active shell
 		//
@@ -147,13 +147,14 @@ public class Shells {
 		//
 		// as a workaround, if an active shell is found, but it isn't visible, we count that as though
 		// there isn't an active shell
+		Shell shell;
 		if (parent == null || parent.isVisible() == false) {
-			shell = new Shell(Display.getCurrent(), style);
+			shell = new Shell(display, style);
 		} else {
 			shell = new Shell(parent, style);
 		}
 		if (location == null) {
-			location = Maps.immutableEntry(Corner.CENTER, parent.getDisplay().getCursorLocation());
+			location = Maps.immutableEntry(Corner.CENTER, display.getCursorLocation());
 		}
 		setupShell(shell);
 		return shell;
