@@ -363,11 +363,11 @@ public class SwtMisc {
 	//////////////////////
 	// Tree-based stuff //
 	//////////////////////
-	/** Sets the enabled status of every child, grandchild, etc. of the given composite. */
+	/** Sets the enabled status of every child, grandchild, etc. of the given composite.  Skips plain-jane Composites. */
 	public static void setEnabledDeep(Composite root, boolean enabled) {
 		TreeStream.depthFirst(treeDefControl(), root)
-				// skip the root
-				.filter(ctl -> ctl != root)
+				// skip plain-jane Composites
+				.filter(ctl -> ctl.getClass().equals(Composite.class))
 				// set the enabled flag
 				.forEach(ctl -> ctl.setEnabled(enabled));
 	}
