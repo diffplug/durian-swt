@@ -16,10 +16,14 @@
 package com.diffplug.common.swt;
 
 import java.util.Optional;
+import java.util.function.Function;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+
+import com.google.common.base.Preconditions;
 
 import com.diffplug.common.rx.RxGetter;
 import com.diffplug.common.rx.RxOptional;
@@ -40,20 +44,30 @@ public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 		wrapped.setLayout(stack);
 		// when the current layer changes, set the topControl appropriately
 		SwtExec.immediate().guardOn(wrapped).subscribe(currentLayer, opt -> {
-			stack.topControl = opt.map(layer -> layer.composite).orElse(null);
+			stack.topControl = opt.map(layer -> layer.control).orElse(null);
 			wrapped.layout(true, true);
 		});
 	}
 
+	/** The current layer (if any). */
+	public RxGetter<Optional<Layer<?>>> rxCurrent() {
+		return currentLayer;
+	}
+
+	/** The Control at the top of the stack (possibly null). */
+	public Control getTopControl() {
+		return stack.topControl;
+	}
+
 	/** Represents a persistent layer within this {@code CoatMux}. It can be shown, hidden, and disposed. */
 	public class Layer<T> {
-		final Composite composite;
+		final Control control;
 		final T handle;
 		final RxGetter<Boolean> rxCurrent = currentLayer.map(opt -> opt.isPresent() && opt.get() == this);
 
-		private Layer(Coat.Returning<T> coat) {
-			composite = new Composite(wrapped, SWT.NONE);
-			handle = coat.putOn(composite);
+		private Layer(Control control, T handle) {
+			this.control = control;
+			this.handle = handle;
 		}
 
 		/** {@link RxGetter} which keeps track of whether this {@code Layer} is currently on top. */
@@ -76,33 +90,102 @@ public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 			if (rxCurrent.get()) {
 				currentLayer.set(Optional.empty());
 			}
-			SwtExec.immediate().execute(composite::dispose);
+			SwtExec.immediate().execute(control::dispose);
 		}
 	}
 
-	/** Adds a persistent {@link Layer} which will be populated immediately by the given {@code Coat}. */
-	public <T> Layer<T> add(Coat.Returning<T> coat) {
-		return new Layer<T>(coat);
+	/** Adds a persistent {@link Layer} which will be populated immediately by the given {@code Coat}, using {@code value} as the key. */
+	public <T> Layer<T> addCoat(Coat coat, T value) {
+		return addCoat(Coat.Returning.fromNonReturning(coat, value));
 	}
 
-	/** Adds a persistent {@link Layer} which will be populated immediately by the given {@code Coat}, with the layer containing the given value. */
-	public <T> Layer<T> add(Coat coat, T value) {
-		return add(Coat.Returning.fromNonReturning(coat, value));
+	/** Adds a persistent {@link Layer} which will be populated immediately by the given {@code Coat.Returning}, using the return value as the key. */
+	public <T> Layer<T> addCoat(Coat.Returning<T> coat) {
+		Composite composite = new Composite(wrapped, SWT.NONE);
+		return new Layer<T>(composite, coat.putOn(composite));
 	}
 
-	/** Sets the current content of this {@code CoatMux}, gets disposed as soon as anything else becomes the top layer. */
-	public <T> T set(Coat.Returning<T> coat) {
-		// create the layer
-		Layer<T> layer = add(coat);
+	private static final String RAW = "The function must create exactly one child of the composite which gets passed in";
+
+	/**
+	 * Adds a persistent {@link Layer} which will be populated immediately by the given {@code Function<Composite, Control>}, with the returned control as the key.
+	 * <p>
+	 * The function must create exactly one child of the composite, and must return that child.
+	 */
+	public <T extends Control> Layer<T> addControl(Function<Composite, T> creator) {
+		int before = wrapped.getChildren().length;
+		T control = creator.apply(wrapped);
+		int after = wrapped.getChildren().length;
+		Preconditions.checkArgument(control.getParent() == wrapped, RAW);
+		Preconditions.checkArgument(before + 1 == after, RAW);
+		return new Layer<T>(control, control);
+	}
+
+	/**
+	 * Adds a persistent {@link Layer} which will be populated immediately by the given {@code Function<Composite, Control>}, with the returned control as the key.
+	 * <p>
+	 * The function must create exactly one child of the composite, and it must return that child.
+	 */
+	public <T extends ControlWrapper> Layer<T> addWrapper(Function<Composite, T> creator) {
+		int before = wrapped.getChildren().length;
+		T wrapper = creator.apply(wrapped);
+		int after = wrapped.getChildren().length;
+		Preconditions.checkArgument(wrapper.getParent() == wrapped, RAW);
+		Preconditions.checkArgument(before + 1 == after, RAW);
+		return new Layer<T>(wrapper.getRootControl(), wrapper);
+	}
+
+	private <T> T makeTemporary(Layer<T> layer) {
 		// bring it to the top
 		layer.bringToTop();
 		// dispose the layer when it's no longer current
-		SwtExec.immediate().guardOn(layer.composite).subscribe(layer.rxCurrent, isCurrent -> {
+		SwtExec.immediate().guardOn(layer.control).subscribe(layer.rxCurrent, isCurrent -> {
 			if (!isCurrent) {
 				layer.dispose();
 			}
 		});
 		// return the handle that the coat created
 		return layer.handle;
+	}
+
+	public <T> T setCoat(Coat.Returning<T> coat) {
+		return makeTemporary(addCoat(coat));
+	}
+
+	/** Sets the current content of this {@code CoatMux}, gets disposed as soon as anything else becomes the top layer. */
+	public <T extends Control> T setControl(Function<Composite, T> creator) {
+		return makeTemporary(addControl(creator));
+	}
+
+	/** Sets the current content of this {@code CoatMux}, gets disposed as soon as anything else becomes the top layer. */
+	public <T extends ControlWrapper> T setWrapper(Function<Composite, T> creator) {
+		return makeTemporary(addWrapper(creator));
+	}
+
+	//////////////////////
+	// Deprecated stuff //
+	//////////////////////
+	/**
+	 * Adds a persistent {@link Layer} which will be populated immediately by the given {@code Coat}, with the layer containing the given value.
+	 * @deprecated use {@link #addCoat(Coat, Object)} instead
+	 */
+	public <T> Layer<T> add(Coat coat, T value) {
+		return addCoat(coat, value);
+	}
+
+	/**
+	 * Adds a persistent {@link Layer} which will be populated immediately by the given {@code Coat}, with the layer containing the given value.
+	 * @deprecated use {@link #addCoat(Coat, Object)} instead
+	 */
+	public <T> Layer<T> add(Coat.Returning<T> coat) {
+		return addCoat(coat);
+	}
+
+	/**
+	 * Sets the current content of this {@code CoatMux}, gets disposed as soon as anything else becomes the top layer.
+	 * @deprecated use {@link #setCoat(Coat, Object)} instead
+	 */
+	public <T> T set(Coat.Returning<T> coat) {
+		return makeTemporary(add(coat));
 	}
 }
