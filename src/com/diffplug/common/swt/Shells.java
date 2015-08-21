@@ -189,6 +189,12 @@ public class Shells {
 		if (image != null) {
 			shell.setImage(image);
 		}
+		// disable close on ESCAPE
+		shell.addListener(SWT.Traverse, e -> {
+			if (e.detail == SWT.TRAVERSE_ESCAPE) {
+				e.doit = false;
+			}
+		});
 		// find the composite we're going to draw on
 		Composite userCmp;
 		if (size == null) {
