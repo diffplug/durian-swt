@@ -45,6 +45,11 @@ public class ColorPool {
 		return color;
 	}
 
+	/** Returns a Color for the SWT.COLOR_xxx. */
+	public Color getSystemColor(int systemColor) {
+		return display.getSystemColor(systemColor);
+	}
+
 	/** Returns a ColorPool for the given Widget, creating one if necessary. */
 	public static ColorPool forWidget(Widget widget) {
 		return onePerWidget.forWidget(widget);
