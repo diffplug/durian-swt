@@ -148,6 +148,12 @@ public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 		return layer.handle;
 	}
 
+	/** Sets the current content of this {@code CoatMux}, gets disposed as soon as anything else becomes the top layer. */
+	public <T> T setCoat(Coat coat, T value) {
+		return setCoat(Coat.Returning.fromNonReturning(coat, value));
+	}
+
+	/** Sets the current content of this {@code CoatMux}, gets disposed as soon as anything else becomes the top layer. */
 	public <T> T setCoat(Coat.Returning<T> coat) {
 		return makeTemporary(addCoat(coat));
 	}
@@ -167,7 +173,7 @@ public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 	//////////////////////
 	/**
 	 * Adds a persistent {@link Layer} which will be populated immediately by the given {@code Coat}, with the layer containing the given value.
-	 * @deprecated use {@link #addCoat(Coat, Object)} instead
+	 * @deprecated use {@link #add(Coat, Object)} instead
 	 */
 	public <T> Layer<T> add(Coat coat, T value) {
 		return addCoat(coat, value);
@@ -175,7 +181,7 @@ public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 
 	/**
 	 * Adds a persistent {@link Layer} which will be populated immediately by the given {@code Coat}, with the layer containing the given value.
-	 * @deprecated use {@link #addCoat(Coat, Object)} instead
+	 * @deprecated use {@link #addCoat(com.diffplug.common.swt.Coat.Returning)} instead
 	 */
 	public <T> Layer<T> add(Coat.Returning<T> coat) {
 		return addCoat(coat);
@@ -183,7 +189,7 @@ public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 
 	/**
 	 * Sets the current content of this {@code CoatMux}, gets disposed as soon as anything else becomes the top layer.
-	 * @deprecated use {@link #setCoat(Coat, Object)} instead
+	 * @deprecated use {@link #setCoat(com.diffplug.common.swt.Coat.Returning)} instead
 	 */
 	public <T> T set(Coat.Returning<T> coat) {
 		return makeTemporary(add(coat));
