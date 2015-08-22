@@ -15,6 +15,7 @@
  */
 package com.diffplug.common.swt;
 
+import java.awt.GraphicsEnvironment;
 import java.util.Map;
 import java.util.Objects;
 
@@ -217,16 +218,17 @@ public class Shells {
 		coat.putOn(userCmp);
 		shell.pack(true);
 
-		// set the opening position
-		Rectangle bounds = shell.getBounds();
-		Point topLeft = location.getKey().topLeftRequiredFor(bounds, location.getValue());
+		// calculate the opening size and nominal topLeft
+		Point size = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		Point topLeft = location.getKey().topLeftRequiredFor(new Rectangle(0, 0, size.x, size.y), location.getValue());
 
 		// constrain the position by the Display's bounds
-		Rectangle monitorBounds = shell.getDisplay().getBounds();
+		// we use GraphicsEnvironment because it includes the Start menu, which SWT doesn't do
+		java.awt.Rectangle monitorBounds = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
 		topLeft.x = Math.max(topLeft.x, monitorBounds.x);
 		topLeft.y = Math.max(topLeft.y, monitorBounds.y);
-		topLeft.x = Math.min(topLeft.x + bounds.x, monitorBounds.x + monitorBounds.width) - bounds.x;
-		topLeft.y = Math.min(topLeft.y + bounds.y, monitorBounds.y + monitorBounds.height) - bounds.y;
+		topLeft.x = Math.min(topLeft.x + size.x, monitorBounds.x + monitorBounds.width) - size.x;
+		topLeft.y = Math.min(topLeft.y + size.y, monitorBounds.y + monitorBounds.height) - size.y;
 
 		// set the location and open it up!
 		shell.setLocation(topLeft);
