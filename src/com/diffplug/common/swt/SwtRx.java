@@ -104,9 +104,13 @@ public class SwtRx {
 		return box;
 	}
 
-	/** Returns an {@code RxBox<Boolean>} for the toggle state of the given button as an RxBox. */
+	/**
+	 * Returns an {@code RxBox<Boolean>} for the toggle state of the given button as an RxBox.
+	 * <p>
+	 * Applicable to SWT.TOGGLE, SWT.CHECK, and SWT.RADIO.
+	 */
 	public static RxBox<Boolean> toggle(Button btn) {
-		Preconditions.checkArgument(SwtMisc.flagIsSet(SWT.TOGGLE, btn) || SwtMisc.flagIsSet(SWT.CHECK, btn));
+		Preconditions.checkArgument(SwtMisc.flagIsSet(SWT.TOGGLE, btn) || SwtMisc.flagIsSet(SWT.CHECK, btn) || SwtMisc.flagIsSet(SWT.RADIO, btn));
 		RxBox<Boolean> box = RxBox.of(btn.getSelection());
 		// update the box when a click happens
 		btn.addListener(SWT.Selection, e -> {
