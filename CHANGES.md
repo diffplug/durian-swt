@@ -1,6 +1,22 @@
 # DuriansSwt releases
 
-### Version 1.2.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/))
+### Version 1.3.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/))
+
+### Version 1.2.0 - September 14th 2015 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/1.2.0/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/1.2.0/view))
+
+* Major improvement to the `CoatMux` API.
+* Added `ColorPool.getSystemColor(int systemColor)` so that ColorPool can be your one-stop-shop for getting colors.
+* Added some methods to `SwtMisc`:
+	* `Shell rootShell(Control control)`
+	* `void forEachDeep(Composite root, Consumer<Control> ctlSetter)`
+	* `void setForegroundDeep(Composite root, Color foreground)`
+	* `void setBackgroundDeep(Composite root, Color background)`
+	* `Rectangle globalBounds(Control control)`
+	* `Rectangle toDisplay(Control control, Rectangle rect)`
+	* `Optional<Monitor> monitorFor(Point p)`
+* Fixed `SwtMisc.setEnabledDeep()` - it now skips `Composite`s which haven't been subclassed.
+* Fixed `SwtRx.toggle()` now works with radio buttons.
+* Fixed `Shells` so that the dialogs it creates don't automatically close on escape, and so that they are better about opening on-screen.
 
 ### Version 1.1.1 - July 27th 2015 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/1.1.1/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/1.1.1/view))
 
