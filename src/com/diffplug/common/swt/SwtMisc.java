@@ -42,6 +42,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.diffplug.common.base.Box.Nullable;
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.TreeDef;
+import com.diffplug.common.base.TreeQuery;
 import com.diffplug.common.base.TreeStream;
 import com.diffplug.common.rx.Rx;
 import com.diffplug.common.swt.os.OS;
@@ -370,6 +371,16 @@ public class SwtMisc {
 				.filter(ctl -> ctl.getClass().equals(Composite.class))
 				// set the enabled flag
 				.forEach(ctl -> ctl.setEnabled(enabled));
+	}
+
+	public static Shell rootShell(Control ctl) {
+		Shell shell;
+		if (ctl instanceof Shell) {
+			shell = (Shell) ctl;
+		} else {
+			shell = ctl.getShell();
+		}
+		return TreeQuery.root(SwtMisc.treeDefShell(), shell);
 	}
 
 	/** {@link TreeDef} for {@link Composite}s. */
