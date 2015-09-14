@@ -18,6 +18,8 @@ package com.diffplug.common.swt;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import org.eclipse.swt.SWT;
@@ -27,11 +29,13 @@ import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
 
@@ -42,6 +46,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.diffplug.common.base.Box.Nullable;
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.TreeDef;
+import com.diffplug.common.base.TreeIterable;
 import com.diffplug.common.base.TreeQuery;
 import com.diffplug.common.base.TreeStream;
 import com.diffplug.common.rx.Rx;
@@ -361,6 +366,34 @@ public class SwtMisc {
 		}
 	}
 
+	/////////////////////
+	// Geometric stuff //
+	/////////////////////
+	/** Returns the bounds of the given control in global coordinates. */
+	public static Rectangle globalBounds(Control control) {
+		Point size = control.getSize();
+		Point topLeft = control.toDisplay(0, 0);
+		return new Rectangle(topLeft.x, topLeft.y, size.x, size.y);
+	}
+
+	/** Converts a rectangle to global coordinates using the given control as a reference frame. */
+	public static Rectangle toDisplay(Control control, Rectangle rect) {
+		Point topLeft = control.toDisplay(rect.x, rect.y);
+		return new Rectangle(topLeft.x, topLeft.y, rect.width, rect.height);
+	}
+
+	/** Returns the monitor (if any) which contains the given point. */
+	public static Optional<Monitor> monitorFor(Point p) {
+		Monitor[] monitors = assertUI().getMonitors();
+		for (Monitor monitor : monitors) {
+			Rectangle bounds = monitor.getBounds();
+			if (bounds.contains(p)) {
+				return Optional.of(monitor);
+			}
+		}
+		return Optional.empty();
+	}
+
 	//////////////////////
 	// Tree-based stuff //
 	//////////////////////
@@ -373,6 +406,22 @@ public class SwtMisc {
 				.forEach(ctl -> ctl.setEnabled(enabled));
 	}
 
+	/** Calls the given consumer on the given composite and all of its children, recursively. */
+	public static void forEachDeep(Composite root, Consumer<Control> ctlSetter) {
+		TreeIterable.depthFirst(treeDefControl(), root).forEach(ctlSetter);
+	}
+
+	/** Sets the foreground color of the given composite and all of its children, recursively. */
+	public static void setForegroundDeep(Composite root, Color foreground) {
+		forEachDeep(root, ctl -> ctl.setForeground(foreground));
+	}
+
+	/** Sets the background color of the given composite and all of its children, recursively. */
+	public static void setBackgroundDeep(Composite root, Color background) {
+		forEachDeep(root, ctl -> ctl.setBackground(background));
+	}
+
+	/** Returns the root shell of the given control. */
 	public static Shell rootShell(Control ctl) {
 		Shell shell;
 		if (ctl instanceof Shell) {
