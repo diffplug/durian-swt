@@ -1,4 +1,4 @@
-# DuriansSwt releases
+# DurianSwt releases
 
 ### Version 1.3.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/))
 
