@@ -2,6 +2,9 @@
 
 ### Version 1.3.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/))
 
+* Changed OSGi metadata Bundle-SymbolicName to `com.diffplug.durian.swt`.
+* OSGi metadata is now auto-generated using bnd.
+
 ### Version 1.2.0 - September 14th 2015 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/1.2.0/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/1.2.0/view))
 
 * Major improvement to the `CoatMux` API.
