@@ -116,8 +116,11 @@ public class ColumnViewerFormat<T> {
 		viewer.setUseHashlookup(useHashLookup);
 		for (int i = 0; i < columnBuilders.size(); ++i) {
 			ViewerColumn viewerColumn = columnViewerCreator.apply(viewer, columns.get(i));
-			viewerColumn.setLabelProvider(columnBuilders.get(i).provider);
-			columnBuilders.get(i).finalSetup.accept(viewerColumn);
+			ColumnBuilder<T> builder = columnBuilders.get(i);
+			if (builder.provider != null) {
+				viewerColumn.setLabelProvider(builder.provider);
+			}
+			builder.finalSetup.accept(viewerColumn);
 		}
 		return viewer;
 	}
