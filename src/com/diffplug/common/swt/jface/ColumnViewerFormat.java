@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Tree;
 
+import com.diffplug.common.base.Consumers;
 import com.diffplug.common.swt.ColumnFormat;
 
 /** Fluent API for creating {@link TableViewer}s and {@link TreeViewer}s with a certain format. */
@@ -116,6 +117,7 @@ public class ColumnViewerFormat<T> {
 		for (int i = 0; i < columnBuilders.size(); ++i) {
 			ViewerColumn viewerColumn = columnViewerCreator.apply(viewer, columns.get(i));
 			viewerColumn.setLabelProvider(columnBuilders.get(i).provider);
+			columnBuilders.get(i).finalSetup.accept(viewerColumn);
 		}
 		return viewer;
 	}
@@ -125,6 +127,7 @@ public class ColumnViewerFormat<T> {
 		private ColumnBuilder() {}
 
 		private CellLabelProvider provider;
+		private Consumer<? super ViewerColumn> finalSetup = Consumers.doNothing();
 
 		/** Uses the given as the label provider. */
 		public ColumnBuilder<T> setLabelProvider(CellLabelProvider provider) {
@@ -147,11 +150,10 @@ public class ColumnViewerFormat<T> {
 			return setLabelProvider(LabelProviders.createWithTextAndImage(text, image));
 		}
 
-		/** Manipulate the given builder, and the result will be used as the label provider. */
-		public ColumnBuilder<T> setLabelProviderBuilder(Consumer<? super LabelProviders.Builder<T>> consumer) {
-			LabelProviders.Builder<T> builder = LabelProviders.builder();
-			consumer.accept(builder);
-			return setLabelProvider(builder.build());
+		/** Calls the given consumer after the ColumnViewer has been constructed. */
+		public ColumnBuilder<T> setFinalSetup(Consumer<? super ViewerColumn> finalSetup) {
+			this.finalSetup = finalSetup;
+			return this;
 		}
 
 		////////////////////////////////
