@@ -2,13 +2,13 @@ Manifest-Version: 1.0
 Bundle-Description: DurianSwt - Reactive utilities and fluent builders f
  or SWT
 Bundle-DocURL: https://github.com/diffplug/durian-swt
-Bundle-License: https://github.com/diffplug/durian-swt/blob/v1.3.0-SNAPS
- HOT/LICENSE
+Bundle-License: https://github.com/diffplug/durian-swt/blob/v1.3.0/LICEN
+ SE
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: com.diffplug.durian.swt
-Bundle-Vendor: DiffPlug LLC
-Bundle-Version: 1.3.0.SNAPSHOT
+Bundle-Vendor: DiffPlug
+Bundle-Version: 1.3.0
 Export-Package: com.diffplug.common.swt;uses:="com.diffplug.common.base,
  com.diffplug.common.rx,com.google.common.collect,com.google.common.util
  .concurrent,org.eclipse.jface.viewers,org.eclipse.swt.graphics,org.ecli
@@ -18,8 +18,8 @@ Export-Package: com.diffplug.common.swt;uses:="com.diffplug.common.base,
  ction,org.eclipse.jface.resource,org.eclipse.jface.viewers,org.eclipse.
  swt.graphics,org.eclipse.swt.widgets";version="1.3.0",com.diffplug.comm
  on.swt.os;version="1.3.0"
-Import-Package: com.diffplug.common.base;version="[3.0,4)",com.diffplug.
- common.rx;version="[1.0,2)",com.diffplug.common.swt,com.diffplug.common
+Import-Package: com.diffplug.common.base;version="[3.3,4)",com.diffplug.
+ common.rx;version="[1.1,2)",com.diffplug.common.swt,com.diffplug.common
  .swt.os,com.google.common.base;version="[18.0,19)",com.google.common.co
  llect;version="[18.0,19)",com.google.common.primitives;version="[18.0,1
  9)",com.google.common.util.concurrent;version="[18.0,19)",org.eclipse.j
