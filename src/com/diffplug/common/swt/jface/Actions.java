@@ -22,9 +22,10 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 
 import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.Runnables;
 
 import com.diffplug.common.swt.SwtMisc;
 
@@ -68,6 +69,21 @@ public class Actions {
 		return builder().setText(text).setImage(image).setAccelerator(accelerator).setRunnable(action).build();
 	}
 
+	/** Concise method for creating a push action. */
+	public static IAction create(String text, Listener listener) {
+		return builder().setText(text).setListener(listener).build();
+	}
+
+	/** Concise method for creating a push action. */
+	public static IAction create(String text, ImageDescriptor image, Listener listener) {
+		return builder().setText(text).setImage(image).setListener(listener).build();
+	}
+
+	/** Concise method for creating a push action. */
+	public static IAction create(String text, ImageDescriptor image, int accelerator, Listener listener) {
+		return builder().setText(text).setImage(image).setAccelerator(accelerator).setListener(listener).build();
+	}
+
 	/** Defaults to a push style with no text, accelerator, or action. */
 	public static Actions builder() {
 		return new Actions();
@@ -79,7 +95,7 @@ public class Actions {
 	private Style style = Style.PUSH;
 	private String text = "";
 	private String tooltip = "";
-	private Runnable run = Runnables.doNothing();
+	private Listener listener = e -> {};
 	private int accelerator = SWT.NONE;
 	private ImageDescriptor img = null;
 
@@ -91,7 +107,7 @@ public class Actions {
 	private Actions(IAction action) {
 		this.text = action.getText();
 		this.style = Style.of(action);
-		this.run = action::run;
+		this.listener = action::runWithEvent;
 		this.img = action.getImageDescriptor();
 		this.accelerator = action.getAccelerator();
 		this.tooltip = action.getToolTipText();
@@ -125,9 +141,15 @@ public class Actions {
 		return this;
 	}
 
-	/** Sets the runnable. */
+	/** Sets the listener to be the given Runnable. */
 	public Actions setRunnable(Runnable run) {
-		this.run = run;
+		this.listener = e -> run.run();
+		return this;
+	}
+
+	/** Sets the listener to be the given Listener.  It may receive a null event. */
+	public Actions setListener(Listener listener) {
+		this.listener = listener;
 		return this;
 	}
 
@@ -145,7 +167,7 @@ public class Actions {
 
 	/** Returns an action with the specified properties. */
 	public IAction build() {
-		ActionImp action = new ActionImp(text, style.jfaceStyle, run);
+		ActionImp action = new ActionImp(text, style.jfaceStyle, listener);
 		action.setImageDescriptor(img);
 		action.setAccelerator(accelerator);
 		setToolTipAccelAware(action, tooltip);
@@ -154,16 +176,21 @@ public class Actions {
 
 	/** A trivial Action class which delegates its run() method to a Runnable. */
 	private static class ActionImp extends Action {
-		private final Runnable run;
+		private final Listener listener;
 
-		private ActionImp(String text, int style, Runnable run) {
+		private ActionImp(String text, int style, Listener listener) {
 			super(text, style);
-			this.run = run;
+			this.listener = listener;
 		}
 
 		@Override
 		public void run() {
-			run.run();
+			runWithEvent(null);
+		}
+
+		@Override
+		public void runWithEvent(Event e) {
+			listener.handleEvent(e);
 		}
 	}
 
