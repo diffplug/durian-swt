@@ -15,7 +15,6 @@
  */
 package com.diffplug.common.swt;
 
-import java.awt.GraphicsEnvironment;
 import java.util.Map;
 import java.util.Objects;
 
@@ -222,9 +221,8 @@ public class Shells {
 		Point size = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 		Point topLeft = location.getKey().topLeftRequiredFor(new Rectangle(0, 0, size.x, size.y), location.getValue());
 
-		// constrain the position by the Display's bounds
-		// we use GraphicsEnvironment because it includes the Start menu, which SWT doesn't do
-		java.awt.Rectangle monitorBounds = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+		// constrain the position by the Display's bounds (getClientArea() takes the Start bar into account)	
+		Rectangle monitorBounds = SwtMisc.monitorFor(topLeft).orElse(SwtMisc.assertUI().getMonitors()[0]).getClientArea();
 		topLeft.x = Math.max(topLeft.x, monitorBounds.x);
 		topLeft.y = Math.max(topLeft.y, monitorBounds.y);
 		topLeft.x = Math.min(topLeft.x + size.x, monitorBounds.x + monitorBounds.width) - size.x;
