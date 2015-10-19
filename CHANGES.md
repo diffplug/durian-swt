@@ -4,6 +4,9 @@
 
 * Changed OSGi metadata Bundle-SymbolicName to `com.diffplug.durian.swt`.
 * OSGi metadata is now auto-generated using bnd.
+* Added `ColumnViewerFormat.ColumnBuilder::setFinalSetup()` which allows us to get the `ViewerColumn` object and setup something such as a `CellEditor` on it.
+* `ColumnViewerFormat` no longer requires a `LabelProvider`, since we might set that stuff up in `setFinalSetup()`.
+* Fixed a bug in `Shells` which caused windows to always open on the primary monitor.
 
 ### Version 1.2.0 - September 14th 2015 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/1.2.0/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/1.2.0/view))
 
