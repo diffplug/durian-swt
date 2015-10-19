@@ -1,12 +1,15 @@
 # DurianSwt releases
 
-### Version 1.3.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/))
+### Version 1.4.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/)) [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/durian/durian-swt/))
+
+### Version 1.3.0 - October 19th 2015 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/1.3.0/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/1.3.0/view))
 
 * Changed OSGi metadata Bundle-SymbolicName to `com.diffplug.durian.swt`.
 * OSGi metadata is now auto-generated using bnd.
 * Added `ColumnViewerFormat.ColumnBuilder::setFinalSetup()` which allows us to get the `ViewerColumn` object and setup something such as a `CellEditor` on it.
 * `ColumnViewerFormat` no longer requires a `LabelProvider`, since we might set that stuff up in `setFinalSetup()`.
 * Fixed a bug in `Shells` which caused windows to always open on the primary monitor.
+* `Actions` is now based on `runWithEvent()` rather than `run()`.  This allows implementors to get the `Event` which is causing the action to fire, which can allow more detailed actions to be taken.
 
 ### Version 1.2.0 - September 14th 2015 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/1.2.0/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/1.2.0/view))
 
