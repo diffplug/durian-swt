@@ -19,6 +19,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -172,6 +174,36 @@ public class SwtMisc {
 	/** Runs the display loop until the given future has returned. */
 	@SuppressWarnings("unchecked")
 	public static <T, E extends Throwable> T loopUntilGetChecked(ListenableFuture<T> future, Class<E> clazz) throws E {
+		try {
+			return loopUntilGet(future);
+		} catch (Throwable error) {
+			if (clazz.isAssignableFrom(error.getClass())) {
+				throw (E) error;
+			} else {
+				throw Errors.asRuntime(error);
+			}
+		}
+	}
+
+	/** Runs the display loop until the given future has returned. */
+	public static <T> T loopUntilGet(CompletionStage<T> future) throws Throwable {
+		Nullable<T> result = Nullable.ofNull();
+		Nullable<Throwable> error = Nullable.ofNull();
+		Rx.subscribe(future, Rx.onValueOnFailure(result::set, error::set));
+
+		CompletableFuture<?> actualFuture = future.toCompletableFuture();
+		loopUntil(display -> actualFuture.isDone());
+
+		if (error.get() != null) {
+			throw error.get();
+		} else {
+			return result.get();
+		}
+	}
+
+	/** Runs the display loop until the given future has returned. */
+	@SuppressWarnings("unchecked")
+	public static <T, E extends Throwable> T loopUntilGetChecked(CompletionStage<T> future, Class<E> clazz) throws E {
 		try {
 			return loopUntilGet(future);
 		} catch (Throwable error) {
