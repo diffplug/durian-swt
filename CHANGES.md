@@ -2,6 +2,8 @@
 
 ### Version 1.4.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/)) [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/durian/durian-swt/))
 
+* `SwtExec.Guarded::subscribe` now supports `CompletionStage` and `CompletableFuture`, in support of improvements made to DurianRx 1.2.0.
+
 ### Version 1.3.0 - October 19th 2015 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/1.3.0/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/1.3.0/view))
 
 * Changed OSGi metadata Bundle-SymbolicName to `com.diffplug.durian.swt`.

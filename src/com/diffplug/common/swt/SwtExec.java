@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
@@ -283,6 +284,11 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 
 		@Override
 		public <T> Subscription subscribe(ListenableFuture<? extends T> future, Rx<T> listener) {
+			return subscribe(() -> parent.rxExecutor.subscribe(future, listener));
+		}
+
+		@Override
+		public <T> Subscription subscribe(CompletionStage<? extends T> future, Rx<T> listener) {
 			return subscribe(() -> parent.rxExecutor.subscribe(future, listener));
 		}
 
