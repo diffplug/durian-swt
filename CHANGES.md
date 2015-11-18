@@ -1,8 +1,12 @@
 # DurianSwt releases
 
-### Version 1.4.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/)) [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/durian/durian-swt/))
+### Version 1.5.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/)) [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/durian/durian-swt/))
+
+### Version 1.4.0 - November 18th 2015 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/1.4.0/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/1.4.0/view))
 
 * `SwtExec.Guarded::subscribe` now supports `CompletionStage` and `CompletableFuture`, in support of improvements made to DurianRx 1.2.0.
+* Added `SwtMisc.setFlag()`.
+* Added `JFaceRx`, which exposes JFace properties as RxJava observables.
 
 ### Version 1.3.0 - October 19th 2015 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/1.3.0/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/1.3.0/view))
 
