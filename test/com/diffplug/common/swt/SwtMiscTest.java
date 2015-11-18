@@ -36,4 +36,16 @@ public class SwtMiscTest {
 		Assert.assertTrue(SwtMisc.flagIsSet(SWT.ITALIC, SWT.BOLD | SWT.ITALIC));
 		Assert.assertFalse(SwtMisc.flagIsSet(37, SWT.BOLD | SWT.ITALIC));
 	}
+
+	@Test
+	public void setFlag() {
+		Assert.assertEquals(SWT.BOLD, SwtMisc.setFlag(SWT.BOLD, true, SWT.NONE));
+		Assert.assertEquals(SWT.BOLD, SwtMisc.setFlag(SWT.BOLD, true, SWT.BOLD));
+		Assert.assertEquals(SWT.NONE, SwtMisc.setFlag(SWT.BOLD, false, SWT.BOLD));
+
+		Assert.assertEquals(SWT.BOLD | SWT.ITALIC, SwtMisc.setFlag(SWT.ITALIC, true, SWT.BOLD));
+		Assert.assertEquals(SWT.ITALIC, SwtMisc.setFlag(SWT.BOLD, false, SWT.ITALIC | SWT.BOLD));
+		Assert.assertEquals(SWT.BOLD, SwtMisc.setFlag(SWT.ITALIC, false, SWT.ITALIC | SWT.BOLD));
+		Assert.assertEquals(SWT.BOLD, SwtMisc.setFlag(SWT.ITALIC, false, SWT.BOLD));
+	}
 }

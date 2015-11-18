@@ -70,6 +70,11 @@ public class SwtMisc {
 		return flagIsSet(flag, widget.getStyle());
 	}
 
+	/** Sets whether the flag is set for the given style. */
+	public static int setFlag(int flag, boolean isSet, int style) {
+		return isSet ? (style | flag) : (style & ~flag);
+	}
+
 	/** Converts a {@link Runnable} into a {@link Listener}. */
 	public static Listener asListener(Runnable runnable) {
 		return e -> runnable.run();
