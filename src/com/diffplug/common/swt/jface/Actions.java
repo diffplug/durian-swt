@@ -17,6 +17,7 @@ package com.diffplug.common.swt.jface;
 
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.function.BiConsumer;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
@@ -95,7 +96,7 @@ public class Actions {
 	private Style style = Style.PUSH;
 	private String text = "";
 	private String tooltip = "";
-	private Listener listener = e -> {};
+	private BiConsumer<IAction, Event> callback;
 	private int accelerator = SWT.NONE;
 	private ImageDescriptor img = null;
 
@@ -107,7 +108,17 @@ public class Actions {
 	private Actions(IAction action) {
 		this.text = action.getText();
 		this.style = Style.of(action);
-		this.listener = action::runWithEvent;
+		if (action instanceof ActionImp) {
+			callback = ((ActionImp) action).callback;
+		} else {
+			callback = (a, e) -> {
+				if (e == null) {
+					action.run();
+				} else {
+					action.runWithEvent(e);
+				}
+			};
+		}
 		this.img = action.getImageDescriptor();
 		this.accelerator = action.getAccelerator();
 		this.tooltip = action.getToolTipText();
@@ -141,15 +152,19 @@ public class Actions {
 		return this;
 	}
 
-	/** Sets the listener to be the given Runnable. */
+	/** Sets the callback to be the given Runnable. */
 	public Actions setRunnable(Runnable run) {
-		this.listener = e -> run.run();
-		return this;
+		return setCallback((action, event) -> run.run());
 	}
 
-	/** Sets the listener to be the given Listener.  It may receive a null event. */
+	/** Sets the callback to be the given Listener.  It may receive a null event. */
 	public Actions setListener(Listener listener) {
-		this.listener = listener;
+		return setCallback((action, event) -> listener.handleEvent(event));
+	}
+
+	/** Sets the callback to be the given BiConsumer.  Action will definitely be present, but event might be missing. */
+	public Actions setCallback(BiConsumer<IAction, Event> callback) {
+		this.callback = callback;
 		return this;
 	}
 
@@ -167,7 +182,7 @@ public class Actions {
 
 	/** Returns an action with the specified properties. */
 	public IAction build() {
-		ActionImp action = new ActionImp(text, style.jfaceStyle, listener);
+		ActionImp action = new ActionImp(text, style.jfaceStyle, callback);
 		action.setImageDescriptor(img);
 		action.setAccelerator(accelerator);
 		setToolTipAccelAware(action, tooltip);
@@ -176,11 +191,11 @@ public class Actions {
 
 	/** A trivial Action class which delegates its run() method to a Runnable. */
 	private static class ActionImp extends Action {
-		private final Listener listener;
+		private final BiConsumer<IAction, Event> callback;
 
-		private ActionImp(String text, int style, Listener listener) {
+		private ActionImp(String text, int style, BiConsumer<IAction, Event> callback) {
 			super(text, style);
-			this.listener = listener;
+			this.callback = callback;
 		}
 
 		@Override
@@ -190,7 +205,7 @@ public class Actions {
 
 		@Override
 		public void runWithEvent(Event e) {
-			listener.handleEvent(e);
+			callback.accept(this, e);
 		}
 	}
 
