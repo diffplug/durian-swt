@@ -1,6 +1,12 @@
 # DurianSwt releases
 
-### Version 1.5.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/)) [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/durian/durian-swt/))
+### Version 1.6.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/)) [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/durian/durian-swt/))
+
+### Version 1.5.0 - December 11th 2015 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/1.5.0/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/1.5.0/view))
+
+* Added `Actions.setCallback`, which allows behavior based on the actual IAction which ends up being created.
+* Added `SwtMisc.copyEvent()`.
+* Added `SwtMisc.withGcRun` and `SwtMisc.withGcCompute`, which allows quick access to a GC for e.g. computing the size of some text.
 
 ### Version 1.4.0 - November 18th 2015 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/1.4.0/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/1.4.0/view))
 
