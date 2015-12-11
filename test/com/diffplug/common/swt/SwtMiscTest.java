@@ -15,11 +15,19 @@
  */
 package com.diffplug.common.swt;
 
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Event;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.diffplug.common.swt.SwtMisc;
+import com.diffplug.common.base.Errors;
+import com.diffplug.common.base.FieldsAndGetters;
 
 public class SwtMiscTest {
 	@Test
@@ -47,5 +55,27 @@ public class SwtMiscTest {
 		Assert.assertEquals(SWT.ITALIC, SwtMisc.setFlag(SWT.BOLD, false, SWT.ITALIC | SWT.BOLD));
 		Assert.assertEquals(SWT.BOLD, SwtMisc.setFlag(SWT.ITALIC, false, SWT.ITALIC | SWT.BOLD));
 		Assert.assertEquals(SWT.BOLD, SwtMisc.setFlag(SWT.ITALIC, false, SWT.BOLD));
+	}
+
+	@Test
+	public void testCopyEvent() {
+		Event original = new Event();
+		FieldsAndGetters.fields(original).map(Map.Entry::getKey).forEach(Errors.rethrow().wrap(field -> {
+			if (field.getType().equals(boolean.class)) {
+				field.set(original, Math.random() < 0.5 ? false : true);
+			} else if (field.getType().equals(int.class)) {
+				field.set(original, (int) (1000 * Math.random()));
+			}
+		}));
+		Function<Event, List<Object>> getData = e -> FieldsAndGetters.fields(e).map(Map.Entry::getValue).collect(Collectors.toList());
+		Event copy = SwtMisc.copyEvent(original);
+		Assert.assertEquals(getData.apply(original), getData.apply(copy));
+	}
+
+	@Test
+	public void testWithGc() {
+		Point size = SwtMisc.withGcCompute(gc -> gc.textExtent("billy_bob"));
+		Assert.assertTrue(size.y > 0);
+		Assert.assertTrue(size.x > size.y);
 	}
 }

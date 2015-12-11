@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import org.eclipse.swt.SWT;
@@ -35,6 +36,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Monitor;
@@ -137,6 +139,63 @@ public class SwtMisc {
 	public static void assertClean(Composite cmp) {
 		Preconditions.checkArgument(cmp.getChildren().length == 0, "The composite should have no children, this had %s.", cmp.getChildren().length);
 		Preconditions.checkArgument(cmp.getLayout() == null, "The composite should have no layout, this had %s.", cmp.getLayout());
+	}
+
+	/** Returns a deep copy of the given SWT event. */
+	public static Event copyEvent(Event event) {
+		Event copy = new Event();
+		copy.display = event.display;
+		copy.widget = event.widget;
+		copy.type = event.type;
+		copy.detail = event.detail;
+		copy.item = event.item;
+		copy.index = event.index;
+		copy.gc = event.gc;
+		copy.x = event.x;
+		copy.y = event.y;
+		copy.width = event.width;
+		copy.height = event.height;
+		copy.count = event.count;
+		copy.time = event.time;
+		copy.button = event.button;
+		copy.character = event.character;
+		copy.keyCode = event.keyCode;
+		copy.keyLocation = event.keyLocation;
+		copy.stateMask = event.stateMask;
+		copy.start = event.start;
+		copy.end = event.end;
+		copy.text = event.text;
+		copy.segments = event.segments;
+		copy.segmentsChars = event.segmentsChars;
+		copy.doit = event.doit;
+		copy.data = event.data;
+		copy.touches = event.touches;
+		copy.xDirection = event.xDirection;
+		copy.yDirection = event.yDirection;
+		copy.magnification = event.magnification;
+		copy.rotation = event.rotation;
+		return copy;
+	}
+
+	/** Runs some function using a temporary GC. */
+	public static void withGcRun(Consumer<GC> consumer) {
+		withGcCompute(gc -> {
+			consumer.accept(gc);
+			return null;
+		});
+	}
+
+	/** Computes some function using a temporary GC. */
+	public static <T> T withGcCompute(Function<GC, T> function) {
+		// create a tiny image to bind our GC to (not that it can't be size 0)
+		Image dummyImg = new Image(assertUI(), 1, 1);
+		GC gc = new GC(dummyImg);
+		try {
+			return function.apply(gc);
+		} finally {
+			gc.dispose();
+			dummyImg.dispose();
+		}
 	}
 
 	////////////////////////////////////////
