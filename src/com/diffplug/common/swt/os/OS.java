@@ -93,6 +93,7 @@ public enum OS {
 		} else if (isLinux) {
 			String os_arch = System.getProperty("os.arch");
 			switch (os_arch) {
+			case "i386":
 			case "x86":
 				return LINUX_x86;
 			case "x86_64":
