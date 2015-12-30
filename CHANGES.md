@@ -2,6 +2,10 @@
 
 ### Version 1.6.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/)) [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/durian/durian-swt/))
 
+### Version 1.5.1 - December 30th 2015 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/1.5.1/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/1.5.1/view))
+
+* Fixed a bug in `OS.calculateNative` on linux x86 systems that report their `os.arch` as `i386`.
+
 ### Version 1.5.0 - December 11th 2015 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/1.5.0/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/1.5.0/view))
 
 * Added `Actions.setCallback`, which allows behavior based on the actual IAction which ends up being created.
