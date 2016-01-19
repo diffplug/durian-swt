@@ -9,6 +9,10 @@ plugins {
 
 repositories {
 	mavenCentral()
+	// while we're testing this new guava/durian thing
+	maven {
+		url "https://dl.bintray.com/diffplug/opensource/"
+	}
 	ivy {
 		// There isn't a reliable way to get eclipse artifacts except through p2 repositories,
 		// which gradle does not yet support.  For now we're forcing it with ivy.
@@ -46,7 +50,7 @@ targetCompatibility = VER_JAVA
 dependencies {
 	compile "com.diffplug.durian:durian-rx:${VER_DURIAN_RX}"
 	compile "com.diffplug.durian:durian:${VER_DURIAN}"
-	compile "com.google.guava:guava:${VER_GUAVA}"
+	compile "com.diffplug.guava:guava-concurrent:${VER_GUAVA}"
 	compile "io.reactivex:rxjava:${VER_RXJAVA}"
 
 	compile "p2:org.eclipse.swt:${VER_SWT}"
