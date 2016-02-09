@@ -1,6 +1,10 @@
 # DurianSwt releases
 
-### Version 1.6.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/)) [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/durian/durian-swt/))
+### Version 1.7.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/)) [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/durian/durian-swt/))
+
+### Version 1.6.0 - February 9th 2016 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/1.6.0/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/1.6.0/view))
+
+* Ditched Guava for DurianGuava.
 
 ### Version 1.5.1 - December 30th 2015 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/1.5.1/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/1.5.1/view))
 
