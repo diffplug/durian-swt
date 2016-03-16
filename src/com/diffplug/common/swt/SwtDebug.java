@@ -177,8 +177,12 @@ public class SwtDebug {
 		builder.put(SWT.Segments, "Segments"); // 49
 		builder.put(SWT.PreEvent, "Gesture"); // 50
 		builder.put(SWT.PostEvent, "PostEvent"); // 51
-		builder.put(SWT.Sleep, "Sleep"); // 52
-		builder.put(SWT.Wakeup, "Wakeup"); // 53
+		@SuppressWarnings("deprecation")
+		int sleep = SWT.Sleep;
+		builder.put(sleep, "PreExternalEventDispatch"); // 52
+		@SuppressWarnings("deprecation")
+		int wakeup = SWT.Wakeup;
+		builder.put(wakeup, "PostExternalEventDispatch"); // 53
 		events = builder.build();
 	}
 }
