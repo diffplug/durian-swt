@@ -100,6 +100,11 @@ public class SwtMisc {
 		Preconditions.checkArgument(current == null, "Must not be called from the UI thread.");
 	}
 
+	/** Returns the given system color. */
+	public static Color getSystemColor(int code) {
+		return assertUI().getSystemColor(code);
+	}
+
 	/**
 	 * Performs an asynchronous layout on the given composite.
 	 * <p>
@@ -109,11 +114,6 @@ public class SwtMisc {
 	 */
 	public static void asyncLayout(Composite cmp) {
 		SwtExec.async().guardOn(cmp).execute(() -> cmp.layout(true, true));
-	}
-
-	/** Returns the given system color. */
-	public static Color getSystemColor(int code) {
-		return assertUI().getSystemColor(code);
 	}
 
 	/**
