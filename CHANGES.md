@@ -1,6 +1,14 @@
 # DurianSwt releases
 
-### Version 1.7.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/)) [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/durian/durian-swt/))
+### Version 1.8.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/)) [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/durian/durian-swt/))
+
+### Version 1.7.0 - April 6th 2016 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/1.7.0/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/1.7.0/view))
+
+* Upgraded Eclipse/SWT dependencies from Luna SR2 to Mars.2 (4.4.2 to 4.5.2).
+* Changed `SwtDebug` event names to their 4.5-based names.
+* `InteractiveTest` can now pass/fail itself automatically, for self-testing gui tests.
+* Added `SwtRx.combo()` methods for reactive control of combo boxes.
+* Added `SwtMisc.requestLayout()`, which is backported from Eclipse Neon.  It will be deprecated when Neon comes out.
 
 ### Version 1.6.0 - February 9th 2016 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/1.6.0/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/1.6.0/view))
 
