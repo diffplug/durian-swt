@@ -60,5 +60,5 @@ public class ColorPool {
 		return onePerWidget.forWidget(wrapper.getRootControl());
 	}
 
-	private static OnePerWidget<Widget, ColorPool> onePerWidget = OnePerWidget.from(ColorPool::new);
+	private static final OnePerWidget<Widget, ColorPool> onePerWidget = OnePerWidget.from(ColorPool::new);
 }
