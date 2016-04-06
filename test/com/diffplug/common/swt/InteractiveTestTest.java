@@ -95,6 +95,20 @@ public class InteractiveTestTest {
 		}
 	}
 
+	@Test
+	public void testCloseAndPass() {
+		InteractiveTest.testCoat("Should pass itself very quickly.", cmp -> {
+			InteractiveTest.closeAndPass(cmp);
+		});
+	}
+
+	@Test(expected = AssertionError.class)
+	public void testCloseAndFail() {
+		InteractiveTest.testCoat("Should fail itself very quickly.", cmp -> {
+			InteractiveTest.closeAndFail(cmp);
+		});
+	}
+
 	/** The simple little coat which is displayed in each test. */
 	private void dummyCoat(Composite parent) {
 		Layouts.setFill(parent);

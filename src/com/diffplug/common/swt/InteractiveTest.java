@@ -15,6 +15,9 @@
  */
 package com.diffplug.common.swt;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -23,6 +26,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -108,6 +112,9 @@ public class InteractiveTest {
 		});
 	}
 
+	/** A map containing the shells for the currently running test, mapped to the box which holds its result. */
+	private static Map<Shell, Box<TestResult>> shellToResult = new HashMap<>();
+
 	/**
 	 * @param instructions Instructions for the user to follow.
 	 * @param harness A function which takes a Display and returns a Shell to test.
@@ -123,6 +130,7 @@ public class InteractiveTest {
 				// create the shell under test
 				Shell underTest = harness.apply(display);
 				underTest.setLocation(10, 10);
+				shellToResult.put(underTest, result);
 
 				// create the test dialog
 				Shell instructionsDialog = openInstructions(underTest, instructions, result);
@@ -157,9 +165,30 @@ public class InteractiveTest {
 				// dispose everything at the end
 				for (Shell shell : display.getShells()) {
 					shell.dispose();
+					shellToResult.remove(shell);
 				}
 			}
 		});
+	}
+
+	private static void setResult(Control ctl, TestResult result) {
+		Shell shell = ctl.getShell();
+		SwtExec.async().guardOn(ctl).execute(() -> {
+			Box<TestResult> resultBox = shellToResult.remove(shell);
+			Objects.requireNonNull(resultBox, "No test shell for control.");
+			resultBox.set(result);
+			shell.dispose();
+		});
+	}
+
+	/** Closes the test for the given control, and passes. */
+	public static void closeAndPass(Control ctl) {
+		setResult(ctl, TestResult.PASS);
+	}
+
+	/** Closes the test for the given control, and fails. */
+	public static void closeAndFail(Control ctl) {
+		setResult(ctl, TestResult.FAIL);
 	}
 
 	/**
