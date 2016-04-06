@@ -16,11 +16,13 @@
 package com.diffplug.common.swt;
 
 import java.util.Collection;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -31,6 +33,7 @@ import rx.Observable;
 import rx.subjects.PublishSubject;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.primitives.Ints;
 
 import com.diffplug.common.rx.RxBox;
@@ -119,5 +122,43 @@ public class SwtRx {
 		// update the button when the box happens
 		SwtExec.immediate().guardOn(btn).subscribe(box, btn::setSelection);
 		return box;
+	}
+
+	/**
+	 * Populates a Combo returns an {@code RxBox<T>} which is bidirectionally bound
+	 * to the given combo.
+	 *
+	 * @param combo  The combo which is being bound.
+	 * @param values The values which the RxBox can take on.  Must match combo.getItems().
+	 * @return An {@code RxBox<T>} which is bound bidirectionally to the given combo.
+	 */
+	public static <T> RxBox<T> combo(Combo combo, ImmutableList<T> values, Function<T, String> converter) {
+		RxBox<T> box = RxBox.of(values.get(Math.max(0, combo.getSelectionIndex())));
+		combo(combo, values, converter, box);
+		return box;
+	}
+
+	/**
+	 * Populates a Combo and bidirectionally binds it to an {@code RxBox<T>}.
+	 *
+	 * @param combo       The combo which is being bound.
+	 * @param values      The values which the RxBox can take on.
+	 * @param converter   A function for mapping values to strings.
+	 * @param values      The values which the RxBox can take on.
+	 * @return An {@code RxBox<T>} which will be bound bidirectionally to the given combo.
+	 */
+	public static <T> void combo(Combo combo, ImmutableList<T> values, Function<T, String> converter, RxBox<T> box) {
+		// setup the combo
+		combo.removeAll();
+		for (T value : values) {
+			combo.add(converter.apply(value));
+		}
+		// bind it to a box
+		combo.addListener(SWT.Selection, e -> {
+			box.set(values.get(combo.getSelectionIndex()));
+		});
+		SwtExec.immediate().guardOn(combo).subscribe(box, mdlValue -> {
+			combo.select(values.indexOf(mdlValue));
+		});
 	}
 }

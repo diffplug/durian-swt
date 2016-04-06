@@ -15,18 +15,20 @@
  */
 package com.diffplug.common.swt;
 
+import java.util.function.Supplier;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import com.google.common.collect.ImmutableList;
+
 import com.diffplug.common.rx.Rx;
 import com.diffplug.common.rx.RxBox;
-import com.diffplug.common.swt.InteractiveTest;
-import com.diffplug.common.swt.Layouts;
-import com.diffplug.common.swt.SwtRx;
 
 @Category(InteractiveTest.class)
 public class SwtRxTest {
@@ -52,6 +54,34 @@ public class SwtRxTest {
 			Button offBtn = new Button(cmp, SWT.PUSH);
 			offBtn.setText("Set off");
 			offBtn.addListener(SWT.Selection, e -> toggleBox.set(false));
+		});
+	}
+
+	enum TestEnum {
+		A, B, C
+	}
+
+	@Test
+	public void testComboAsBox() {
+		InteractiveTest.testCoat("The two combos should stay in sync.", cmp -> {
+			ImmutableList<TestEnum> values = ImmutableList.copyOf(TestEnum.class.getEnumConstants());
+
+			Supplier<Combo> creator = () -> {
+				Combo combo = new Combo(cmp, SWT.DROP_DOWN);
+				values.forEach(value -> combo.add(value.name()));
+				combo.select(0);
+				return combo;
+			};
+			Layouts.setGrid(cmp).numColumns(2);
+
+			Combo comboA = creator.get();
+			RxBox<TestEnum> boxA = SwtRx.combo(comboA, values, Enum::name);
+
+			Combo comboB = creator.get();
+			RxBox<TestEnum> boxB = SwtRx.combo(comboB, values, Enum::name);
+
+			Rx.subscribe(boxA, boxB);
+			Rx.subscribe(boxB, boxA);
 		});
 	}
 }
