@@ -106,6 +106,20 @@ public class SwtMisc {
 	}
 
 	/**
+	 * Backport of Eclipse Neon's {@code Composite.requestLayout()} method - this will be deprecated when Neon comes out.
+	 * <p>
+	 * See Eclipse Neon M4 release notes for more details: https://www.eclipse.org/eclipse/news/4.6/M4/
+	 * The M4 release notes misses a bug related to Shells, which is fixed and included here: https://git.eclipse.org/r/#/c/62265/3/bundles/org.eclipse.swt/Eclipse+SWT/gtk/org/eclipse/swt/widgets/Shell.java
+	 */
+	public static void requestLayout(Control control) {
+		if (control instanceof Shell) {
+			((Shell) control).layout(null, SWT.DEFER);
+		} else {
+			control.getShell().layout(new Control[]{control}, SWT.DEFER);
+		}
+	}
+
+	/**
 	 * Performs an asynchronous layout on the given composite.
 	 * <p>
 	 * Oftentimes, a layout will not be successful unless it is performed in
