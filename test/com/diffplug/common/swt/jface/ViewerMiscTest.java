@@ -34,6 +34,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StringPrinter;
@@ -128,7 +129,7 @@ public class ViewerMiscTest {
 	}
 
 	@Test
-	public void testMultiSelection() {
+	public void testMultiSelectionList() {
 		String message = StringPrinter.buildStringFromLines(
 				"- The table and the tree should keep their selection in sync.",
 				"- The table and the tree should allow multi-selection.",
@@ -143,6 +144,27 @@ public class ViewerMiscTest {
 
 			// sync the tree and the table
 			RxBox<ImmutableList<TreeNode<String>>> tableSelection = ViewerMisc.multiSelectionList(tableAndTree.table);
+			Rx.subscribe(treeSelection, tableSelection::set);
+			Rx.subscribe(tableSelection, treeSelection::set);
+		});
+	}
+
+	@Test
+	public void testMultiSelectionSet() {
+		String message = StringPrinter.buildStringFromLines(
+				"- The table and the tree should keep their selection in sync.",
+				"- The table and the tree should allow multi-selection.",
+				"- The categories in the tree should not be selectable.");
+		InteractiveTest.testCoat(message, cmp -> {
+			TableAndTree tableAndTree = new TableAndTree(cmp, SWT.MULTI);
+
+			// ensure the tree only supports selecting names
+			RxBox<ImmutableSet<TreeNode<String>>> treeSelection = ViewerMisc.<TreeNode<String>> multiSelectionSet(tableAndTree.tree)
+					// remove any nodes that aren't a name
+					.enforce(Immutables.mutatorSet(mutable -> mutable.removeIf(node -> !isName(node))));
+
+			// sync the tree and the table
+			RxBox<ImmutableSet<TreeNode<String>>> tableSelection = ViewerMisc.multiSelectionSet(tableAndTree.table);
 			Rx.subscribe(treeSelection, tableSelection::set);
 			Rx.subscribe(tableSelection, treeSelection::set);
 		});
