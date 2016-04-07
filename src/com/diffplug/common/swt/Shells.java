@@ -127,8 +127,16 @@ public class Shells {
 		return shell;
 	}
 
-	/** Opens the shell on this parent and blocks. */
+	/**
+	 * @deprecated for {@link #openOnBlocking(Shell)} - same behavior, but name is consistent with the others.
+	 */
+	@Deprecated
 	public void openOnAndBlock(Shell parent) {
+		openOnBlocking(parent);
+	}
+
+	/** Opens the shell on this parent and blocks. */
+	public void openOnBlocking(Shell parent) {
 		SwtMisc.loopUntilDisposed(openOn(parent));
 	}
 
