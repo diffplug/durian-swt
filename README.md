@@ -162,6 +162,7 @@ Durian requires:
 
 ## Acknowledgements
 
+* Thanks to [David Karnok](https://akarnokd.blogspot.com/) for [contributing an SwtScheduler that honors the Scheduler/Worker contracts](https://github.com/diffplug/durian-swt/pull/1).
 * Thanks to Moritz Post for his [fluent layout idea](http://eclipsesource.com/blogs/2013/07/25/efficiently-dealing-with-swt-gridlayout-and-griddata/).
 * Formatted by [spotless](https://github.com/diffplug/spotless), [as such](https://github.com/diffplug/durian-rx/blob/v1.0/build.gradle?ts=4#L70-L90).
 * Bugs found by [findbugs](http://findbugs.sourceforge.net/), [as such](https://github.com/diffplug/durian-rx/blob/v1.0/build.gradle?ts=4#L92-L116).
