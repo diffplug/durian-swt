@@ -30,6 +30,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
+import com.diffplug.common.base.ConverterNonNull;
 import com.diffplug.common.base.TreeDef;
 import com.diffplug.common.rx.RxBox;
 import com.diffplug.common.rx.RxList;
@@ -76,7 +77,9 @@ public class ViewerMisc {
 
 	/** Manipulates the selection of the given viewer with the given RxSet. */
 	public static <T> void multiSelectionSet(StructuredViewer viewer, RxBox<ImmutableSet<T>> box) {
-		multiSelectionList(viewer, box.map(ImmutableSet::asList, list -> ImmutableSet.copyOf(list)));
+		ConverterNonNull<ImmutableSet<T>, ImmutableList<T>> converter = ConverterNonNull.from(
+				ImmutableSet::asList, ImmutableSet::copyOf, "setToList");
+		multiSelectionList(viewer, box.map(converter));
 	}
 
 	/** Returns a thread-safe {@link RxList} for manipulating the selection of a {@link StructuredViewer} created with {@link SWT#MULTI}. */
