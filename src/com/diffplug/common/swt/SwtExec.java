@@ -34,7 +34,6 @@ import com.google.common.primitives.Ints;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import com.diffplug.common.base.Box.Nullable;
-import com.diffplug.common.base.Unhandled;
 import com.diffplug.common.rx.*;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -179,22 +178,22 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 		// The schedule methods don't sync with the SwtExec.blocking() semantics.
 		@Override
 		public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
-			throw Unhandled.operationException();
+			throw new UnsupportedOperationException();
 		}
 
 		@Override
 		public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit) {
-			throw Unhandled.operationException();
+			throw new UnsupportedOperationException();
 		}
 
 		@Override
 		public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit) {
-			throw Unhandled.operationException();
+			throw new UnsupportedOperationException();
 		}
 
 		@Override
 		public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit) {
-			throw Unhandled.operationException();
+			throw new UnsupportedOperationException();
 		}
 	}
 
@@ -359,7 +358,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 *             denies access.
 	 */
 	public void shutdown() {
-		throw Unhandled.operationException();
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -380,7 +379,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 *             denies access.
 	 */
 	public List<Runnable> shutdownNow() {
-		throw Unhandled.operationException();
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -389,7 +388,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 * @return <tt>true</tt> if this executor has been shut down
 	 */
 	public boolean isShutdown() {
-		throw Unhandled.operationException();
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -400,7 +399,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 * @return <tt>true</tt> if all tasks have completed following shut down
 	 */
 	public boolean isTerminated() {
-		throw Unhandled.operationException();
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -417,7 +416,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 *             if interrupted while waiting
 	 */
 	public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
-		throw Unhandled.operationException();
+		throw new UnsupportedOperationException();
 	}
 
 	//////////////////////////////
@@ -504,7 +503,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 *             if period less than or equal to zero
 	 */
 	public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit) {
-		throw Unhandled.operationException();
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -537,7 +536,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 *             if delay less than or equal to zero
 	 */
 	public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit) {
-		throw Unhandled.operationException();
+		throw new UnsupportedOperationException();
 	}
 
 	/** Simple little mixin for making RunnableFutures schedulable. */
