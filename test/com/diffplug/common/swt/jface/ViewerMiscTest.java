@@ -43,7 +43,6 @@ import com.diffplug.common.collect.ImmutableSet;
 import com.diffplug.common.rx.Immutables;
 import com.diffplug.common.rx.Rx;
 import com.diffplug.common.rx.RxBox;
-import com.diffplug.common.rx.RxOptional;
 import com.diffplug.common.swt.InteractiveTest;
 import com.diffplug.common.swt.Layouts;
 import com.diffplug.common.swt.SwtMisc;
@@ -121,7 +120,7 @@ public class ViewerMiscTest {
 					.enforce(opt -> opt.map(val -> isName(val) ? val : null));
 
 			// sync the tree and the table
-			RxOptional<TreeNode<String>> tableSelection = ViewerMisc.singleSelection(tableAndTree.table);
+			RxBox<Optional<TreeNode<String>>> tableSelection = ViewerMisc.singleSelection(tableAndTree.table);
 			Rx.subscribe(treeSelection, tableSelection::set);
 			Rx.subscribe(tableSelection, treeSelection::set);
 		});

@@ -33,7 +33,6 @@ import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.common.collect.ImmutableSet;
 import com.diffplug.common.rx.RxBox;
 import com.diffplug.common.rx.RxList;
-import com.diffplug.common.rx.RxOptional;
 import com.diffplug.common.rx.RxSet;
 import com.diffplug.common.swt.SwtExec;
 import com.diffplug.common.swt.SwtMisc;
@@ -41,8 +40,8 @@ import com.diffplug.common.swt.SwtMisc;
 /** Utilities for manipulating and creating JFace viewers. */
 public class ViewerMisc {
 	/** Returns a thread-safe {@link RxOptional} for manipulating the selection of a {@link StructuredViewer} created with {@link SWT#SINGLE}. */
-	public static <T> RxOptional<T> singleSelection(StructuredViewer viewer) {
-		RxOptional<T> box = RxOptional.ofEmpty();
+	public static <T> RxBox<Optional<T>> singleSelection(StructuredViewer viewer) {
+		RxBox<Optional<T>> box = RxBox.of(Optional.empty());
 		singleSelection(viewer, box);
 		return box;
 	}
