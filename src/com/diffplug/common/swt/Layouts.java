@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
 
-import com.google.common.base.Preconditions;
+import com.diffplug.common.base.Preconditions;
 
 /**
  * Provides fluent utilities for manipulating SWT layouts. Serves as the entry point to {@link LayoutsFillLayout},

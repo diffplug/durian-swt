@@ -33,14 +33,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.common.base.TreeDef;
 import com.diffplug.common.base.TreeNode;
 import com.diffplug.common.base.TreeStream;
+import com.diffplug.common.collect.ImmutableList;
+import com.diffplug.common.collect.ImmutableSet;
 import com.diffplug.common.rx.Immutables;
 import com.diffplug.common.rx.Rx;
 import com.diffplug.common.rx.RxBox;

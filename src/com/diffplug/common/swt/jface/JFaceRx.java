@@ -17,8 +17,7 @@ package com.diffplug.common.swt.jface;
 
 import org.eclipse.jface.action.IAction;
 
-import com.google.common.base.Preconditions;
-
+import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.rx.Rx;
 import com.diffplug.common.rx.RxBox;
 import com.diffplug.common.swt.SwtMisc;

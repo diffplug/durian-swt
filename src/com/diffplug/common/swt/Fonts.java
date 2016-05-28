@@ -23,9 +23,8 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Display;
 
-import com.google.common.base.Preconditions;
-
 import com.diffplug.common.base.Errors;
+import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.swt.os.OS;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 

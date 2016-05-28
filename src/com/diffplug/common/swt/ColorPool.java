@@ -23,7 +23,7 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Widget;
 
-import com.google.common.collect.Maps;
+import com.diffplug.common.collect.Maps;
 
 /** Caches {@link Color}s, and automatically manages their disposal. */
 public class ColorPool {

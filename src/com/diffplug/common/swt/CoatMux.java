@@ -23,8 +23,7 @@ import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-import com.google.common.base.Preconditions;
-
+import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.rx.RxGetter;
 import com.diffplug.common.rx.RxOptional;
 

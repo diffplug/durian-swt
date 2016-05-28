@@ -25,8 +25,7 @@ import org.eclipse.swt.widgets.Text;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import com.google.common.collect.ImmutableList;
-
+import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.common.rx.Rx;
 import com.diffplug.common.rx.RxBox;
 

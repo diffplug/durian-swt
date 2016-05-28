@@ -30,8 +30,8 @@ import org.eclipse.swt.widgets.Shell;
 import rx.Subscription;
 import rx.subscriptions.BooleanSubscription;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
+import com.diffplug.common.base.Preconditions;
+import com.diffplug.common.collect.Maps;
 
 /** A fluent builder for creating SWT {@link Shell}s. */
 public class Shells {

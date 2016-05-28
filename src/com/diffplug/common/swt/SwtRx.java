@@ -32,10 +32,9 @@ import org.eclipse.swt.widgets.Widget;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.primitives.Ints;
-
+import com.diffplug.common.base.Preconditions;
+import com.diffplug.common.collect.ImmutableList;
+import com.diffplug.common.primitives.Ints;
 import com.diffplug.common.rx.RxBox;
 
 /** Utilities that convert SWT events into Rx-friendly Observables. */

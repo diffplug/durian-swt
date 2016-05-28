@@ -26,12 +26,11 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-
 import com.diffplug.common.base.Converter;
+import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.base.TreeDef;
+import com.diffplug.common.collect.ImmutableList;
+import com.diffplug.common.collect.ImmutableSet;
 import com.diffplug.common.rx.RxBox;
 import com.diffplug.common.rx.RxList;
 import com.diffplug.common.rx.RxOptional;

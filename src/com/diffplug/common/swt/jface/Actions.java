@@ -26,8 +26,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
-import com.google.common.base.Preconditions;
-
+import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.swt.SwtMisc;
 
 /** Provides a fluent interface for constructing actions. */

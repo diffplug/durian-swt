@@ -31,10 +31,9 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-import com.google.common.base.Preconditions;
-
 import com.diffplug.common.base.Box;
 import com.diffplug.common.base.Errors;
+import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.base.Unhandled;
 
 /**
@@ -124,7 +123,7 @@ public class InteractiveTest {
 			Display display = SwtMisc.assertUI();
 
 			// the test is a failure until the user tells us otherwise
-			Box<TestResult> result = Box.of(TestResult.FAIL);
+			Box<TestResult> result = Box.ofVolatile(TestResult.FAIL);
 
 			try {
 				// create the shell under test

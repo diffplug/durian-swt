@@ -15,6 +15,8 @@
  */
 package com.diffplug.common.swt;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.*;
@@ -29,12 +31,10 @@ import rx.Observable;
 import rx.functions.Action0;
 import rx.subscriptions.*;
 
-import com.google.common.base.Preconditions;
-import com.google.common.primitives.Ints;
-import com.google.common.util.concurrent.ListenableFuture;
-
 import com.diffplug.common.base.Box.Nullable;
+import com.diffplug.common.primitives.Ints;
 import com.diffplug.common.rx.*;
+import com.diffplug.common.util.concurrent.ListenableFuture;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -52,7 +52,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * {@link Guarded#wrap} and {@link Guarded#execute}, whose contents are <i>only executed if the guarded widget is not disposed</i>.
  * <p>
  * {@link Guarded} also contains the full API of {@link com.diffplug.common.rx.Rx},
- * which allows subscribing to {@link rx.Observable}s and {@link com.google.common.util.concurrent.ListenableFuture}s while guarding on a given widget.
+ * which allows subscribing to {@link rx.Observable}s and {@link com.diffplug.common.util.concurrent.ListenableFuture}s while guarding on a given widget.
  */
 public class SwtExec extends AbstractExecutorService implements ScheduledExecutorService, Rx.HasRxExecutor {
 	/** Global executor for async. */
@@ -89,7 +89,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 			immediate = new SwtExec(Display.getDefault()) {
 				@Override
 				public void execute(Runnable runnable) {
-					Preconditions.checkNotNull(runnable);
+					requireNonNull(runnable);
 					if (!display.isDisposed()) {
 						if (Thread.currentThread() == display.getThread()) {
 							runnable.run();
@@ -146,7 +146,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 
 		@Override
 		public void execute(Runnable runnable) {
-			Preconditions.checkNotNull(runnable);
+			requireNonNull(runnable);
 			if (!display.isDisposed()) {
 				if (Thread.currentThread() == display.getThread()) {
 					runnable.run();
@@ -168,7 +168,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 			if (Thread.currentThread() == display.getThread()) {
 				return supplier.get();
 			} else {
-				Nullable<T> holder = Nullable.ofNull();
+				Nullable<T> holder = Nullable.ofVolatileNull();
 				display.syncExec(() -> holder.set(supplier.get()));
 				return holder.get();
 			}
@@ -355,7 +355,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 */
 	@Override
 	public void execute(Runnable runnable) {
-		Preconditions.checkNotNull(runnable);
+		requireNonNull(runnable);
 		if (!display.isDisposed()) {
 			display.asyncExec(runnable);
 		} else {

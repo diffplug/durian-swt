@@ -43,18 +43,17 @@ import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import com.google.common.util.concurrent.ListenableFuture;
-
 import com.diffplug.common.base.Box.Nullable;
 import com.diffplug.common.base.Errors;
+import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.base.TreeDef;
 import com.diffplug.common.base.TreeIterable;
 import com.diffplug.common.base.TreeQuery;
 import com.diffplug.common.base.TreeStream;
+import com.diffplug.common.collect.Lists;
 import com.diffplug.common.rx.Rx;
 import com.diffplug.common.swt.os.OS;
+import com.diffplug.common.util.concurrent.ListenableFuture;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /** Miscellaneous SWT functions. */

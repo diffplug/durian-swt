@@ -24,10 +24,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import com.google.common.collect.Range;
-import com.google.common.util.concurrent.Uninterruptibles;
-
+import com.diffplug.common.collect.Range;
 import com.diffplug.common.swt.InteractiveTest.FailsWithoutUser;
+import com.diffplug.common.util.concurrent.Uninterruptibles;
 
 @Category(InteractiveTest.class)
 public class InteractiveTestTest {
