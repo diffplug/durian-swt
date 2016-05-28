@@ -165,32 +165,54 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 		 * @return the value which was returned by supplier.
 		 */
 		public <T> T get(Supplier<T> supplier) {
-			Display current = Display.getCurrent();
-			if (current != null) {
+			if (Thread.currentThread() == display.getThread()) {
 				return supplier.get();
 			} else {
 				Nullable<T> holder = Nullable.ofNull();
-				execute(() -> holder.set(supplier.get()));
+				display.syncExec(() -> holder.set(supplier.get()));
 				return holder.get();
 			}
 		}
 
-		// The schedule methods don't sync with the SwtExec.blocking() semantics.
+		/**
+		 * This method is incompatible with {@link SwtExec#blocking}'s guarantee to block.
+		 * 
+		 * Use {@link SwtExec#async()} instead.
+		 */
+		@Deprecated
 		@Override
 		public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
 			throw new UnsupportedOperationException();
 		}
 
+		/**
+		 * This method is incompatible with {@link SwtExec#blocking}'s guarantee to block.
+		 * 
+		 * Use {@link SwtExec#async()} instead.
+		 */
+		@Deprecated
 		@Override
 		public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit) {
 			throw new UnsupportedOperationException();
 		}
 
+		/**
+		 * This method is incompatible with {@link SwtExec#blocking}'s guarantee to block.
+		 * 
+		 * Use {@link SwtExec#async()} instead.
+		 */
+		@Deprecated
 		@Override
 		public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit) {
 			throw new UnsupportedOperationException();
 		}
 
+		/**
+		 * This method is incompatible with {@link SwtExec#blocking}'s guarantee to block.
+		 * 
+		 * Use {@link SwtExec#async()} instead.
+		 */
+		@Deprecated
 		@Override
 		public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit) {
 			throw new UnsupportedOperationException();
