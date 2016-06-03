@@ -24,9 +24,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Widget;
 
-import com.diffplug.common.base.FieldsAndGetters;
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.common.collect.ImmutableMap;
+import com.diffplug.common.debug.FieldsAndGetters;
 import com.diffplug.common.rx.Rx;
 
 /**

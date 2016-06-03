@@ -27,7 +27,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.diffplug.common.base.Errors;
-import com.diffplug.common.base.FieldsAndGetters;
+import com.diffplug.common.debug.FieldsAndGetters;
 
 public class SwtMiscTest {
 	@Test
