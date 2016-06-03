@@ -46,13 +46,13 @@ import org.eclipse.swt.widgets.Widget;
 import com.diffplug.common.base.Box.Nullable;
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.Preconditions;
-import com.diffplug.common.base.TreeDef;
-import com.diffplug.common.base.TreeIterable;
-import com.diffplug.common.base.TreeQuery;
-import com.diffplug.common.base.TreeStream;
 import com.diffplug.common.collect.Lists;
 import com.diffplug.common.rx.Rx;
 import com.diffplug.common.swt.os.OS;
+import com.diffplug.common.tree.TreeDef;
+import com.diffplug.common.tree.TreeIterable;
+import com.diffplug.common.tree.TreeQuery;
+import com.diffplug.common.tree.TreeStream;
 import com.diffplug.common.util.concurrent.ListenableFuture;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 

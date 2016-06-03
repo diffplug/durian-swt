@@ -35,9 +35,6 @@ import org.junit.experimental.categories.Category;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StringPrinter;
-import com.diffplug.common.base.TreeDef;
-import com.diffplug.common.base.TreeNode;
-import com.diffplug.common.base.TreeStream;
 import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.common.collect.ImmutableSet;
 import com.diffplug.common.rx.Immutables;
@@ -48,6 +45,9 @@ import com.diffplug.common.swt.Layouts;
 import com.diffplug.common.swt.SwtMisc;
 import com.diffplug.common.swt.jface.ColumnViewerFormat;
 import com.diffplug.common.swt.jface.ViewerMisc;
+import com.diffplug.common.tree.TreeDef;
+import com.diffplug.common.tree.TreeNode;
+import com.diffplug.common.tree.TreeStream;
 
 @Category(InteractiveTest.class)
 public class ViewerMiscTest {
