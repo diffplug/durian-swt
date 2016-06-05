@@ -32,7 +32,6 @@ import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.common.collect.ImmutableSet;
 import com.diffplug.common.rx.RxBox;
 import com.diffplug.common.rx.RxList;
-import com.diffplug.common.rx.RxSet;
 import com.diffplug.common.swt.SwtExec;
 import com.diffplug.common.swt.SwtMisc;
 import com.diffplug.common.tree.TreeDef;
@@ -67,8 +66,8 @@ public class ViewerMisc {
 	}
 
 	/** Returns a thread-safe {@link RxSet} for manipulating the selection of a {@link StructuredViewer} created with {@link SWT#MULTI}. */
-	public static <T> RxSet<T> multiSelectionSet(StructuredViewer viewer) {
-		RxSet<T> box = RxSet.ofEmpty();
+	public static <T> RxBox<ImmutableSet<T>> multiSelectionSet(StructuredViewer viewer) {
+		RxBox<ImmutableSet<T>> box = RxBox.of(ImmutableSet.of());
 		multiSelectionSet(viewer, box);
 		return box;
 	}
