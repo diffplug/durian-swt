@@ -31,7 +31,6 @@ import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.common.collect.ImmutableSet;
 import com.diffplug.common.rx.RxBox;
-import com.diffplug.common.rx.RxList;
 import com.diffplug.common.swt.SwtExec;
 import com.diffplug.common.swt.SwtMisc;
 import com.diffplug.common.tree.TreeDef;
@@ -80,8 +79,8 @@ public class ViewerMisc {
 	}
 
 	/** Returns a thread-safe {@link RxList} for manipulating the selection of a {@link StructuredViewer} created with {@link SWT#MULTI}. */
-	public static <T> RxList<T> multiSelectionList(StructuredViewer viewer) {
-		RxList<T> box = RxList.ofEmpty();
+	public static <T> RxBox<ImmutableList<T>> multiSelectionList(StructuredViewer viewer) {
+		RxBox<ImmutableList<T>> box = RxBox.of(ImmutableList.of());
 		multiSelectionList(viewer, box);
 		return box;
 	}
