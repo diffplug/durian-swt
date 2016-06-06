@@ -37,7 +37,7 @@ import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.common.collect.ImmutableSet;
-import com.diffplug.common.rx.Immutables;
+import com.diffplug.common.collect.Immutables;
 import com.diffplug.common.rx.Rx;
 import com.diffplug.common.rx.RxBox;
 import com.diffplug.common.swt.InteractiveTest;
