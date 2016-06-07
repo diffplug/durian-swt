@@ -17,12 +17,15 @@ package com.diffplug.common.swt.jface;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import org.eclipse.jface.viewers.CellLabelProvider;
+import javax.annotation.Nullable;
+
+import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -100,8 +103,25 @@ public class ColumnViewerFormat<T> {
 		return buildViewer(new TreeViewer(control), Arrays.asList(control.getColumns()), TreeViewerColumn::new);
 	}
 
+	/** Returns the columns array. */
+	public List<ColumnBuilder<T>> getColumns() {
+		return Collections.unmodifiableList(columnBuilders);
+	}
+
+	/** Returns as a regular non-viewer format. */
+	public ColumnFormat asColumnFormat() {
+		return new Portal(this);
+	}
+
 	/** Provides a portal to the protected static methods in ColumnFormat. */
 	private static class Portal extends ColumnFormat {
+		private Portal(ColumnViewerFormat<?> source) {
+			Portal.this.style = source.style;
+			Portal.this.linesVisible = source.linesVisible;
+			Portal.this.headerVisible = source.headerVisible;
+			Portal.this.columnBuilders.addAll(source.columnBuilders);
+		}
+
 		protected static Table buildTable(Composite parent, int style, boolean linesVisible, boolean headerVisible, List<? extends ColumnBuilder> columnBuilders) {
 			return ColumnFormat.buildTable(parent, style, linesVisible, headerVisible, columnBuilders);
 		}
@@ -129,11 +149,12 @@ public class ColumnViewerFormat<T> {
 	public static class ColumnBuilder<T> extends ColumnFormat.ColumnBuilder {
 		private ColumnBuilder() {}
 
-		private CellLabelProvider provider;
+		@Nullable
+		private ColumnLabelProvider provider;
 		private Consumer<? super ViewerColumn> finalSetup = Consumers.doNothing();
 
 		/** Uses the given as the label provider. */
-		public ColumnBuilder<T> setLabelProvider(CellLabelProvider provider) {
+		public ColumnBuilder<T> setLabelProvider(ColumnLabelProvider provider) {
 			this.provider = provider;
 			return this;
 		}
@@ -178,6 +199,14 @@ public class ColumnViewerFormat<T> {
 		public ColumnBuilder<T> setStyle(int style) {
 			super.setStyle(style);
 			return this;
+		}
+
+		/////////////
+		// GETTERS //
+		/////////////
+		@Nullable
+		public ColumnLabelProvider getLabelProvider() {
+			return provider;
 		}
 	}
 }

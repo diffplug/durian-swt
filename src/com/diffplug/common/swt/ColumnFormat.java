@@ -16,6 +16,7 @@
 package com.diffplug.common.swt;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -45,10 +46,10 @@ public class ColumnFormat {
 		return new ColumnFormat();
 	}
 
-	private int style;
-	private boolean linesVisible = true;
-	private boolean headerVisible = true;
-	private final List<ColumnBuilder> columnBuilders = new ArrayList<>();
+	protected int style;
+	protected boolean linesVisible = true;
+	protected boolean headerVisible = true;
+	protected final List<ColumnBuilder> columnBuilders = new ArrayList<>();
 
 	protected ColumnFormat() {}
 
@@ -84,7 +85,7 @@ public class ColumnFormat {
 
 	/** Returns the columns array. */
 	public List<ColumnBuilder> getColumns() {
-		return columnBuilders;
+		return Collections.unmodifiableList(columnBuilders);
 	}
 
 	/** Builds a {@link Table} with the specified columns and layout. */
@@ -174,6 +175,9 @@ public class ColumnFormat {
 			return item;
 		}
 
+		/////////////
+		// SETTERS //
+		/////////////
 		public ColumnBuilder setText(String text) {
 			this.text = text;
 			return this;
@@ -199,6 +203,25 @@ public class ColumnFormat {
 			ColumnPixelDataBuilder dataBuilder = new ColumnPixelDataBuilder(pixels);
 			this.dataBuilder = dataBuilder;
 			return dataBuilder;
+		}
+
+		/////////////
+		// GETTERS //
+		/////////////
+		public String getText() {
+			return text;
+		}
+
+		public Image getImage() {
+			return image;
+		}
+
+		public int getStyle() {
+			return style;
+		}
+
+		public ColumnLayoutData getColumnLayoutData() {
+			return dataBuilder.data;
 		}
 	}
 
