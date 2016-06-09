@@ -13,19 +13,19 @@ Export-Package: com.diffplug.common.swt;uses:="com.diffplug.common.bas
  s,org.eclipse.swt.graphics,org.eclipse.swt.layout,org.eclipse.swt.wid
  gets,rx";version="2.0.0",com.diffplug.common.swt.jface;uses:="com.dif
  fplug.common.base,com.diffplug.common.collect,com.diffplug.common.rx,
- com.diffplug.common.swt,com.diffplug.common.tree,org.eclipse.jface.ac
- tion,org.eclipse.jface.resource,org.eclipse.jface.viewers,org.eclipse
- .swt.graphics,org.eclipse.swt.widgets";version="2.0.0",com.diffplug.c
- ommon.swt.os;version="2.0.0"
+ com.diffplug.common.swt,com.diffplug.common.tree,javax.annotation,org
+ .eclipse.jface.action,org.eclipse.jface.resource,org.eclipse.jface.vi
+ ewers,org.eclipse.swt.graphics,org.eclipse.swt.widgets";version="2.0.
+ 0",com.diffplug.common.swt.os;version="2.0.0"
 Import-Package: com.diffplug.common.base;version="[1.2,2)",com.diffplu
  g.common.collect;version="[1.2,2)",com.diffplug.common.debug;version=
  "[1.0,2)",com.diffplug.common.primitives;version="[1.2,2)",com.diffpl
  ug.common.rx;version="[2.0,3)",com.diffplug.common.swt,com.diffplug.c
  ommon.swt.os,com.diffplug.common.tree;version="[1.2,2)",com.diffplug.
- common.util.concurrent;version="[1.2,2)",org.eclipse.jface.action,org
- .eclipse.jface.layout,org.eclipse.jface.resource,org.eclipse.jface.ut
- il,org.eclipse.jface.viewers,org.eclipse.swt.custom,org.eclipse.swt.g
- raphics,org.eclipse.swt.layout,org.eclipse.swt.widgets,rx;version="[1
- .1,2)",rx.functions;version="[1.1,2)",rx.subjects;version="[1.1,2)",r
- x.subscriptions;version="[1.1,2)"
+ common.util.concurrent;version="[1.2,2)",javax.annotation,org.eclipse
+ .jface.action,org.eclipse.jface.layout,org.eclipse.jface.resource,org
+ .eclipse.jface.util,org.eclipse.jface.viewers,org.eclipse.swt.custom,
+ org.eclipse.swt.graphics,org.eclipse.swt.layout,org.eclipse.swt.widge
+ ts,rx;version="[1.1,2)",rx.functions;version="[1.1,2)",rx.subjects;ve
+ rsion="[1.1,2)",rx.subscriptions;version="[1.1,2)"
 Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.8))"
