@@ -37,14 +37,14 @@ import com.diffplug.common.tree.TreeDef;
 
 /** Utilities for manipulating and creating JFace viewers. */
 public class ViewerMisc {
-	/** Returns a thread-safe {@link RxOptional} for manipulating the selection of a {@link StructuredViewer} created with {@link SWT#SINGLE}. */
+	/** Returns a thread-safe `RxBox<Optional>` for manipulating the selection of a {@link StructuredViewer} created with {@link SWT#SINGLE}. */
 	public static <T> RxBox<Optional<T>> singleSelection(StructuredViewer viewer) {
 		RxBox<Optional<T>> box = RxBox.of(Optional.empty());
 		singleSelection(viewer, box);
 		return box;
 	}
 
-	/** Returns a thread-safe {@link RxOptional} for manipulating the selection of a {@link StructuredViewer} created with {@link SWT#SINGLE}. */
+	/** Returns a thread-safe `RxBox<Optional>` for manipulating the selection of a {@link StructuredViewer} created with {@link SWT#SINGLE}. */
 	public static <T> void singleSelection(StructuredViewer viewer, RxBox<Optional<T>> box) {
 		Preconditions.checkArgument(SwtMisc.flagIsSet(SWT.SINGLE, viewer.getControl()), "Control style does not have SWT.SINGLE set.");
 		// set the box when the selection changes
@@ -64,21 +64,21 @@ public class ViewerMisc {
 		});
 	}
 
-	/** Returns a thread-safe {@link RxSet} for manipulating the selection of a {@link StructuredViewer} created with {@link SWT#MULTI}. */
+	/** Returns a thread-safe `RxBox<ImmutableSet>` for manipulating the selection of a {@link StructuredViewer} created with {@link SWT#MULTI}. */
 	public static <T> RxBox<ImmutableSet<T>> multiSelectionSet(StructuredViewer viewer) {
 		RxBox<ImmutableSet<T>> box = RxBox.of(ImmutableSet.of());
 		multiSelectionSet(viewer, box);
 		return box;
 	}
 
-	/** Manipulates the selection of the given viewer with the given RxSet. */
+	/** Manipulates the selection of the given viewer with the given `RxBox<ImmutableSet>`. */
 	public static <T> void multiSelectionSet(StructuredViewer viewer, RxBox<ImmutableSet<T>> box) {
 		Converter<ImmutableSet<T>, ImmutableList<T>> converter = Converter.from(
 				ImmutableSet::asList, ImmutableSet::copyOf, "setToList");
 		multiSelectionList(viewer, box.map(converter));
 	}
 
-	/** Returns a thread-safe {@link RxList} for manipulating the selection of a {@link StructuredViewer} created with {@link SWT#MULTI}. */
+	/** Returns a thread-safe `RxBox<ImmutableList>` for manipulating the selection of a {@link StructuredViewer} created with {@link SWT#MULTI}. */
 	public static <T> RxBox<ImmutableList<T>> multiSelectionList(StructuredViewer viewer) {
 		RxBox<ImmutableList<T>> box = RxBox.of(ImmutableList.of());
 		multiSelectionList(viewer, box);
