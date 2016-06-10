@@ -40,29 +40,29 @@ import com.diffplug.common.rx.RxBox;
 /** Utilities that convert SWT events into Rx-friendly Observables. */
 public class SwtRx {
 	/** Subscribes to the given widget and pipes the events to an {@link Observable}<{@link Event}>. */
-	public static Observable<Event> addListener(Widget widget, int... events) {
+	public static @SwtThread Observable<Event> addListener(Widget widget, int... events) {
 		return addListener(widget, Ints.asList(events));
 	}
 
 	/** Subscribes to the given widget and pipes the events to an {@link Observable}<{@link Event}>. */
-	public static Observable<Event> addListener(Widget widget, Collection<Integer> events) {
+	public static @SwtThread Observable<Event> addListener(Widget widget, Collection<Integer> events) {
 		return addListener(widget, events.stream());
 	}
 
 	/** Subscribes to the given widget and pipes the events to an {@link Observable}<{@link Event}>. */
-	public static Observable<Event> addListener(Widget widget, Stream<Integer> events) {
+	public static @SwtThread Observable<Event> addListener(Widget widget, Stream<Integer> events) {
 		PublishSubject<Event> subject = PublishSubject.create();
 		events.forEach(event -> widget.addListener(event, subject::onNext));
 		return subject.asObservable();
 	}
 
 	/** Returns an {@link Observable}<{@link Point}> of the right-click mouse-up on the given control, in global coordinates. */
-	public static Observable<Point> rightClickGlobal(Control ctl) {
+	public static @SwtThread Observable<Point> rightClickGlobal(Control ctl) {
 		return rightClickLocal(ctl).map(ctl::toDisplay);
 	}
 
 	/** Returns an {@link Observable}<{@link Point}> of the right-click mouse-up on the given control, in local coordinates. */
-	public static Observable<Point> rightClickLocal(Control ctl) {
+	public static @SwtThread Observable<Point> rightClickLocal(Control ctl) {
 		PublishSubject<Point> observable = PublishSubject.create();
 		ctl.addListener(SWT.MouseUp, e -> {
 			if (e.button == 3) {
@@ -73,7 +73,7 @@ public class SwtRx {
 	}
 
 	/** Returns an RxBox<String> which contains the content of the text box. */
-	public static RxBox<String> textImmediate(Text text) {
+	public static @SwtThread RxBox<String> textImmediate(Text text) {
 		return textImp(text, SWT.Modify);
 	}
 
@@ -86,7 +86,7 @@ public class SwtRx {
 	 * <li>focus leaving the text</li>
 	 * </ul>
 	 */
-	public static RxBox<String> textConfirmed(Text text) {
+	public static @SwtThread RxBox<String> textConfirmed(Text text) {
 		return textImp(text, SWT.DefaultSelection, SWT.FocusOut);
 	}
 
