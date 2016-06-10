@@ -33,12 +33,13 @@ import com.diffplug.common.collect.ImmutableSet;
 import com.diffplug.common.rx.RxBox;
 import com.diffplug.common.swt.SwtExec;
 import com.diffplug.common.swt.SwtMisc;
+import com.diffplug.common.swt.SwtThread;
 import com.diffplug.common.tree.TreeDef;
 
 /** Utilities for manipulating and creating JFace viewers. */
 public class ViewerMisc {
 	/** Returns a thread-safe `RxBox<Optional>` for manipulating the selection of a {@link StructuredViewer} created with {@link SWT#SINGLE}. */
-	public static <T> RxBox<Optional<T>> singleSelection(StructuredViewer viewer) {
+	public static @SwtThread <T> RxBox<Optional<T>> singleSelection(StructuredViewer viewer) {
 		RxBox<Optional<T>> box = RxBox.of(Optional.empty());
 		singleSelection(viewer, box);
 		return box;
@@ -65,7 +66,7 @@ public class ViewerMisc {
 	}
 
 	/** Returns a thread-safe `RxBox<ImmutableSet>` for manipulating the selection of a {@link StructuredViewer} created with {@link SWT#MULTI}. */
-	public static <T> RxBox<ImmutableSet<T>> multiSelectionSet(StructuredViewer viewer) {
+	public static @SwtThread <T> RxBox<ImmutableSet<T>> multiSelectionSet(StructuredViewer viewer) {
 		RxBox<ImmutableSet<T>> box = RxBox.of(ImmutableSet.of());
 		multiSelectionSet(viewer, box);
 		return box;
@@ -79,7 +80,7 @@ public class ViewerMisc {
 	}
 
 	/** Returns a thread-safe `RxBox<ImmutableList>` for manipulating the selection of a {@link StructuredViewer} created with {@link SWT#MULTI}. */
-	public static <T> RxBox<ImmutableList<T>> multiSelectionList(StructuredViewer viewer) {
+	public static @SwtThread <T> RxBox<ImmutableList<T>> multiSelectionList(StructuredViewer viewer) {
 		RxBox<ImmutableList<T>> box = RxBox.of(ImmutableList.of());
 		multiSelectionList(viewer, box);
 		return box;

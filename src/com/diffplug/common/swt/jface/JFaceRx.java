@@ -21,6 +21,7 @@ import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.rx.Rx;
 import com.diffplug.common.rx.RxBox;
 import com.diffplug.common.swt.SwtMisc;
+import com.diffplug.common.swt.SwtThread;
 
 /** Utilities that convert JFace events into Rx-friendly Observables. */
 public class JFaceRx {
@@ -29,7 +30,7 @@ public class JFaceRx {
 	 * <p>
 	 * Applicable to IAction.AS_CHECK_BOX and AS_RADIO_BUTTON.
 	 */
-	public static RxBox<Boolean> toggle(IAction action) {
+	public static @SwtThread RxBox<Boolean> toggle(IAction action) {
 		Preconditions.checkArgument(SwtMisc.flagIsSet(IAction.AS_CHECK_BOX, action.getStyle()) ||
 				SwtMisc.flagIsSet(IAction.AS_RADIO_BUTTON, action.getStyle()));
 		RxBox<Boolean> box = RxBox.of(action.isChecked());

@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 import com.diffplug.common.base.Preconditions;
+import com.diffplug.common.rx.Rx;
 import com.diffplug.common.rx.RxBox;
 import com.diffplug.common.rx.RxGetter;
 
@@ -42,7 +43,7 @@ public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 		super(new Composite(parent, style));
 		wrapped.setLayout(stack);
 		// when the current layer changes, set the topControl appropriately
-		SwtExec.immediate().guardOn(wrapped).subscribe(currentLayer, opt -> {
+		Rx.subscribe(currentLayer, opt -> {
 			stack.topControl = opt.map(layer -> layer.control).orElse(null);
 			wrapped.layout(true, true);
 		});
