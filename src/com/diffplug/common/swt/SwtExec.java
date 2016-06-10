@@ -55,6 +55,16 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * which allows subscribing to {@link rx.Observable}s and {@link com.diffplug.common.util.concurrent.ListenableFuture}s while guarding on a given widget.
  */
 public class SwtExec extends AbstractExecutorService implements ScheduledExecutorService, Rx.HasRxExecutor {
+	private static Display display;
+	private static Thread swtThread;
+
+	static void initSwtThreads() {
+		if (display == null) {
+			display = Display.getDefault();
+			swtThread = display.getThread();
+		}
+	}
+
 	/** Global executor for async. */
 	private static SwtExec async;
 
@@ -67,7 +77,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	public static SwtExec async() {
 		if (async == null) {
 			// There is an acceptable race condition here.  See SwtExec.blocking() for details.
-			async = new SwtExec(Display.getDefault());
+			async = new SwtExec();
 		}
 		return async;
 	}
@@ -86,7 +96,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	public static SwtExec immediate() {
 		if (immediate == null) {
 			// There is an acceptable race condition here.  See SwtExec.blocking() for details.
-			immediate = new SwtExec(Display.getDefault()) {
+			immediate = new SwtExec() {
 				@Override
 				public void execute(Runnable runnable) {
 					if (Thread.currentThread() == swtThread) {
@@ -173,7 +183,8 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 
 	/** Executes the given runnable in the UI thread after the given delay. */
 	public static void timerExec(int ms, Runnable runnable) {
-		async().display.timerExec(ms, runnable);
+		initSwtThreads();
+		display.timerExec(ms, runnable);
 	}
 
 	/** Returns an API for performing actions which are guarded on the given Widget. */
@@ -224,7 +235,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 
 		/** Runs the given runnable after the given delay iff the guard widget is not disposed. */
 		public void timerExec(int delayMs, Runnable runnable) {
-			parent.display.timerExec(delayMs, guardedRunnable(runnable));
+			display.timerExec(delayMs, guardedRunnable(runnable));
 		}
 
 		/** Returns a Runnable which guards on the guard widget. */
@@ -268,8 +279,6 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 		}
 	}
 
-	protected final Display display;
-	protected final Thread swtThread;
 	protected final Rx.RxExecutor rxExecutor;
 
 	/** Returns an instance of {@link com.diffplug.common.rx.Rx.RxExecutor}. */
@@ -278,15 +287,13 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 		return rxExecutor;
 	}
 
-	SwtExec(Display display) {
-		this.display = display;
-		this.swtThread = display.getThread();
+	SwtExec() {
+		initSwtThreads();
 		this.rxExecutor = Rx.on(this, new SwtScheduler(this));
 	}
 
-	SwtExec(Display display, Rx.RxExecutor rxExecutor) {
-		this.display = display;
-		this.swtThread = display.getThread();
+	SwtExec(Rx.RxExecutor rxExecutor) {
+		initSwtThreads();
 		this.rxExecutor = rxExecutor;
 	}
 

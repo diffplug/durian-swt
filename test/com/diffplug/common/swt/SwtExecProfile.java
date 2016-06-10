@@ -103,7 +103,7 @@ public class SwtExecProfile {
 		Map<String, SwtExec> toProfile = new LinkedHashMap<>();
 
 		public void addSwtScheduler(String name, Consumer<Runnable> onRun) {
-			add(name, new SwtExec(Display.getDefault()) {
+			add(name, new SwtExec() {
 				@Override
 				public void execute(Runnable runnable) {
 					onRun.accept(runnable);
@@ -112,7 +112,7 @@ public class SwtExecProfile {
 		}
 
 		public void addSameThreadExecutor(String name, Consumer<Runnable> onRun) {
-			add(name, new SwtExec(Display.getDefault(), Rx.sameThreadExecutor()) {
+			add(name, new SwtExec(Rx.sameThreadExecutor()) {
 				@Override
 				public void execute(Runnable runnable) {
 					onRun.accept(runnable);
