@@ -105,7 +105,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	private static Blocking blocking;
 
 	/**
-	 * Returns a "blocking" SwtExecutor.
+	 * Returns a "blocking" Executor for the SWT thread.
 	 * <ul>
 	 * <li>When {@code execute(Runnable)} is called from the SWT thread, the {@code Runnable} will be executed immediately.</li>
 	 * <li>Else, the {@code Runnable} will be passed to {@link Display#syncExec Display.syncExec}.</li>
@@ -128,16 +128,20 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	}
 
 	/**
-	 * An SwtExec (obtained via {@link SwtExec#blocking()}) which adds a blocking {@link Blocking#get get()} method.
+	 * An Executor (obtained via {@link SwtExec#blocking()}) which adds a blocking {@link Blocking#get get()} method.
 	 * <ul>
 	 * <li>When {@code execute(Runnable)} is called from the SWT thread, the {@code Runnable} will be executed immediately.</li>
 	 * <li>Else, the {@code Runnable} will be passed to {@link Display#syncExec Display.syncExec}.</li>
 	 * </ul>
 	 * @see SwtExec#blocking
 	 */
-	public static class Blocking extends SwtExec {
+	public static class Blocking implements Executor {
+		final Display display;
+		final Thread swtThread;
+
 		private Blocking() {
-			super(Display.getDefault());
+			display = Display.getDefault();
+			swtThread = display.getThread();
 		}
 
 		@Override
@@ -152,7 +156,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 
 		/**
 		 * Performs a blocking get in the UI thread.
-		 * 
+		 *
 		 * @param supplier will be executed in the UI thread.
 		 * @return the value which was returned by supplier.
 		 */
@@ -164,50 +168,6 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 				display.syncExec(() -> holder.set(supplier.get()));
 				return holder.get();
 			}
-		}
-
-		/**
-		 * This method is incompatible with {@link SwtExec#blocking}'s guarantee to block.
-		 * 
-		 * Use {@link SwtExec#async()} instead.
-		 */
-		@Deprecated
-		@Override
-		public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
-			throw new UnsupportedOperationException();
-		}
-
-		/**
-		 * This method is incompatible with {@link SwtExec#blocking}'s guarantee to block.
-		 * 
-		 * Use {@link SwtExec#async()} instead.
-		 */
-		@Deprecated
-		@Override
-		public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit) {
-			throw new UnsupportedOperationException();
-		}
-
-		/**
-		 * This method is incompatible with {@link SwtExec#blocking}'s guarantee to block.
-		 * 
-		 * Use {@link SwtExec#async()} instead.
-		 */
-		@Deprecated
-		@Override
-		public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit) {
-			throw new UnsupportedOperationException();
-		}
-
-		/**
-		 * This method is incompatible with {@link SwtExec#blocking}'s guarantee to block.
-		 * 
-		 * Use {@link SwtExec#async()} instead.
-		 */
-		@Deprecated
-		@Override
-		public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit) {
-			throw new UnsupportedOperationException();
 		}
 	}
 
