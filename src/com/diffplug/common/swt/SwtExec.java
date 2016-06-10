@@ -89,15 +89,11 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 			immediate = new SwtExec(Display.getDefault()) {
 				@Override
 				public void execute(Runnable runnable) {
-					requireNonNull(runnable);
-					if (!display.isDisposed()) {
-						if (Thread.currentThread() == display.getThread()) {
-							runnable.run();
-						} else {
-							display.asyncExec(runnable);
-						}
+					if (Thread.currentThread() == swtThread) {
+						runnable.run();
 					} else {
-						throw new RejectedExecutionException();
+						requireNonNull(runnable);
+						display.asyncExec(runnable);
 					}
 				}
 			};
@@ -146,15 +142,11 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 
 		@Override
 		public void execute(Runnable runnable) {
-			requireNonNull(runnable);
-			if (!display.isDisposed()) {
-				if (Thread.currentThread() == display.getThread()) {
-					runnable.run();
-				} else {
-					display.syncExec(runnable);
-				}
+			if (Thread.currentThread() == swtThread) {
+				runnable.run();
 			} else {
-				throw new RejectedExecutionException();
+				requireNonNull(runnable);
+				display.syncExec(runnable);
 			}
 		}
 
@@ -165,7 +157,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 		 * @return the value which was returned by supplier.
 		 */
 		public <T> T get(Supplier<T> supplier) {
-			if (Thread.currentThread() == display.getThread()) {
+			if (Thread.currentThread() == swtThread) {
 				return supplier.get();
 			} else {
 				Nullable<T> holder = Nullable.ofVolatileNull();
@@ -317,6 +309,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	}
 
 	protected final Display display;
+	protected final Thread swtThread;
 	protected final Rx.RxExecutor rxExecutor;
 
 	/** Returns an instance of {@link com.diffplug.common.rx.Rx.RxExecutor}. */
@@ -327,11 +320,13 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 
 	SwtExec(Display display) {
 		this.display = display;
+		this.swtThread = display.getThread();
 		this.rxExecutor = Rx.on(this, new SwtScheduler(this));
 	}
 
 	SwtExec(Display display, Rx.RxExecutor rxExecutor) {
 		this.display = display;
+		this.swtThread = display.getThread();
 		this.rxExecutor = rxExecutor;
 	}
 
@@ -354,11 +349,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	@Override
 	public void execute(Runnable runnable) {
 		requireNonNull(runnable);
-		if (!display.isDisposed()) {
-			display.asyncExec(runnable);
-		} else {
-			throw new RejectedExecutionException();
-		}
+		display.asyncExec(runnable);
 	}
 
 	////////////////////////////////////////////////////////
