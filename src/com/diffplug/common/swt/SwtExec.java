@@ -69,6 +69,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	private static Display display;
 	private static Thread swtThread;
 
+	@SuppressFBWarnings(value = {"LI_LAZY_INIT_STATIC", "LI_LAZY_INIT_UPDATE_STATIC"}, justification = "This race condition is fine, see comment in SwtExec.blocking()")
 	static void initSwtThreads() {
 		if (display == null) {
 			display = Display.getDefault();
@@ -84,10 +85,9 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 * <p>
 	 * When {@code execute(Runnable)} is called, the {@code Runnable} will be passed to {@link Display#asyncExec Display.asyncExec}.
 	 */
-	@SuppressFBWarnings(value = "LI_LAZY_INIT_STATIC", justification = "This race condition is fine, as explained in the comment below.")
+	@SuppressFBWarnings(value = "LI_LAZY_INIT_STATIC", justification = "This race condition is fine, see comment in SwtExec.blocking()")
 	public static SwtExec async() {
 		if (async == null) {
-			// There is an acceptable race condition here.  See SwtExec.blocking() for details.
 			async = new SwtExec();
 		}
 		return async;
@@ -114,10 +114,9 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 * - `swtOnly()`    - 8.3 million events per second
 	 * - `sameThread()` - 50 million events per second
 	 */
-	@SuppressFBWarnings(value = "LI_LAZY_INIT_STATIC", justification = "This race condition is fine, as explained in the comment below.")
+	@SuppressFBWarnings(value = "LI_LAZY_INIT_STATIC", justification = "This race condition is fine, see comment in SwtExec.blocking()")
 	public static SwtExec immediate() {
 		if (immediate == null) {
-			// There is an acceptable race condition here.  See SwtExec.blocking() for details.
 			immediate = new SwtExec() {
 				@Override
 				public void execute(Runnable runnable) {
@@ -144,7 +143,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 * </ul>
 	 * This instance also has a blocking {@link Blocking#get get()} method for doing a get in the UI thread.
 	 */
-	@SuppressFBWarnings(value = "LI_LAZY_INIT_STATIC", justification = "This race condition is fine, as explained in the comment below.")
+	@SuppressFBWarnings(value = "LI_LAZY_INIT_STATIC", justification = "This race condition is fine, see comment in SwtExec.blocking()")
 	public static Blocking blocking() {
 		// There is an acceptable race condition here - blocking might get set multiple times.
 		// This would happen if multiple threads called blocking() at the same time
@@ -819,15 +818,8 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 * thread.  For values not on the SWT thread, `immediate()` behaves
 	 * likes {@link #async()}, while `swtOnly()` throws an exception.
 	 */
-	@SuppressFBWarnings(value = "LI_LAZY_INIT_STATIC", justification = "This race condition is fine, as explained in the comment below.")
+	@SuppressFBWarnings(value = "LI_LAZY_INIT_STATIC", justification = "This race condition is fine, see comment in SwtExec.blocking()")
 	public static SwtExec swtOnly() {
-		// There is an acceptable race condition here - danger might get set multiple times.
-		// This would happen if multiple threads called danger() at the same time
-		// during initialization, and this is likely to actually happen in practice.
-		//
-		// It is important for this method to be fast, so it's better to accept
-		// that danger() might return different instances (which each have the
-		// same behavior), rather than to incur the cost of some type of synchronization.
 		if (swtOnly == null) {
 			swtOnly = new SwtExec(exec -> Rx.on(exec, new SwtOnlyScheduler())) {
 				@Override
@@ -855,7 +847,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 			return new InnerImmediateScheduler();
 		}
 
-		private static final class InnerImmediateScheduler extends Scheduler.Worker implements Subscription {
+		private static final class InnerImmediateScheduler extends Scheduler.Worker {
 			final BooleanSubscription innerSubscription = new BooleanSubscription();
 
 			@Override
