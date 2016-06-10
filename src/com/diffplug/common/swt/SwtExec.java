@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.eclipse.swt.SWT;
@@ -29,6 +30,7 @@ import org.eclipse.swt.widgets.*;
 import rx.*;
 import rx.Observable;
 import rx.functions.Action0;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.*;
 
 import com.diffplug.common.base.Box.Nullable;
@@ -38,21 +40,30 @@ import com.diffplug.common.util.concurrent.ListenableFuture;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
- * {link ExecutorService}s which execute on the SWT UI thread.
- * <p>
- * There are three "kinds" of {@code SwtExec}:
- * <ul>
- * <li>{@link #async} -> performs actions using  {@link Display#asyncExec}</li>
- * <li>{@link #immediate} -> performs actions immediately if called from a UI thread, otherwise delegates to  {@link Display#asyncExec}.</li>
- * <li>{@link #blocking} -> performs actions immediately if called from a UI thread, else delegates to  {@link Display#syncExec}.</li>
- * </ul>
- * <p>
- * In addition to the standard executor methods, each {@code SwtExec} also has a method {@link #guardOn}, which
- * returns a {@link Guarded} instance - the cure for "Widget is disposed" errors.  {@code Guarded} has methods like
- * {@link Guarded#wrap} and {@link Guarded#execute}, whose contents are <i>only executed if the guarded widget is not disposed</i>.
- * <p>
- * {@link Guarded} also contains the full API of {@link com.diffplug.common.rx.Rx},
- * which allows subscribing to {@link rx.Observable}s and {@link com.diffplug.common.util.concurrent.ListenableFuture}s while guarding on a given widget.
+ * {@link Executor Executors} which execute on the SWT UI thread.
+ *
+ * There are two primary kinds of {@code SwtExec}:
+ *
+ * - {@link #async()} -> performs actions using {@link Display#asyncExec(Runnable) Display.asyncExec}
+ * - {@link #immediate()} -> performs actions immediately if called from a UI thread, otherwise delegates to `asyncExec`.
+ *
+ * In addition to the standard executor methods, each `SwtExec` also has a method {@link #guardOn(ControlWrapper) guardOn}, which
+ * returns a {@link Guarded} instance - the cure for "Widget is disposed" errors.  `Guarded` is an {@link Executor} and {@link RxSubscriber} which
+ * stops running tasks and cancels all subscriptions and futures when the guard widget is disposed.
+ *
+ * ```java
+ * SwtExec.immediate().guardOn(myWidget).subscribe(someFuture, value -> myWidget.setContentsTo(value));
+ * ```
+ *
+ * In the example above, if the widget is disposed before the future completes, that's fine!  No "widget is disposed" errors. 
+ *
+ * {@link #blocking()} is similar to `async()` and `immediate()`, but it doesn't support `guard` - it's just a simple `Executor`.
+ * It performs actions immediately if called from a UI thread, else delegates to the blocking {@link Display#syncExec}.  It also
+ * has the {@link Blocking#get(Supplier)} method, which allows you to easily get a value using a function which must be called
+ * on the SWT thread.
+ *
+ * In the rare scenario where you need higher performance, it is possible to get similar behavior as {@link #immediate()} but with
+ * less overhead (and safety) in {@link #swtOnly()} and {@link SwtExec#sameThread()}.  It is very rarely worth this sacrifice.
  */
 public class SwtExec extends AbstractExecutorService implements ScheduledExecutorService, Rx.HasRxExecutor {
 	private static Display display;
@@ -87,10 +98,21 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 
 	/**
 	 * Returns an "immediate" SwtExecutor.
-	 * <ul>
-	 * <li>When {@code execute(Runnable)} is called from the SWT thread, the {@code Runnable} will be executed immediately.</li>
-	 * <li>Else, the {@code Runnable} will be passed to {@link Display#asyncExec Display.asyncExec}.</li>
-	 * </ul>
+	 *
+	 * - When `execute(Runnable)` is called from the SWT thread, the `Runnable` will be executed immediately.
+	 * - Else, the `Runnable` will be passed to {@link Display#asyncExec(Runnable) Display.asyncExec}.
+	 *
+	 * In the rare case that `immediate()` only ever receives events on the SWT thread, there are faster options:
+	 *
+	 * - {@link #swtOnly} is about 3x faster, and will throw an error if you call it from somewhere besides an SWT thread.
+	 * - {@link #sameThread} is about 15x faster, and will not throw an error if you call it from somewhere besides an SWT thread (but your callback probably will).
+	 *
+	 * It is very rare that sacrificing the safety of `immediate()` is worth it.  Here is the approximate throughput
+	 * of the three options on a Win 10, i7-2630QM machine.
+	 *
+	 * - `immediate()`  - 2.9 million events per second
+	 * - `swtOnly()`    - 8.3 million events per second
+	 * - `sameThread()` - 50 million events per second
 	 */
 	@SuppressFBWarnings(value = "LI_LAZY_INIT_STATIC", justification = "This race condition is fine, as explained in the comment below.")
 	public static SwtExec immediate() {
@@ -288,13 +310,12 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	}
 
 	SwtExec() {
-		initSwtThreads();
-		this.rxExecutor = Rx.on(this, new SwtScheduler(this));
+		this(exec -> Rx.on(exec, new SwtScheduler(exec)));
 	}
 
-	SwtExec(Rx.RxExecutor rxExecutor) {
+	SwtExec(Function<SwtExec, Rx.RxExecutor> rxExecutorCreator) {
 		initSwtThreads();
-		this.rxExecutor = rxExecutor;
+		this.rxExecutor = rxExecutorCreator.apply(this);
 	}
 
 	//////////////
@@ -784,5 +805,108 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 				}
 			}
 		}
+	}
+
+	/** Global executor for actions which should only execute immediately on the SWT thread. */
+	private static SwtExec swtOnly;
+
+	/**
+	 * UNLESS YOU HAVE PERFORMANCE PROBLEMS, USE {@link #immediate()} INSTEAD.
+	 *
+	 * Returns an SwtExecutor which can only be called from the SWT
+	 * thread, and runs actions immediately.  Has the same behavior
+	 * as {@link #immediate()} for callbacks on the SWT
+	 * thread.  For values not on the SWT thread, `immediate()` behaves
+	 * likes {@link #async()}, while `swtOnly()` throws an exception.
+	 */
+	@SuppressFBWarnings(value = "LI_LAZY_INIT_STATIC", justification = "This race condition is fine, as explained in the comment below.")
+	public static SwtExec swtOnly() {
+		// There is an acceptable race condition here - danger might get set multiple times.
+		// This would happen if multiple threads called danger() at the same time
+		// during initialization, and this is likely to actually happen in practice.
+		//
+		// It is important for this method to be fast, so it's better to accept
+		// that danger() might return different instances (which each have the
+		// same behavior), rather than to incur the cost of some type of synchronization.
+		if (swtOnly == null) {
+			swtOnly = new SwtExec(exec -> Rx.on(exec, new SwtOnlyScheduler())) {
+				@Override
+				public void execute(Runnable runnable) {
+					requireNonNull(runnable);
+					if (Thread.currentThread() == swtThread) {
+						runnable.run();
+					} else {
+						SWT.error(SWT.ERROR_THREAD_INVALID_ACCESS);
+					}
+				}
+			};
+		}
+		return swtOnly;
+	}
+
+	/**
+	 * Copied straight from rx.schedulers.ImmediateScheduler,
+	 * but checks for the SWT thread before running stuff,
+	 * and handles future-scheduling correctly.
+	 */
+	static final class SwtOnlyScheduler extends Scheduler {
+		@Override
+		public Worker createWorker() {
+			return new InnerImmediateScheduler();
+		}
+
+		private static final class InnerImmediateScheduler extends Scheduler.Worker implements Subscription {
+			final BooleanSubscription innerSubscription = new BooleanSubscription();
+
+			@Override
+			public Subscription schedule(Action0 action, long delayTime, TimeUnit unit) {
+				BooleanSubscription actionSubscription = new BooleanSubscription();
+				SwtExec.async().schedule(() -> {
+					if (!actionSubscription.isUnsubscribed()) {
+						action.call();
+						actionSubscription.unsubscribe();
+					}
+				}, delayTime, unit);
+				return actionSubscription;
+			}
+
+			@Override
+			public Subscription schedule(Action0 action) {
+				if (Thread.currentThread() == swtThread) {
+					action.call();
+				} else {
+					SWT.error(SWT.ERROR_THREAD_INVALID_ACCESS);
+				}
+				return Subscriptions.unsubscribed();
+			}
+
+			@Override
+			public void unsubscribe() {
+				innerSubscription.unsubscribe();
+			}
+
+			@Override
+			public boolean isUnsubscribed() {
+				return innerSubscription.isUnsubscribed();
+			}
+		}
+	}
+
+	private static final SwtExec sameThread = new SwtExec(exec -> Rx.on(exec, Schedulers.immediate())) {
+		@Override
+		public void execute(Runnable runnable) {
+			requireNonNull(runnable);
+			runnable.run();
+		}
+	};
+
+	/**
+	 * UNLESS YOU HAVE PERFORMANCE PROBLEMS, USE {@link #immediate()} INSTEAD.
+	 *
+	 * Returns an SwtExec which runs actions immediately, without checking
+	 * whether they were called from the SWT thread or not.
+	 */
+	public static SwtExec sameThread() {
+		return sameThread;
 	}
 }

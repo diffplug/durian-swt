@@ -26,23 +26,27 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Widget;
 import org.junit.Test;
 
+import rx.Subscription;
 import rx.subjects.PublishSubject;
 
 import com.diffplug.common.debug.JuxtaProfiler;
+import com.diffplug.common.debug.LapTimer;
 import com.diffplug.common.rx.Rx;
 
 /** Some simple profiles to make sure tha danger is worth it. */
 public class SwtExecProfile {
 	/** MUST BE 20 if you want good results, but 1 for quick CI tests. */
-	static final int NUM_TRIALS = 1;
+	static final int NUM_TRIALS = 20;
 
 	/**
 	 * For 1,000,000 events, the overhead is:
 	 *
-	 * control:               median= 18ms mean= 20ms
-	 * completelyUnchecked:   median= 21ms mean= 20ms
-	 * immediateWithSync:    median=450ms mean=459ms
-	 * immediateWithoutSync: median=338ms mean=352ms
+	 * control:              20ms
+	 * completelyUnchecked:  20ms
+	 * sameThread:           20ms
+	 * swtOnly:              120ms
+	 * immediateWithSync:    450ms
+	 * immediateWithoutSync: 340ms
 	 *
 	 * So, what does this tell us?  First off, for SwtExec.async(),
 	 * SwtExec.blocking(), and SwtExec.immediate(), having this:
@@ -59,8 +63,9 @@ public class SwtExecProfile {
 	 * Results in .45ms vs .34ms per 1,000 events (30% speed increase).
 	 *
 	 * The second thing it tells us is that SwtScheduler vs
-	 * Rx.sameThreadExecutor() is huge, about 22x slower.  Clearly
-	 * worthwhile to have an Swt-only executor.
+	 * Rx.sameThreadExecutor() is huge, about 6x slower.  There must
+	 * be some optimizations that check for the built-in
+	 * Schedulers.immediate().
 	 */
 	@Test
 	public void testImmediatePerformance() {
@@ -71,6 +76,8 @@ public class SwtExecProfile {
 			profiler.addSameThreadExecutor("completelyUnchecked", runnable -> {
 				runnable.run();
 			});
+			profiler.addSwtExec("sameThread", SwtExec.sameThread());
+			profiler.addSwtExec("sameThreadSwtOnly", SwtExec.swtOnly());
 			profiler.addSwtScheduler("immediateWithSync", runnable -> {
 				requireNonNull(runnable);
 				if (!display.isDisposed()) {
@@ -103,7 +110,7 @@ public class SwtExecProfile {
 		Map<String, SwtExec> toProfile = new LinkedHashMap<>();
 
 		public void addSwtScheduler(String name, Consumer<Runnable> onRun) {
-			add(name, new SwtExec() {
+			addSwtExec(name, new SwtExec() {
 				@Override
 				public void execute(Runnable runnable) {
 					onRun.accept(runnable);
@@ -112,7 +119,7 @@ public class SwtExecProfile {
 		}
 
 		public void addSameThreadExecutor(String name, Consumer<Runnable> onRun) {
-			add(name, new SwtExec(Rx.sameThreadExecutor()) {
+			addSwtExec(name, new SwtExec(unused -> Rx.sameThreadExecutor()) {
 				@Override
 				public void execute(Runnable runnable) {
 					onRun.accept(runnable);
@@ -120,7 +127,7 @@ public class SwtExecProfile {
 			});
 		}
 
-		public void add(String name, SwtExec underTest) {
+		public void addSwtExec(String name, SwtExec underTest) {
 			toProfile.put(name, underTest);
 		}
 
@@ -132,10 +139,27 @@ public class SwtExecProfile {
 				drain(subject);
 			});
 			toProfile.forEach((name, underTest) -> {
-				profiler.addTestNanoWrap2Sec(name, () -> {
-					PublishSubject<Integer> subject = PublishSubject.create();
-					underTest.guardOn(guard).subscribe(subject, val -> {});
-					drain(subject);
+				profiler.addTest(name, new JuxtaProfiler.InitTimedCleanup(LapTimer.createNanoWrap2Sec()) {
+					PublishSubject<Integer> subject;
+					Subscription sub;
+
+					@Override
+					protected void init() throws Throwable {
+						subject = PublishSubject.create();
+						sub = underTest.guardOn(guard).subscribe(subject, val -> {});
+					}
+
+					@Override
+					protected void timed() throws Throwable {
+						drain(subject);
+					}
+
+					@Override
+					protected void cleanup() throws Throwable {
+						sub.unsubscribe();
+						subject = null;
+						sub = null;
+					}
 				});
 			});
 			profiler.runRandomTrials(NUM_TRIALS);
