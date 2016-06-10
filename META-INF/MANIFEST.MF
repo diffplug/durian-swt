@@ -24,8 +24,9 @@ Import-Package: com.diffplug.common.base;version="[1.2,2)",com.diffplu
  ommon.swt.os,com.diffplug.common.tree;version="[1.2,2)",com.diffplug.
  common.util.concurrent;version="[1.2,2)",javax.annotation,org.eclipse
  .jface.action,org.eclipse.jface.layout,org.eclipse.jface.resource,org
- .eclipse.jface.util,org.eclipse.jface.viewers,org.eclipse.swt.custom,
- org.eclipse.swt.graphics,org.eclipse.swt.layout,org.eclipse.swt.widge
- ts,rx;version="[1.1,2)",rx.functions;version="[1.1,2)",rx.subjects;ve
- rsion="[1.1,2)",rx.subscriptions;version="[1.1,2)"
+ .eclipse.jface.util,org.eclipse.jface.viewers,org.eclipse.swt,org.ecl
+ ipse.swt.custom,org.eclipse.swt.graphics,org.eclipse.swt.layout,org.e
+ clipse.swt.widgets,rx;version="[1.1,2)",rx.functions;version="[1.1,2)
+ ",rx.schedulers;version="[1.1,2)",rx.subjects;version="[1.1,2)",rx.su
+ bscriptions;version="[1.1,2)"
 Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.8))"
