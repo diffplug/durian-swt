@@ -37,6 +37,7 @@ import com.diffplug.common.base.Box.Nullable;
 import com.diffplug.common.primitives.Ints;
 import com.diffplug.common.rx.*;
 import com.diffplug.common.util.concurrent.ListenableFuture;
+import com.diffplug.common.util.concurrent.MoreExecutors;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -65,7 +66,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * In the rare scenario where you need higher performance, it is possible to get similar behavior as {@link #immediate()} but with
  * less overhead (and safety) in {@link #swtOnly()} and {@link SwtExec#sameThread()}.  It is very rarely worth this sacrifice.
  */
-public class SwtExec extends AbstractExecutorService implements ScheduledExecutorService, Rx.HasRxExecutor {
+public class SwtExec extends AbstractExecutorService implements ScheduledExecutorService, RxExecutor.Has {
 	private static Display display;
 	private static Thread swtThread;
 
@@ -269,17 +270,17 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 		}
 
 		@Override
-		public <T> Subscription subscribe(Observable<? extends T> observable, Rx<T> listener) {
+		public <T> Subscription subscribe(Observable<? extends T> observable, RxListener<T> listener) {
 			return subscribe(() -> parent.rxExecutor.subscribe(observable, listener));
 		}
 
 		@Override
-		public <T> Subscription subscribe(ListenableFuture<? extends T> future, Rx<T> listener) {
+		public <T> Subscription subscribe(ListenableFuture<? extends T> future, RxListener<T> listener) {
 			return subscribe(() -> parent.rxExecutor.subscribe(future, listener));
 		}
 
 		@Override
-		public <T> Subscription subscribe(CompletionStage<? extends T> future, Rx<T> listener) {
+		public <T> Subscription subscribe(CompletionStage<? extends T> future, RxListener<T> listener) {
 			return subscribe(() -> parent.rxExecutor.subscribe(future, listener));
 		}
 
@@ -300,19 +301,19 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 		}
 	}
 
-	protected final Rx.RxExecutor rxExecutor;
+	protected final RxExecutor rxExecutor;
 
-	/** Returns an instance of {@link com.diffplug.common.rx.Rx.RxExecutor}. */
+	/** Returns an instance of {@link com.diffplug.common.rx.RxExecutor}. */
 	@Override
-	public Rx.RxExecutor getRxExecutor() {
+	public RxExecutor getRxExecutor() {
 		return rxExecutor;
 	}
 
 	SwtExec() {
-		this(exec -> Rx.on(exec, new SwtScheduler(exec)));
+		this(exec -> Rx.callbackOn(exec, new SwtScheduler(exec)));
 	}
 
-	SwtExec(Function<SwtExec, Rx.RxExecutor> rxExecutorCreator) {
+	SwtExec(Function<SwtExec, RxExecutor> rxExecutorCreator) {
 		initSwtThreads();
 		this.rxExecutor = rxExecutorCreator.apply(this);
 	}
@@ -821,7 +822,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	@SuppressFBWarnings(value = "LI_LAZY_INIT_STATIC", justification = "This race condition is fine, see comment in SwtExec.blocking()")
 	public static SwtExec swtOnly() {
 		if (swtOnly == null) {
-			swtOnly = new SwtExec(exec -> Rx.on(exec, new SwtOnlyScheduler())) {
+			swtOnly = new SwtExec(exec -> Rx.callbackOn(exec, new SwtOnlyScheduler())) {
 				@Override
 				public void execute(Runnable runnable) {
 					requireNonNull(runnable);
@@ -884,7 +885,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 		}
 	}
 
-	private static final SwtExec sameThread = new SwtExec(exec -> Rx.on(exec, Schedulers.immediate())) {
+	private static final SwtExec sameThread = new SwtExec(exec -> Rx.callbackOn(MoreExecutors.directExecutor(), Schedulers.immediate())) {
 		@Override
 		public void execute(Runnable runnable) {
 			requireNonNull(runnable);
