@@ -211,7 +211,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 
 	/** Returns an API for performing actions which are guarded on the given Widget. */
 	public Guarded guardOn(Widget widget) {
-		return new Guarded(this, Objects.requireNonNull(widget));
+		return new Guarded(this, widget);
 	}
 
 	/** Returns an API for performing actions which are guarded on the given ControlWrapper. */
@@ -236,7 +236,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 
 		private Guarded(SwtExec parent, Widget guard) {
 			this.parent = parent;
-			this.guard = guard;
+			this.guard = requireNonNull(guard);
 		}
 
 		/** Returns the guard widget. */
