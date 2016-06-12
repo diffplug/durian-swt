@@ -43,7 +43,7 @@ import com.diffplug.common.swt.ColumnFormat;
 
 /** Fluent API for creating {@link TableViewer}s and {@link TreeViewer}s with a certain format. */
 public class ColumnViewerFormat<T> {
-	/** Creates a {@code TableFormat} with the given style bits. */
+	/** Creates a `TableFormat` with the given style bits. */
 	public static <T> ColumnViewerFormat<T> builder() {
 		return new ColumnViewerFormat<T>();
 	}

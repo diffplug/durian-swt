@@ -40,8 +40,8 @@ public enum Corner {
 	}
 
 	/**
-	 * If you move the topLeft of {@code rectangle} to the returned point,
-	 * then this corner will be at {@code position}. 
+	 * If you move the topLeft of `rectangle` to the returned point,
+	 * then this corner will be at `position`. 
 	 */
 	public Point topLeftRequiredFor(Rectangle rectangle, Point position) {
 		Point current = getPosition(rectangle);

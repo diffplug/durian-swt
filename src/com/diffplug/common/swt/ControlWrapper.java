@@ -65,7 +65,7 @@ public interface ControlWrapper {
 	 * <p>
 	 * You <i>can</i> rely on this Control for:
 	 * <ol>
-	 * <li>Managing lifetimes: {@code wrapped.getRootControl().addListener(SWT.Dispose, ...}</li>
+	 * <li>Managing lifetimes: `wrapped.getRootControl().addListener(SWT.Dispose, ...`</li>
 	 * </ol>
 	 * <p>
 	 * But that's all. If you use it for something else, it's on you when it breaks.
@@ -88,7 +88,7 @@ public interface ControlWrapper {
 		}
 	}
 
-	/** Default implementation of a {@link ControlWrapper} which wraps some other form of {@code ControlWrapper} with a new interface. */
+	/** Default implementation of a {@link ControlWrapper} which wraps some other form of `ControlWrapper` with a new interface. */
 	public static class AroundWrapper<T extends ControlWrapper> implements ControlWrapper {
 		/** The wrapped control. */
 		protected final T wrapped;

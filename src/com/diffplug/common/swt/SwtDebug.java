@@ -100,12 +100,12 @@ public class SwtDebug {
 		Rx.subscribe(SwtRx.addListener(widget, events), event -> dumpEvent(name, event, to));
 	}
 
-	/** Returns the name for the given SWT {@code event}. */
+	/** Returns the name for the given SWT `event`. */
 	public static String eventType(Event event) {
 		return eventType(event.type);
 	}
 
-	/** Returns the name for the given SWT {@code eventType}. */
+	/** Returns the name for the given SWT `eventType`. */
 	public static String eventType(int type) {
 		String name = events.get(type);
 		if (name != null) {

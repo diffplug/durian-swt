@@ -41,7 +41,7 @@ import org.eclipse.swt.widgets.Widget;
 
 /** Fluent API for creating {@link Table}s and {@link Tree}s with the specified columns and layout. */
 public class ColumnFormat {
-	/** Creates a {@code TableFormat} with the given style bits. */
+	/** Creates a `TableFormat` with the given style bits. */
 	public static ColumnFormat builder() {
 		return new ColumnFormat();
 	}

@@ -28,7 +28,7 @@ import com.diffplug.common.rx.Rx;
 import com.diffplug.common.rx.RxBox;
 import com.diffplug.common.rx.RxGetter;
 
-/** A widget that switches between multiple {@code Coat}s. */
+/** A widget that switches between multiple `Coat`s. */
 public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 	/** The StackLayout for switching between layers. */
 	private StackLayout stack = new StackLayout();
@@ -59,7 +59,7 @@ public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 		return stack.topControl;
 	}
 
-	/** Represents a persistent layer within this {@code CoatMux}. It can be shown, hidden, and disposed. */
+	/** Represents a persistent layer within this `CoatMux`. It can be shown, hidden, and disposed. */
 	public class Layer<T> {
 		final Control control;
 		final T handle;
@@ -70,7 +70,7 @@ public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 			this.handle = handle;
 		}
 
-		/** {@link RxGetter} which keeps track of whether this {@code Layer} is currently on top. */
+		/** {@link RxGetter} which keeps track of whether this `Layer` is currently on top. */
 		public RxGetter<Boolean> rxOnTop() {
 			return rxCurrent;
 		}
@@ -94,12 +94,12 @@ public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 		}
 	}
 
-	/** Adds a persistent {@link Layer} which will be populated immediately by the given {@code Coat}, using {@code value} as the key. */
+	/** Adds a persistent {@link Layer} which will be populated immediately by the given `Coat`, using `value` as the key. */
 	public <T> Layer<T> addCoat(Coat coat, T value) {
 		return addCoat(Coat.Returning.fromNonReturning(coat, value));
 	}
 
-	/** Adds a persistent {@link Layer} which will be populated immediately by the given {@code Coat.Returning}, using the return value as the key. */
+	/** Adds a persistent {@link Layer} which will be populated immediately by the given `Coat.Returning`, using the return value as the key. */
 	public <T> Layer<T> addCoat(Coat.Returning<T> coat) {
 		Composite composite = new Composite(wrapped, SWT.NONE);
 		return new Layer<T>(composite, coat.putOn(composite));
@@ -108,7 +108,7 @@ public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 	private static final String RAW = "The function must create exactly one child of the composite which gets passed in";
 
 	/**
-	 * Adds a persistent {@link Layer} which will be populated immediately by the given {@code Function<Composite, Control>}, with the returned control as the key.
+	 * Adds a persistent {@link Layer} which will be populated immediately by the given `Function<Composite, Control>`, with the returned control as the key.
 	 * <p>
 	 * The function must create exactly one child of the composite, and must return that child.
 	 */
@@ -122,7 +122,7 @@ public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 	}
 
 	/**
-	 * Adds a persistent {@link Layer} which will be populated immediately by the given {@code Function<Composite, Control>}, with the returned control as the key.
+	 * Adds a persistent {@link Layer} which will be populated immediately by the given `Function<Composite, Control>`, with the returned control as the key.
 	 * <p>
 	 * The function must create exactly one child of the composite, and it must return that child.
 	 */
@@ -148,22 +148,22 @@ public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 		return layer.handle;
 	}
 
-	/** Sets the current content of this {@code CoatMux}, gets disposed as soon as anything else becomes the top layer. */
+	/** Sets the current content of this `CoatMux`, gets disposed as soon as anything else becomes the top layer. */
 	public <T> T setCoat(Coat coat, T value) {
 		return setCoat(Coat.Returning.fromNonReturning(coat, value));
 	}
 
-	/** Sets the current content of this {@code CoatMux}, gets disposed as soon as anything else becomes the top layer. */
+	/** Sets the current content of this `CoatMux`, gets disposed as soon as anything else becomes the top layer. */
 	public <T> T setCoat(Coat.Returning<T> coat) {
 		return makeTemporary(addCoat(coat));
 	}
 
-	/** Sets the current content of this {@code CoatMux}, gets disposed as soon as anything else becomes the top layer. */
+	/** Sets the current content of this `CoatMux`, gets disposed as soon as anything else becomes the top layer. */
 	public <T extends Control> T setControl(Function<Composite, T> creator) {
 		return makeTemporary(addControl(creator));
 	}
 
-	/** Sets the current content of this {@code CoatMux}, gets disposed as soon as anything else becomes the top layer. */
+	/** Sets the current content of this `CoatMux`, gets disposed as soon as anything else becomes the top layer. */
 	public <T extends ControlWrapper> T setWrapper(Function<Composite, T> creator) {
 		return makeTemporary(addWrapper(creator));
 	}
@@ -172,7 +172,7 @@ public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 	// Deprecated stuff //
 	//////////////////////
 	/**
-	 * Adds a persistent {@link Layer} which will be populated immediately by the given {@code Coat}, with the layer containing the given value.
+	 * Adds a persistent {@link Layer} which will be populated immediately by the given `Coat`, with the layer containing the given value.
 	 * @deprecated use {@link #add(Coat, Object)} instead
 	 */
 	public <T> Layer<T> add(Coat coat, T value) {
@@ -180,7 +180,7 @@ public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 	}
 
 	/**
-	 * Adds a persistent {@link Layer} which will be populated immediately by the given {@code Coat}, with the layer containing the given value.
+	 * Adds a persistent {@link Layer} which will be populated immediately by the given `Coat`, with the layer containing the given value.
 	 * @deprecated use {@link #addCoat(com.diffplug.common.swt.Coat.Returning)} instead
 	 */
 	public <T> Layer<T> add(Coat.Returning<T> coat) {
@@ -188,7 +188,7 @@ public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 	}
 
 	/**
-	 * Sets the current content of this {@code CoatMux}, gets disposed as soon as anything else becomes the top layer.
+	 * Sets the current content of this `CoatMux`, gets disposed as soon as anything else becomes the top layer.
 	 * @deprecated use {@link #setCoat(com.diffplug.common.swt.Coat.Returning)} instead
 	 */
 	public <T> T set(Coat.Returning<T> coat) {

@@ -61,12 +61,12 @@ public class SwtMisc {
 	/////////////////////
 	// True miscellany //
 	/////////////////////
-	/** Returns true if {@code flag} is set in {@code style}. */
+	/** Returns true if `flag` is set in `style`. */
 	public static boolean flagIsSet(int flag, int style) {
 		return (style & flag) == flag;
 	}
 
-	/** Returns true if {@code flag} is set in the style value of {@code widget}. */
+	/** Returns true if `flag` is set in the style value of `widget`. */
 	public static boolean flagIsSet(int flag, Widget widget) {
 		return flagIsSet(flag, widget.getStyle());
 	}
@@ -105,7 +105,7 @@ public class SwtMisc {
 	}
 
 	/**
-	 * Backport of Eclipse Neon's {@code Composite.requestLayout()} method - this will be deprecated when Neon comes out.
+	 * Backport of Eclipse Neon's `Composite.requestLayout()` method - this will be deprecated when Neon comes out.
 	 * <p>
 	 * See Eclipse Neon M4 release notes for more details: https://www.eclipse.org/eclipse/news/4.6/M4/
 	 * The M4 release notes misses a bug related to Shells, which is fixed and included here: https://git.eclipse.org/r/#/c/62265/3/bundles/org.eclipse.swt/Eclipse+SWT/gtk/org/eclipse/swt/widgets/Shell.java
@@ -132,7 +132,7 @@ public class SwtMisc {
 	/**
 	 * Performs an asynchronous layout on the given composite anytime that it is resized.
 	 * <p>
-	 * This can often fix graphical glitches with resize-to-fit layouts, such as a {@code TableColumnLayout}.
+	 * This can often fix graphical glitches with resize-to-fit layouts, such as a `TableColumnLayout`.
 	 */
 	public static void asyncLayoutOnResize(Composite cmp) {
 		cmp.addListener(SWT.Resize, e -> asyncLayout(cmp));
@@ -148,7 +148,7 @@ public class SwtMisc {
 		cmp.setLayout(null);
 	}
 
-	/** Throws an {@link IllegalArgumentException} iff the given {@code Composite} has any children or a non-null layout. */
+	/** Throws an {@link IllegalArgumentException} iff the given `Composite` has any children or a non-null layout. */
 	public static void assertClean(Composite cmp) {
 		Preconditions.checkArgument(cmp.getChildren().length == 0, "The composite should have no children, this had %s.", cmp.getChildren().length);
 		Preconditions.checkArgument(cmp.getLayout() == null, "The composite should have no layout, this had %s.", cmp.getLayout());
@@ -214,7 +214,7 @@ public class SwtMisc {
 	////////////////////////////////////////
 	// Run the SWT display loop until ... //
 	////////////////////////////////////////
-	/** Runs the display loop until the given {@code Predicate<Display>} returns false. */
+	/** Runs the display loop until the given `Predicate<Display>` returns false. */
 	public static void loopUntil(Predicate<Display> until) {
 		Display display = assertUI();
 		while (!until.test(display)) {
@@ -228,7 +228,7 @@ public class SwtMisc {
 		}
 	}
 
-	/** Runs the display loop until the {@code widget} has been disposed. */
+	/** Runs the display loop until the `widget` has been disposed. */
 	public static void loopUntilDisposed(Widget widget) {
 		loopUntil(display -> widget.isDisposed());
 	}

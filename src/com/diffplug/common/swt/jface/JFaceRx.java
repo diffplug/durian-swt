@@ -26,7 +26,7 @@ import com.diffplug.common.swt.SwtThread;
 /** Utilities that convert JFace events into Rx-friendly Observables. */
 public class JFaceRx {
 	/**
-	 * Returns an {@code RxBox<Boolean>} for the toggle state of the given action as an RxBox.
+	 * Returns an `RxBox<Boolean>` for the toggle state of the given action as an RxBox.
 	 * <p>
 	 * Applicable to IAction.AS_CHECK_BOX and AS_RADIO_BUTTON.
 	 */

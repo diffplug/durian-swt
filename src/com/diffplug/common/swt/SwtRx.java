@@ -107,7 +107,7 @@ public class SwtRx {
 	}
 
 	/**
-	 * Returns an {@code RxBox<Boolean>} for the toggle state of the given button as an RxBox.
+	 * Returns an `RxBox<Boolean>` for the toggle state of the given button as an RxBox.
 	 * <p>
 	 * Applicable to SWT.TOGGLE, SWT.CHECK, and SWT.RADIO.
 	 */
@@ -124,12 +124,12 @@ public class SwtRx {
 	}
 
 	/**
-	 * Populates a Combo returns an {@code RxBox<T>} which is bidirectionally bound
+	 * Populates a Combo returns an `RxBox<T>` which is bidirectionally bound
 	 * to the given combo.
 	 *
 	 * @param combo  The combo which is being bound.
 	 * @param values The values which the RxBox can take on.  Must match combo.getItems().
-	 * @return An {@code RxBox<T>} which is bound bidirectionally to the given combo.
+	 * @return An `RxBox<T>` which is bound bidirectionally to the given combo.
 	 */
 	public static <T> RxBox<T> combo(Combo combo, ImmutableList<T> values, Function<T, String> converter) {
 		RxBox<T> box = RxBox.of(values.get(Math.max(0, combo.getSelectionIndex())));
@@ -138,13 +138,13 @@ public class SwtRx {
 	}
 
 	/**
-	 * Populates a Combo and bidirectionally binds it to an {@code RxBox<T>}.
+	 * Populates a Combo and bidirectionally binds it to an `RxBox<T>`.
 	 *
 	 * @param combo       The combo which is being bound.
 	 * @param values      The values which the RxBox can take on.
 	 * @param converter   A function for mapping values to strings.
 	 * @param values      The values which the RxBox can take on.
-	 * @return An {@code RxBox<T>} which will be bound bidirectionally to the given combo.
+	 * @return An `RxBox<T>` which will be bound bidirectionally to the given combo.
 	 */
 	public static <T> void combo(Combo combo, ImmutableList<T> values, Function<T, String> converter, RxBox<T> box) {
 		// setup the combo

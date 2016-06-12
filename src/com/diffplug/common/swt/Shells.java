@@ -67,10 +67,10 @@ public class Shells {
 	/**
 	 * Sets the size for this Shell.
 	 * <ul>
-	 * <li>If {@code size} is null, the shell will be packed as tightly as possible.</li>
-	 * <li>If both components are {@code > 0}, the shell will be set to that size.</li>
-	 * <li>If <i>one</i> component is {@code <= 0}, the positive dimension will be constrained and the other dimension will be packed as tightly as possible.</li>
-	 * <li>If both components are {@code <= 0}, you'll get an {@code IllegalArgumentException}.</li>
+	 * <li>If `size` is null, the shell will be packed as tightly as possible.</li>
+	 * <li>If both components are `> 0`, the shell will be set to that size.</li>
+	 * <li>If <i>one</i> component is `<= 0`, the positive dimension will be constrained and the other dimension will be packed as tightly as possible.</li>
+	 * <li>If both components are `<= 0`, you'll get an `IllegalArgumentException`.</li>
 	 * </ul>
 	 * @throws IllegalArgumentException if size is non-null and both components are negative
 	 */

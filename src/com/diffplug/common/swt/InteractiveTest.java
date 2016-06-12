@@ -42,7 +42,7 @@ import com.diffplug.common.base.Unhandled;
  * it extremely easy to create and specify a UI test, which can be converted into
  * an automated UI test at a later date.
  * <p>
- * If the system property {@code com.diffplug.InteractiveTest.autoclose.milliseconds}
+ * If the system property `com.diffplug.InteractiveTest.autoclose.milliseconds`
  * is set, then the tests will open and then automatically pass after the specified
  * timeout. This lets a headless CI server ensure that the tests are in working order,
  * although a meatbag is still required for full validation.

@@ -44,7 +44,7 @@ public class ImageDescriptors {
 	 * @param lifecycle   Any outstanding images will be destroyed with the lifecycle of this Widget.
 	 * @param imageGetter Function which returns the image currently on the Widget (used to ensure that nobody messed with it).
 	 * @param imageSetter Function which sets the image on the Widget.
-	 * @return A {@code Box.Nullable<ImageDescriptor>} for setting the {@link Image} using an {@link ImageDescriptor}.
+	 * @return A `Box.Nullable<ImageDescriptor>` for setting the {@link Image} using an {@link ImageDescriptor}.
 	 */
 	public static Box.Nullable<ImageDescriptor> createSetter(Widget lifecycle, Supplier<Image> imageGetter, Consumer<Image> imageSetter) {
 		return new Box.Nullable<ImageDescriptor>() {

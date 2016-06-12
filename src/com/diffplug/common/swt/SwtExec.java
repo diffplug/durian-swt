@@ -43,7 +43,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 /**
  * {@link Executor Executors} which execute on the SWT UI thread.
  *
- * There are two primary kinds of {@code SwtExec}:
+ * There are two primary kinds of `SwtExec`:
  *
  * - {@link #async()} -> performs actions using {@link Display#asyncExec(Runnable) Display.asyncExec}
  * - {@link #immediate()} -> performs actions immediately if called from a UI thread, otherwise delegates to `asyncExec`.
@@ -84,7 +84,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	/**
 	 * Returns an "async" SwtExecutor.
 	 * <p>
-	 * When {@code execute(Runnable)} is called, the {@code Runnable} will be passed to {@link Display#asyncExec Display.asyncExec}.
+	 * When `execute(Runnable)` is called, the `Runnable` will be passed to {@link Display#asyncExec Display.asyncExec}.
 	 */
 	@SuppressFBWarnings(value = "LI_LAZY_INIT_STATIC", justification = "This race condition is fine, see comment in SwtExec.blocking()")
 	public static SwtExec async() {
@@ -139,8 +139,8 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	/**
 	 * Returns a "blocking" Executor for the SWT thread.
 	 * <ul>
-	 * <li>When {@code execute(Runnable)} is called from the SWT thread, the {@code Runnable} will be executed immediately.</li>
-	 * <li>Else, the {@code Runnable} will be passed to {@link Display#syncExec Display.syncExec}.</li>
+	 * <li>When `execute(Runnable)` is called from the SWT thread, the `Runnable` will be executed immediately.</li>
+	 * <li>Else, the `Runnable` will be passed to {@link Display#syncExec Display.syncExec}.</li>
 	 * </ul>
 	 * This instance also has a blocking {@link Blocking#get get()} method for doing a get in the UI thread.
 	 */
@@ -162,8 +162,8 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	/**
 	 * An Executor (obtained via {@link SwtExec#blocking()}) which adds a blocking {@link Blocking#get get()} method.
 	 * <ul>
-	 * <li>When {@code execute(Runnable)} is called from the SWT thread, the {@code Runnable} will be executed immediately.</li>
-	 * <li>Else, the {@code Runnable} will be passed to {@link Display#syncExec Display.syncExec}.</li>
+	 * <li>When `execute(Runnable)` is called from the SWT thread, the `Runnable` will be executed immediately.</li>
+	 * <li>Else, the `Runnable` will be passed to {@link Display#syncExec Display.syncExec}.</li>
 	 * </ul>
 	 * @see SwtExec#blocking
 	 */
