@@ -89,19 +89,6 @@ public class SwtPlatform {
 		return map;
 	}
 
-	/** Returns the code that wuff uses for this SwtPlatform. */
-	public String getWuffString() {
-		// @formatter:off
-		Map<SwtPlatform, String> wuffMap = new HashMap<>();
-		wuffMap.put(parseWsOsArch("cocoa.macosx.x86_64"),	"macosx-x86_64");
-		wuffMap.put(parseWsOsArch("gtk.linux.x86"),			"linux-x86_32");
-		wuffMap.put(parseWsOsArch("gtk.linux.x86_64"),		"linux-x86_64");
-		wuffMap.put(parseWsOsArch("win32.win32.x86"),		"windows-x86_32");
-		wuffMap.put(parseWsOsArch("win32.win32.x86_64"),	"windows-x86_64");
-		// @formatter:on
-		return Objects.requireNonNull(wuffMap.get(this));
-	}
-
 	/** Parses ws.os.arch strings (which is how SWT bundles are specified). */
 	public static SwtPlatform parseWsOsArch(String unparsed) {
 		String[] pieces = unparsed.split("\\.");

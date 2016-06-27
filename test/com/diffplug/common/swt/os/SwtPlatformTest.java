@@ -26,7 +26,6 @@ public class SwtPlatformTest {
 		Assert.assertEquals("win32", platform.getOs());
 		Assert.assertEquals("x86", platform.getArch());
 
-		Assert.assertEquals("windows-x86_32", platform.getWuffString());
 		Assert.assertEquals("(& (osgi.ws=win32) (osgi.os=win32) (osgi.arch=x86) )", platform.platformFilter());
 	}
 }
