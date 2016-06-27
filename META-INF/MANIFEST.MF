@@ -18,15 +18,14 @@ Export-Package: com.diffplug.common.swt;uses:="com.diffplug.common.bas
  ewers,org.eclipse.swt.graphics,org.eclipse.swt.widgets";version="2.0.
  0",com.diffplug.common.swt.os;version="2.0.0"
 Import-Package: com.diffplug.common.base;version="[1.2,2)",com.diffplu
- g.common.collect;version="[1.2,2)",com.diffplug.common.debug;version=
- "[1.0,2)",com.diffplug.common.primitives;version="[1.2,2)",com.diffpl
- ug.common.rx;version="[2.0,3)",com.diffplug.common.swt,com.diffplug.c
- ommon.swt.os,com.diffplug.common.tree;version="[1.2,2)",com.diffplug.
- common.util.concurrent;version="[1.2,2)",javax.annotation,org.eclipse
- .jface.action,org.eclipse.jface.layout,org.eclipse.jface.resource,org
- .eclipse.jface.util,org.eclipse.jface.viewers,org.eclipse.swt,org.ecl
- ipse.swt.custom,org.eclipse.swt.graphics,org.eclipse.swt.layout,org.e
- clipse.swt.widgets,rx;version="[1.1,2)",rx.functions;version="[1.1,2)
- ",rx.schedulers;version="[1.1,2)",rx.subjects;version="[1.1,2)",rx.su
- bscriptions;version="[1.1,2)"
+ g.common.collect;version="[1.2,2)",com.diffplug.common.primitives;ver
+ sion="[1.2,2)",com.diffplug.common.rx;version="[2.0,3)",com.diffplug.
+ common.swt,com.diffplug.common.swt.os,com.diffplug.common.tree;versio
+ n="[1.2,2)",com.diffplug.common.util.concurrent;version="[1.2,2)",jav
+ ax.annotation,org.eclipse.jface.action,org.eclipse.jface.layout,org.e
+ clipse.jface.resource,org.eclipse.jface.util,org.eclipse.jface.viewer
+ s,org.eclipse.swt,org.eclipse.swt.custom,org.eclipse.swt.graphics,org
+ .eclipse.swt.layout,org.eclipse.swt.widgets,rx;version="[1.1,2)",rx.f
+ unctions;version="[1.1,2)",rx.schedulers;version="[1.1,2)",rx.subject
+ s;version="[1.1,2)",rx.subscriptions;version="[1.1,2)"
 Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.8))"

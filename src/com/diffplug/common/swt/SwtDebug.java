@@ -15,18 +15,27 @@
  */
 package com.diffplug.common.swt;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.annotation.Nullable;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Widget;
 
+import com.diffplug.common.base.Predicates;
 import com.diffplug.common.base.StringPrinter;
+import com.diffplug.common.base.Throwing;
 import com.diffplug.common.collect.ImmutableMap;
-import com.diffplug.common.debug.FieldsAndGetters;
+import com.diffplug.common.collect.Maps;
 import com.diffplug.common.rx.Rx;
 
 /**
@@ -43,7 +52,7 @@ public class SwtDebug {
 		// print the name
 		to.println(name + ": " + eventType(e));
 		// print the non-null / non-zero fields
-		FieldsAndGetters.fields(e).filter(entry -> {
+		fields(e).filter(entry -> {
 			Object value = entry.getValue();
 			if (value == null) {
 				return false;
@@ -58,12 +67,12 @@ public class SwtDebug {
 			to.println("\t" + entry.getKey().getName() + " = " + entry.getValue());
 		});
 		// print the nulls
-		to.println("\tnull = " + FieldsAndGetters.fields(e)
+		to.println("\tnull = " + fields(e)
 				.filter(entry -> entry.getValue() == null)
 				.map(entry -> entry.getKey().getName())
 				.collect(Collectors.joining(", ")));
 		// print the zeroes
-		to.println("\t0 = " + FieldsAndGetters.fields(e)
+		to.println("\t0 = " + fields(e)
 				.filter(entry -> {
 					if (entry.getValue() instanceof Number) {
 						return ((Number) entry.getValue()).intValue() == 0;
@@ -184,4 +193,64 @@ public class SwtDebug {
 		builder.put(wakeup, "PostExternalEventDispatch"); // 53
 		events = builder.build();
 	}
+
+	////////////////////////////////////////////////
+	// Copied from DurianDebug's FieldsAndGetters //
+	////////////////////////////////////////////////
+	/**
+	 * Returns a {@code Stream} of all public fields which match {@code predicate} and their values for the given object.
+	 * <p>
+	 * This method uses reflection to find all of the public instance fields of the given object,
+	 * and if they pass the given predicate, it includes them in a stream of {@code Map.Entry<Field, Object>}
+	 * where the entry's value is the value of the field for this object.
+	 */
+	private static Stream<Map.Entry<Field, Object>> fields(@Nullable Object obj, Predicate<Field> predicate) {
+		Objects.requireNonNull(predicate);
+		return Arrays.asList(getClassNullable(obj).getFields()).stream()
+				// gotta be public
+				.filter(field -> Modifier.isPublic(field.getModifiers()))
+				// gotta be an instance field
+				.filter(field -> !Modifier.isStatic(field.getModifiers()))
+				// gotta pass the predicate
+				.filter(predicate)
+				// then create the field
+				.map(field -> Maps.immutableEntry(field, tryCall(field.getName(), () -> field.get(obj))));
+	}
+
+	private static Object tryCall(String methodName, Throwing.Supplier<Object> supplier) {
+		try {
+			return supplier.get();
+		} catch (Throwable error) {
+			return new CallException(methodName, error);
+		}
+	}
+
+	/** Exception which wraps up a thrown exception - ensures that users don't think an exception was returned. */
+	private static class CallException extends Exception {
+		private static final long serialVersionUID = 1206955156719866328L;
+
+		private final String methodName;
+
+		private CallException(String methodName, Throwable cause) {
+			super(cause);
+			this.methodName = methodName;
+		}
+
+		@Override
+		public String toString() {
+			return "When calling " + methodName + ": " + getCause().getMessage();
+		}
+	}
+
+	private static Stream<Map.Entry<Field, Object>> fields(@Nullable Object obj) {
+		return fields(obj, Predicates.alwaysTrue());
+	}
+
+	private static Class<?> getClassNullable(@Nullable Object obj) {
+		return obj == null ? ObjectIsNull.class : obj.getClass();
+	}
+
+	/** Sentinel class for null objects. */
+	public static class ObjectIsNull {}
+
 }
