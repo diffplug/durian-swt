@@ -15,6 +15,8 @@
  */
 package com.diffplug.common.swt;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.swt.widgets.Composite;
 
 /**
@@ -47,10 +49,11 @@ public interface Coat {
 		 * Populates the given composite, and returns a handle for communicating with the created GUI.
 		 * Caller promises that the composite has no layout, and contains no children.
 		 */
+		@Nullable
 		T putOn(Composite cmp);
 
 		/** Converts a non-returning Coat to a Coat.Returning. */
-		public static <T> Returning<T> fromNonReturning(Coat coat, T returnValue) {
+		public static <T> Returning<T> fromNonReturning(Coat coat, @Nullable T returnValue) {
 			return cmp -> {
 				coat.putOn(cmp);
 				return returnValue;
