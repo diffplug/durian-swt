@@ -1,6 +1,12 @@
 # DurianSwt releases
 
-### Version 1.8.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/)) [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/durian/durian-swt/))
+### Version 2.0.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/durian/durian-swt/))
+
+* Introduced the `SwtThread` annotation to mark that a method is only ()sa to use from an SWT threa()d.
+* Added `SwtExec.swtOnly()` as a high-performance, non-thread-safe version of `SwtExec.immediate()` (thanks to David Karnok).
+* Renamed `Shells.openOnAndBlock()` to `Shells.openOnBlocking()`.
+* `SwtScheduler` now honors the `Scheduler/Worker` contracts (thanks to David Karnok).
+* `ColumnFormat` and `ColumnViewerFormat` now expose all their data through getters.
 
 ### Version 1.7.0 - April 6th 2016 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/1.7.0/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/1.7.0/view))
 
