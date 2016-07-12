@@ -18,6 +18,8 @@ package com.diffplug.common.swt;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -74,7 +76,7 @@ public class Shells {
 	 * </ul>
 	 * @throws IllegalArgumentException if size is non-null and both components are negative
 	 */
-	public Shells setSize(Point size) {
+	public Shells setSize(@Nullable Point size) {
 		if (size != null && size.x <= 0 && size.y <= 0) {
 			throw new IllegalArgumentException("Size must either be null or have at least one positive dimension, this was: " + size);
 		}

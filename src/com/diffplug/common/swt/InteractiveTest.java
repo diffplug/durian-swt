@@ -22,6 +22,8 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -102,7 +104,7 @@ public class InteractiveTest {
 	 * @param size Width and height of the test composite (in multiples of the system font height).
 	 * @param coat A function to populate the test composite.
 	 */
-	public static void testCoat(String instructions, Point size, Coat coat) {
+	public static void testCoat(String instructions, @Nullable Point size, Coat coat) {
 		testShell(instructions, display -> {
 			return Shells.builder(SWT.SHELL_TRIM, coat)
 					.setTitle("UnderTest")

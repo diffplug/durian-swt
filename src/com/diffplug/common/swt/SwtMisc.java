@@ -25,6 +25,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Device;
@@ -43,7 +45,7 @@ import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
 
-import com.diffplug.common.base.Box.Nullable;
+import com.diffplug.common.base.Box;
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.collect.Lists;
@@ -235,8 +237,8 @@ public class SwtMisc {
 
 	/** Runs the display loop until the given future has returned. */
 	public static <T> T loopUntilGet(ListenableFuture<T> future) throws Throwable {
-		Nullable<T> result = Nullable.ofNull();
-		Nullable<Throwable> error = Nullable.ofNull();
+		Box.Nullable<T> result = Box.Nullable.ofNull();
+		Box.Nullable<Throwable> error = Box.Nullable.ofNull();
 		Rx.subscribe(future, Rx.onValueOnFailure(result::set, error::set));
 
 		loopUntil(display -> future.isDone());
@@ -264,8 +266,8 @@ public class SwtMisc {
 
 	/** Runs the display loop until the given future has returned. */
 	public static <T> T loopUntilGet(CompletionStage<T> future) throws Throwable {
-		Nullable<T> result = Nullable.ofNull();
-		Nullable<Throwable> error = Nullable.ofNull();
+		Box.Nullable<T> result = Box.Nullable.ofNull();
+		Box.Nullable<Throwable> error = Box.Nullable.ofNull();
 		Rx.subscribe(future, Rx.onValueOnFailure(result::set, error::set));
 
 		CompletableFuture<?> actualFuture = future.toCompletableFuture();
@@ -296,7 +298,7 @@ public class SwtMisc {
 	// Thread-safe blocking notifications //
 	////////////////////////////////////////
 	/** Blocks to notify about a success. Can be called from any thread. */
-	public static void blockForSuccess(String title, String msg, Shell parent) {
+	public static void blockForSuccess(String title, String msg, @Nullable Shell parent) {
 		blockForMessageBox(title, msg, parent, SWT.ICON_INFORMATION | SWT.OK);
 	}
 
@@ -306,7 +308,7 @@ public class SwtMisc {
 	}
 
 	/** Blocks to notify about an error. Can be called from any thread. */
-	public static void blockForError(String title, String msg, Shell parent) {
+	public static void blockForError(String title, String msg, @Nullable Shell parent) {
 		blockForMessageBox(title, msg, parent, SWT.ICON_ERROR | SWT.OK);
 	}
 
@@ -316,7 +318,7 @@ public class SwtMisc {
 	}
 
 	/** Blocks to ask a yes/no question.  Can be called from any thread. */
-	public static boolean blockForQuestion(String title, String message, Shell parent) {
+	public static boolean blockForQuestion(String title, String message, @Nullable Shell parent) {
 		return blockForMessageBox(title, message, parent, SWT.ICON_QUESTION | SWT.YES | SWT.NO) == SWT.YES;
 	}
 
@@ -326,7 +328,7 @@ public class SwtMisc {
 	}
 
 	/** Blocks to ask an Ok/Cancel question. Can be called from any thread. */
-	public static boolean blockForOkCancel(String title, String message, Shell parent) {
+	public static boolean blockForOkCancel(String title, String message, @Nullable Shell parent) {
 		return blockForMessageBox(title, message, parent, SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL) == SWT.OK;
 	}
 
@@ -345,7 +347,7 @@ public class SwtMisc {
 	 * @param style An OR'ed combination of SWT.YES/NO, SWT.OK/CANCEL, and SWT.ICON_*
 	 * @return The button that was pressed (e.g. SWT.YES, SWT.OK, etc)
 	 */
-	public static int blockForMessageBox(String title, String message, Shell parent, int style) {
+	public static int blockForMessageBox(String title, String message, @Nullable Shell parent, int style) {
 		return SwtExec.blocking().get(() -> {
 			Display display = assertUI();
 			Shell parentInternal;
