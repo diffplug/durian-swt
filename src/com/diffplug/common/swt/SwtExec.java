@@ -180,9 +180,11 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 		public Executor guardOn(Control guard) {
 			Objects.requireNonNull(guard);
 			return runnable -> {
-				if (!guard.isDisposed()) {
-					runnable.run();
-				}
+				execute(() -> {
+					if (!guard.isDisposed()) {
+						runnable.run();
+					}
+				});
 			};
 		}
 
