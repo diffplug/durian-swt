@@ -176,6 +176,21 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 			swtThread = display.getThread();
 		}
 
+		/** Returns an executor which will only execute if the given guard hasn't been disposed. */
+		public Executor guardOn(Control guard) {
+			Objects.requireNonNull(guard);
+			return runnable -> {
+				if (!guard.isDisposed()) {
+					runnable.run();
+				}
+			};
+		}
+
+		/** Returns an executor which will only execute if the given guard hasn't been disposed. */
+		public Executor guardOn(ControlWrapper guard) {
+			return guardOn(guard.getRootControl());
+		}
+
 		@Override
 		public void execute(Runnable runnable) {
 			if (Thread.currentThread() == swtThread) {
