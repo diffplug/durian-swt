@@ -18,6 +18,8 @@ package com.diffplug.common.swt;
 import java.util.Optional;
 import java.util.function.Function;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -95,7 +97,7 @@ public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 	}
 
 	/** Adds a persistent {@link Layer} which will be populated immediately by the given `Coat`, using `value` as the key. */
-	public <T> Layer<T> addCoat(Coat coat, T value) {
+	public <T> Layer<T> addCoat(Coat coat, @Nullable T value) {
 		return addCoat(Coat.Returning.fromNonReturning(coat, value));
 	}
 
@@ -149,7 +151,7 @@ public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 	}
 
 	/** Sets the current content of this `CoatMux`, gets disposed as soon as anything else becomes the top layer. */
-	public <T> T setCoat(Coat coat, T value) {
+	public <T> T setCoat(Coat coat, @Nullable T value) {
 		return setCoat(Coat.Returning.fromNonReturning(coat, value));
 	}
 
