@@ -1,12 +1,12 @@
 Manifest-Version: 1.0
 Bundle-DocURL: https://github.com/diffplug/durian-swt
-Bundle-License: https://github.com/diffplug/durian-swt/blob/v2.0.0-SNA
- PSHOT/LICENSE
+Bundle-License: https://github.com/diffplug/durian-swt/blob/v2.0.0/LIC
+ ENSE
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: com.diffplug.durian.swt
 Bundle-Vendor: DiffPlug
-Bundle-Version: 2.0.0.SNAPSHOT
+Bundle-Version: 2.0.0
 Export-Package: com.diffplug.common.swt;uses:="com.diffplug.common.bas
  e,com.diffplug.common.collect,com.diffplug.common.rx,com.diffplug.com
  mon.tree,com.diffplug.common.util.concurrent,javax.annotation,org.ecl
