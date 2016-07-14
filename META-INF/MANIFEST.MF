@@ -1,22 +1,22 @@
 Manifest-Version: 1.0
 Bundle-DocURL: https://github.com/diffplug/durian-swt
-Bundle-License: https://github.com/diffplug/durian-swt/blob/v2.0.0/LIC
- ENSE
+Bundle-License: https://github.com/diffplug/durian-swt/blob/v2.1.0-SNA
+ PSHOT/LICENSE
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: com.diffplug.durian.swt
 Bundle-Vendor: DiffPlug
-Bundle-Version: 2.0.0
+Bundle-Version: 2.1.0.SNAPSHOT
 Export-Package: com.diffplug.common.swt;uses:="com.diffplug.common.bas
  e,com.diffplug.common.collect,com.diffplug.common.rx,com.diffplug.com
  mon.tree,com.diffplug.common.util.concurrent,javax.annotation,org.ecl
  ipse.jface.viewers,org.eclipse.swt.graphics,org.eclipse.swt.layout,or
- g.eclipse.swt.widgets,rx";version="2.0.0",com.diffplug.common.swt.jfa
+ g.eclipse.swt.widgets,rx";version="2.1.0",com.diffplug.common.swt.jfa
  ce;uses:="com.diffplug.common.base,com.diffplug.common.collect,com.di
  ffplug.common.rx,com.diffplug.common.swt,com.diffplug.common.tree,jav
  ax.annotation,org.eclipse.jface.action,org.eclipse.jface.resource,org
  .eclipse.jface.viewers,org.eclipse.swt.graphics,org.eclipse.swt.widge
- ts";version="2.0.0",com.diffplug.common.swt.os;version="2.0.0"
+ ts";version="2.1.0",com.diffplug.common.swt.os;version="2.1.0"
 Import-Package: com.diffplug.common.base;version="[1.2,2)",com.diffplu
  g.common.collect;version="[1.2,2)",com.diffplug.common.primitives;ver
  sion="[1.2,2)",com.diffplug.common.rx;version="[2.0,3)",com.diffplug.

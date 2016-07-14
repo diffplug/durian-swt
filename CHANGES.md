@@ -1,6 +1,8 @@
 # DurianSwt releases
 
-### Version 2.0.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/durian/durian-swt/))
+### Version 2.1.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/durian/durian-swt/))
+
+### Version 2.0.0 - July 13th 2016 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/2.0.0/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/2.0.0/view))
 
 * Introduced the `SwtThread` annotation to mark that a method is only safe to use from an SWT thread.
 * Added `SwtExec.swtOnly()` as a high-performance, non-thread-safe version of `SwtExec.immediate()` (thanks to David Karnok).
