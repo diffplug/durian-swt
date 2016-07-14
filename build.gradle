@@ -187,7 +187,7 @@ task sourcesJar(type: Jar) {
 	from sourceSets.main.allJava
 }
 
-def verSnapshot = { it -> it.endsWith('-SNAPSHOT') ? 'snapshot' : VER_DURIAN }
+def verSnapshot = { it.endsWith('-SNAPSHOT') ? 'snapshot' : it }
 // Where it's possible to name parameters and methods clearly enough
 // that javadoc is not necessary, why make the code bigger?
 //
@@ -203,6 +203,7 @@ javadoc {
 	options.links('https://diffplug.github.io/durian/javadoc/durian-collect/' + verSnapshot(VER_DURIAN) + '/')
 	options.links('https://diffplug.github.io/durian/javadoc/durian-concurrent/' + verSnapshot(VER_DURIAN) + '/')
 	options.links('https://diffplug.github.io/durian-debug/javadoc/' + verSnapshot(VER_DURIAN_DEBUG) + '/')
+	options.links('https://diffplug.github.io/durian-rx/javadoc/' + verSnapshot(VER_DURIAN_RX) + '/')
 	options.links('https://docs.oracle.com/javase/8/docs/api/')
 	options.links('http://reactivex.io/RxJava/javadoc/')
 	options.links('http://help.eclipse.org/luna/nftopic/org.eclipse.platform.doc.isv/reference/api/')
@@ -316,7 +317,8 @@ githubPages {
 	repoUri = "https://github.com/${project.org}/${project.name}"
 	deleteExistingFiles = false
 	pages {
-		from 'build/docs'
+		from javadoc.destinationDir
+		into "javadoc/${verSnapshot(version)}"
 	}
 	credentials {
 		username = cred('gh_token')
