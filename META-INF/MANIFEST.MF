@@ -6,7 +6,7 @@ Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: com.diffplug.durian.swt
 Bundle-Vendor: DiffPlug
-Bundle-Version: 2.1.0.SNAPSHOT
+Bundle-Version: 2.1.0.I201608161318
 Export-Package: com.diffplug.common.swt;uses:="com.diffplug.common.bas
  e,com.diffplug.common.collect,com.diffplug.common.rx,com.diffplug.com
  mon.tree,com.diffplug.common.util.concurrent,javax.annotation,org.ecl
