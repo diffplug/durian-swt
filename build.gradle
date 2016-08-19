@@ -170,6 +170,7 @@ dependencies {
 // MAVEN //
 ///////////
 apply plugin: 'maven-publish'
+group='com.diffplug.durian'
 
 task sourcesJar(type: Jar) {
 	classifier = 'sources'
