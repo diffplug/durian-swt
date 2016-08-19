@@ -3,8 +3,6 @@ plugins {
 	id "com.diffplug.gradle.swt.nativedeps" version "3.0.6"
 	// osgi
 	id "com.diffplug.gradle.osgi.bndmanifest" version "3.0.6"
-	// code formatting
-	id "com.diffplug.gradle.spotless" version "2.0.0"
 	// bintray uploading
 	id "com.jfrog.bintray" version "1.3.1"
 	// github pages
@@ -125,20 +123,7 @@ tasks.eclipse.dependsOn(cleanEclipse)
 ////////////
 // FORMAT //
 ////////////
-spotless {
-	java {
-		licenseHeaderFile	'gradle/spotless.license.java'		// License header file
-		importOrderFile		'gradle/spotless.importorder'		// An import ordering file, exported from Eclipse
-		eclipseFormatFile	'gradle/spotless.eclipseformat.xml'	// XML file dumped out by the Eclipse formatter
-	}
-	format 'misc', {
-		target '**/.gitignore', '**/*.gradle', '**/*.md', '**/*.sh'
-		indentWithTabs()
-		trimTrailingWhitespace()
-		endWithNewline()
-	}
-	freshmark {}
-}
+check.dependsOn(':_spotless:spotlessCheck')
 
 //////////////
 // FINDBUGS //

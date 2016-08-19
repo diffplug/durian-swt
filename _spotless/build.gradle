@@ -1,0 +1,49 @@
+plugins {
+	// code formatting
+	id "com.diffplug.gradle.spotless" version "2.0.0"
+}
+
+// Spotless and Goomph's p2.asmaven were clobbering each other's
+// classfiles when applied to the same project.  Easy to move
+// Spotless here to workaround.
+
+spotless {
+	java {
+		target rootProject.fileTree('.') {
+			include '**/*.java'
+			exclude 'gradle/**'
+		}
+		licenseHeaderFile	rootProject.file('gradle/spotless.license.java')		// License header file
+		importOrderFile		rootProject.file('gradle/spotless.importorder')			// An import ordering file, exported from Eclipse
+		eclipseFormatFile	rootProject.file('gradle/spotless.eclipseformat.xml')	// XML file dumped out by the Eclipse formatter
+	}
+	format 'misc', {
+		target rootProject.fileTree('.') {
+			include '**/.gitignore'
+			include '**/*.gradle'
+			include '**/*.md'
+			include '**/*.sh'
+		}
+		indentWithTabs()
+		trimTrailingWhitespace()
+		endWithNewline()
+	}
+	freshmark {
+		target rootProject.fileTree('.') {
+			include '**/.md'
+		}
+	}
+
+	/*
+	Specifying lineEndings is a bad idea.  But, gradle is clobbering the build classpath somehow, not sure how.  Since this repo doesn't
+	use .gitattributes, this workaround gets it done.
+
+	This is the error:
+		Caused by: java.lang.NoSuchMethodError: org.eclipse.jgit.lib.Repository.createAttributesNodeProvider()Lorg/eclipse/jgit/attributes/AttributesNodeProvider;
+			at com.diffplug.gradle.spotless.GitAttributesLineEndingPolicy.lambda$create$24(GitAttributesLineEndingPolicy.java:59)
+
+	Using this: https://discuss.gradle.org/t/accessing-the-buildscript-classpath/5297/4
+	I can confirm that the right version of jgit gets printed.  So not sure where the bad jgit is coming from.
+	*/
+	lineEndings 'PLATFORM_NATIVE'
+}
