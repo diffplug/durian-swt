@@ -1,8 +1,8 @@
 plugins {
+	// swt deps
+	id "com.diffplug.gradle.swt.nativedeps" version "3.0.6"
 	// osgi
 	id "com.diffplug.gradle.osgi.bndmanifest" version "3.0.6"
-	// code formatting
-	id "com.diffplug.gradle.spotless" version "2.0.0"
 	// bintray uploading
 	id "com.jfrog.bintray" version "1.3.1"
 	// github pages
@@ -11,14 +11,6 @@ plugins {
 
 repositories {
 	mavenCentral()
-	ivy {
-		// There isn't a reliable way to get eclipse artifacts except through p2 repositories,
-		// which gradle does not yet support.  For now we're forcing it with ivy.
-		url UPDATE_SITE
-		layout "pattern", {
-			artifact "plugins/[artifact]_[revision].[ext]"
-		}
-	}
 	// SNAPSHOT versions are free to rely on other SNAPSHOT libraries
 	if (project.version.endsWith('-SNAPSHOT')) {
 		maven {
@@ -52,12 +44,6 @@ dependencies {
 	compile "com.diffplug.durian:durian-rx:${VER_DURIAN_RX}"
 	compile "io.reactivex:rxjava:${VER_RXJAVA}"
 
-	compile "p2:org.eclipse.swt:${VER_SWT}"
-	compile "p2:org.eclipse.swt.${com.diffplug.common.swt.os.SwtPlatform.getRunning()}:${VER_SWT_PLATFORM}"
-	compile "p2:org.eclipse.jface:${VER_JFACE}"
-	compile "p2:org.eclipse.core.commands:${VER_CORE_COMMANDS}"
-	compile "p2:org.eclipse.equinox.common:${VER_EQUINOX_COMMON}"
-
 	testCompile "junit:junit:${VER_JUNIT}"
 	testCompile "com.diffplug.durian:durian-debug:${VER_DURIAN_DEBUG}"
 }
@@ -90,7 +76,8 @@ test {
 		// there are some tests that can't pass without a user, so we'll exclude them
 		excludeCategories 'com.diffplug.common.swt.InteractiveTest$FailsWithoutUser'
 		// SWT tests don't work in gradle on OS X (https://github.com/ReadyTalk/swt-bling/issues/4)
-		if (com.diffplug.common.swt.os.OS.getNative().isMac()) {
+		boolean isMac = System.getProperty("os.name").toLowerCase().contains("mac");
+		if (isMac) {
 			excludeCategories 'com.diffplug.common.swt.InteractiveTest'
 		}
 	}
@@ -136,20 +123,7 @@ tasks.eclipse.dependsOn(cleanEclipse)
 ////////////
 // FORMAT //
 ////////////
-spotless {
-	java {
-		licenseHeaderFile	'gradle/spotless.license.java'		// License header file
-		importOrderFile		'gradle/spotless.importorder'		// An import ordering file, exported from Eclipse
-		eclipseFormatFile	'gradle/spotless.eclipseformat.xml'	// XML file dumped out by the Eclipse formatter
-	}
-	format 'misc', {
-		target '**/.gitignore', '**/*.gradle', '**/*.md', '**/*.sh'
-		indentWithTabs()
-		trimTrailingWhitespace()
-		endWithNewline()
-	}
-	freshmark {}
-}
+check.dependsOn(':_spotless:spotlessCheck')
 
 //////////////
 // FINDBUGS //
@@ -181,6 +155,7 @@ dependencies {
 // MAVEN //
 ///////////
 apply plugin: 'maven-publish'
+group='com.diffplug.durian'
 
 task sourcesJar(type: Jar) {
 	classifier = 'sources'
@@ -238,7 +213,7 @@ publishing {
 			pom.withXml {
 				// don't force our weird p2 ivy/p2 solution on our users
 				asNode().dependencies.'*'.each() {
-					if (it.groupId.text() == 'p2') {
+					if (it.groupId.text() == SWT_P2_GROUP) {
 						it.parent().remove(it)
 					}
 				}
