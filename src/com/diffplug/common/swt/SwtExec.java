@@ -256,6 +256,10 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 			this.guard = requireNonNull(guard);
 		}
 
+		public SwtExec getSwtExec() {
+			return parent;
+		}
+
 		/** Returns the guard widget. */
 		public Widget getGuard() {
 			return guard;
