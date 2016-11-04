@@ -29,13 +29,13 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
 
-import rx.Observable;
-import rx.subjects.PublishSubject;
-
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.common.primitives.Ints;
 import com.diffplug.common.rx.RxBox;
+
+import io.reactivex.Observable;
+import io.reactivex.subjects.PublishSubject;
 
 /** Utilities that convert SWT events into Rx-friendly Observables. */
 public class SwtRx {
@@ -53,7 +53,7 @@ public class SwtRx {
 	public static @SwtThread Observable<Event> addListener(Widget widget, Stream<Integer> events) {
 		PublishSubject<Event> subject = PublishSubject.create();
 		events.forEach(event -> widget.addListener(event, subject::onNext));
-		return subject.asObservable();
+		return subject;
 	}
 
 	/** Returns an {@link Observable}<{@link Point}> of the right-click mouse-up on the given control, in global coordinates. */

@@ -26,12 +26,12 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Widget;
 import org.junit.Test;
 
-import rx.Subscription;
-import rx.subjects.PublishSubject;
-
 import com.diffplug.common.debug.JuxtaProfiler;
 import com.diffplug.common.debug.LapTimer;
 import com.diffplug.common.rx.Rx;
+
+import io.reactivex.disposables.Disposable;
+import io.reactivex.subjects.PublishSubject;
 
 /** Some simple profiles to make sure tha danger is worth it. */
 public class SwtExecProfile {
@@ -141,12 +141,12 @@ public class SwtExecProfile {
 			toProfile.forEach((name, underTest) -> {
 				profiler.addTest(name, new JuxtaProfiler.InitTimedCleanup(LapTimer.createNanoWrap2Sec()) {
 					PublishSubject<Integer> subject;
-					Subscription sub;
+					Disposable sub;
 
 					@Override
 					protected void init() throws Throwable {
 						subject = PublishSubject.create();
-						sub = underTest.guardOn(guard).subscribe(subject, val -> {});
+						sub = underTest.guardOn(guard).subscribeDisposable(subject, val -> {});
 					}
 
 					@Override
@@ -156,7 +156,7 @@ public class SwtExecProfile {
 
 					@Override
 					protected void cleanup() throws Throwable {
-						sub.unsubscribe();
+						sub.dispose();
 						subject = null;
 						sub = null;
 					}
@@ -169,7 +169,7 @@ public class SwtExecProfile {
 			for (int i = 0; i < EVENTS_TO_PUSH; ++i) {
 				subject.onNext(0);
 			}
-			subject.onCompleted();
+			subject.onComplete();
 		}
 	}
 

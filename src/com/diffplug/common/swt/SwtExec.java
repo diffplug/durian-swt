@@ -17,28 +17,49 @@ package com.diffplug.common.swt;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.*;
+import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.AbstractExecutorService;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Delayed;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.RunnableFuture;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.*;
-
-import rx.*;
-import rx.Observable;
-import rx.functions.Action0;
-import rx.schedulers.Schedulers;
-import rx.subscriptions.*;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Widget;
 
 import com.diffplug.common.base.Box.Nullable;
 import com.diffplug.common.primitives.Ints;
-import com.diffplug.common.rx.*;
+import com.diffplug.common.rx.Rx;
+import com.diffplug.common.rx.RxExecutor;
+import com.diffplug.common.rx.RxListener;
+import com.diffplug.common.rx.RxSubscriber;
 import com.diffplug.common.util.concurrent.ListenableFuture;
 import com.diffplug.common.util.concurrent.MoreExecutors;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.reactivex.Observable;
+import io.reactivex.Scheduler;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.Disposables;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * {@link Executor Executors} which execute on the SWT UI thread.
@@ -291,34 +312,49 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 		}
 
 		@Override
-		public <T> Subscription subscribe(Observable<? extends T> observable, RxListener<T> listener) {
-			return subscribe(() -> parent.rxExecutor.subscribe(observable, listener));
+		public <T> Disposable subscribeDisposable(Observable<? extends T> observable, RxListener<T> listener) {
+			return subscribe(() -> parent.rxExecutor.subscribeDisposable(observable, listener));
 		}
 
 		@Override
-		public <T> Subscription subscribe(ListenableFuture<? extends T> future, RxListener<T> listener) {
-			return subscribe(() -> parent.rxExecutor.subscribe(future, listener));
+		public <T> Disposable subscribeDisposable(ListenableFuture<? extends T> future, RxListener<T> listener) {
+			return subscribe(() -> parent.rxExecutor.subscribeDisposable(future, listener));
 		}
 
 		@Override
-		public <T> Subscription subscribe(CompletionStage<? extends T> future, RxListener<T> listener) {
-			return subscribe(() -> parent.rxExecutor.subscribe(future, listener));
+		public <T> Disposable subscribeDisposable(CompletionStage<? extends T> future, RxListener<T> listener) {
+			return subscribe(() -> parent.rxExecutor.subscribeDisposable(future, listener));
 		}
 
-		private Subscription subscribe(Supplier<Subscription> subscriber) {
+		private Disposable subscribe(Supplier<Disposable> subscriber) {
 			if (!guard.isDisposed()) {
-				Subscription subscription = subscriber.get();
+				Disposable subscription = subscriber.get();
 				SwtExec.immediate().execute(() -> {
 					if (!guard.isDisposed()) {
-						guard.addListener(SWT.Dispose, e -> subscription.unsubscribe());
+						guard.addListener(SWT.Dispose, e -> subscription.dispose());
 					} else {
-						subscription.unsubscribe();
+						subscription.dispose();
 					}
 				});
 				return subscription;
 			} else {
-				return Subscriptions.unsubscribed();
+				return Disposables.disposed();
 			}
+		}
+
+		@Override
+		public <T> void subscribe(Observable<? extends T> observable, RxListener<T> listener) {
+			subscribeDisposable(observable, listener);
+		}
+
+		@Override
+		public <T> void subscribe(ListenableFuture<? extends T> future, RxListener<T> listener) {
+			subscribeDisposable(future, listener);
+		}
+
+		@Override
+		public <T> void subscribe(CompletionStage<? extends T> future, RxListener<T> listener) {
+			subscribeDisposable(future, listener);
 		}
 	}
 
@@ -655,7 +691,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 			}
 
 			@Override
-			public void unsubscribe() {
+			public void dispose() {
 				if (unsubscribed) {
 					return;
 				}
@@ -688,21 +724,21 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 			}
 
 			@Override
-			public boolean isUnsubscribed() {
+			public boolean isDisposed() {
 				return unsubscribed;
 			}
 
 			@Override
-			public Subscription schedule(Action0 action) {
+			public Disposable schedule(Runnable action) {
 				if (unsubscribed) {
-					return Subscriptions.unsubscribed();
+					return Disposables.disposed();
 				}
 
 				SwtScheduledAction a = new SwtScheduledAction(action, this);
 
 				synchronized (this) {
 					if (unsubscribed) {
-						return Subscriptions.unsubscribed();
+						return Disposables.disposed();
 					}
 
 					tasks.add(a);
@@ -712,23 +748,23 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 
 				if (unsubscribed) {
 					a.cancel();
-					return Subscriptions.unsubscribed();
+					return Disposables.disposed();
 				}
 
 				return a;
 			}
 
 			@Override
-			public Subscription schedule(Action0 action, long delayTime, TimeUnit unit) {
+			public Disposable schedule(Runnable action, long delayTime, TimeUnit unit) {
 				if (unsubscribed) {
-					return Subscriptions.unsubscribed();
+					return Disposables.disposed();
 				}
 
 				SwtScheduledAction a = new SwtScheduledAction(action, this);
 
 				synchronized (this) {
 					if (unsubscribed) {
-						return Subscriptions.unsubscribed();
+						return Disposables.disposed();
 					}
 
 					tasks.add(a);
@@ -739,7 +775,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 				if (unsubscribed) {
 					a.cancel();
 					f.cancel(true);
-					return Subscriptions.unsubscribed();
+					return Disposables.disposed();
 				}
 
 				a.setFuture(f);
@@ -751,8 +787,8 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 			 * Represents a cancellable asynchronous Runnable that wraps an action
 			 * and manages the associated Worker lifecycle.
 			 */
-			static final class SwtScheduledAction implements Runnable, Subscription {
-				final Action0 action;
+			static final class SwtScheduledAction implements Runnable, Disposable {
+				final Runnable action;
 
 				final SwtWorker parent;
 
@@ -771,7 +807,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 				static final int STATE_FINISHED = 1;
 				static final int STATE_CANCELLED = 2;
 
-				public SwtScheduledAction(Action0 action, SwtWorker parent) {
+				public SwtScheduledAction(Runnable action, SwtWorker parent) {
 					this.action = action;
 					this.parent = parent;
 				}
@@ -780,7 +816,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 				public void run() {
 					if (!parent.unsubscribed && state == STATE_ACTIVE) {
 						try {
-							action.call();
+							action.run();
 						} finally {
 							FUTURE.lazySet(this, FINISHED);
 							if (STATE.compareAndSet(this, STATE_ACTIVE, STATE_FINISHED)) {
@@ -791,12 +827,12 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 				}
 
 				@Override
-				public boolean isUnsubscribed() {
+				public boolean isDisposed() {
 					return state != STATE_ACTIVE;
 				}
 
 				@Override
-				public void unsubscribe() {
+				public void dispose() {
 					if (STATE.compareAndSet(this, STATE_ACTIVE, STATE_CANCELLED)) {
 						parent.remove(this);
 					}
@@ -870,43 +906,43 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 		}
 
 		private static final class InnerImmediateScheduler extends Scheduler.Worker {
-			final BooleanSubscription innerSubscription = new BooleanSubscription();
+			final Disposable innerSubscription = Disposables.empty();
 
 			@Override
-			public Subscription schedule(Action0 action, long delayTime, TimeUnit unit) {
-				BooleanSubscription actionSubscription = new BooleanSubscription();
+			public Disposable schedule(Runnable action, long delayTime, TimeUnit unit) {
+				Disposable actionSubscription = Disposables.empty();
 				SwtExec.async().schedule(() -> {
-					if (!actionSubscription.isUnsubscribed()) {
-						action.call();
-						actionSubscription.unsubscribe();
+					if (!actionSubscription.isDisposed()) {
+						action.run();
+						actionSubscription.dispose();
 					}
 				}, delayTime, unit);
 				return actionSubscription;
 			}
 
 			@Override
-			public Subscription schedule(Action0 action) {
+			public Disposable schedule(Runnable action) {
 				if (Thread.currentThread() == swtThread) {
-					action.call();
+					action.run();
 				} else {
 					SWT.error(SWT.ERROR_THREAD_INVALID_ACCESS);
 				}
-				return Subscriptions.unsubscribed();
+				return Disposables.disposed();
 			}
 
 			@Override
-			public void unsubscribe() {
-				innerSubscription.unsubscribe();
+			public void dispose() {
+				innerSubscription.dispose();
 			}
 
 			@Override
-			public boolean isUnsubscribed() {
-				return innerSubscription.isUnsubscribed();
+			public boolean isDisposed() {
+				return innerSubscription.isDisposed();
 			}
 		}
 	}
 
-	private static final SwtExec sameThread = new SwtExec(exec -> Rx.callbackOn(MoreExecutors.directExecutor(), Schedulers.immediate())) {
+	private static final SwtExec sameThread = new SwtExec(exec -> Rx.callbackOn(MoreExecutors.directExecutor(), Schedulers.trampoline())) {
 		@Override
 		public void execute(Runnable runnable) {
 			requireNonNull(runnable);

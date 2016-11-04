@@ -29,11 +29,11 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
-import rx.Subscription;
-import rx.subscriptions.BooleanSubscription;
-
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.collect.Maps;
+
+import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.Disposables;
 
 /** A fluent builder for creating SWT {@link Shell}s. */
 public class Shells {
@@ -244,7 +244,7 @@ public class Shells {
 	}
 
 	/** Prevents the given shell from closing without prompting.  Returns a Subscription which can cancel this blocking. */
-	public static Subscription confirmClose(Shell shell, String title, String question, Runnable runOnClose) {
+	public static Disposable confirmClose(Shell shell, String title, String question, Runnable runOnClose) {
 		Listener listener = e -> {
 			e.doit = SwtMisc.blockForQuestion(title, question, shell);
 			if (e.doit) {
@@ -252,7 +252,7 @@ public class Shells {
 			}
 		};
 		shell.addListener(SWT.Close, listener);
-		return BooleanSubscription.create(() -> {
+		return Disposables.fromRunnable(() -> {
 			SwtExec.immediate().guardOn(shell).execute(() -> {
 				shell.removeListener(SWT.Close, listener);
 			});

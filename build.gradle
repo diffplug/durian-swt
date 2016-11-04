@@ -42,7 +42,7 @@ dependencies {
 	compile "com.diffplug.durian:durian-collect:${VER_DURIAN}"
 	compile "com.diffplug.durian:durian-concurrent:${VER_DURIAN}"
 	compile "com.diffplug.durian:durian-rx:${VER_DURIAN_RX}"
-	compile "io.reactivex:rxjava:${VER_RXJAVA}"
+	compile "io.reactivex.rxjava2:rxjava:${VER_RXJAVA}"
 
 	testCompile "junit:junit:${VER_JUNIT}"
 	testCompile "com.diffplug.durian:durian-debug:${VER_DURIAN_DEBUG}"
