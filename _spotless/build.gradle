@@ -30,7 +30,7 @@ spotless {
 	}
 	freshmark {
 		target rootProject.fileTree('.') {
-			include '**/.md'
+			include '**/*.md'
 		}
 	}
 

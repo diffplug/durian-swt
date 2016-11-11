@@ -12,13 +12,13 @@ output = [
 	link(shield('Live chat', 'gitter', 'live chat', 'brightgreen'), 'https://gitter.im/diffplug/durian')
 	].join('\n');
 -->
-[![Maven artifact](https://img.shields.io/badge/mavenCentral-com.diffplug.durian%3Adurian--swt-blue.svg)](https://bintray.com/diffplug/opensource/durian-swt/view)
-[![Latest version](https://img.shields.io/badge/latest-2.0.0-blue.svg)](https://github.com/diffplug/durian-swt/releases/latest)
-[![Javadoc](https://img.shields.io/badge/javadoc-OK-blue.svg)](https://diffplug.github.io/durian-swt/javadoc/2.0.0/)
+[![Maven artifact](https://img.shields.io/badge/mavenCentral-durian--swt%3A__spotless-blue.svg)](https://bintray.com/diffplug/opensource/_spotless/view)
+[![Latest version](https://img.shields.io/badge/latest-3.0.0.ALPHA-blue.svg)](https://github.com/diffplug/_spotless/releases/latest)
+[![Javadoc](https://img.shields.io/badge/javadoc-OK-blue.svg)](https://diffplug.github.io/_spotless/javadoc/3.0.0.ALPHA/)
 [![License Apache](https://img.shields.io/badge/license-Apache-blue.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
 
-[![Changelog](https://img.shields.io/badge/changelog-2.1.0--SNAPSHOT-brightgreen.svg)](CHANGES.md)
-[![Travis CI](https://travis-ci.org/diffplug/durian-swt.svg?branch=master)](https://travis-ci.org/diffplug/durian-swt)
+[![Changelog](https://img.shields.io/badge/changelog-3.0.0.ALPHA-brightgreen.svg)](CHANGES.md)
+[![Travis CI](https://travis-ci.org/diffplug/_spotless.svg?branch=master)](https://travis-ci.org/diffplug/_spotless)
 [![Live chat](https://img.shields.io/badge/gitter-live_chat-brightgreen.svg)](https://gitter.im/diffplug/durian)
 <!---freshmark /shields -->
 

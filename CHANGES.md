@@ -1,6 +1,10 @@
 # DurianSwt releases
 
-### Version 2.1.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/durian/durian-swt/))
+### Version 3.0.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/durian/durian-swt/))
+
+### Version 3.0.0.ALPHA - November 11th 2016 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/3.0.0.ALPHA/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/3.0.0.ALPHA/view))
+
+* Bumped RxJava to 2.0, and dealt with some initial fallout from that change.
 
 ### Version 2.0.0 - July 13th 2016 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/2.0.0/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/2.0.0/view))
 
