@@ -94,6 +94,9 @@ public class SwtRx {
 		RxBox<String> box = RxBox.of(text.getText());
 		// set the text when the box changes
 		SwtExec.immediate().guardOn(text).subscribe(box, str -> {
+			if (text.getText().equals(str)) {
+				return;
+			}
 			Point selection = text.getSelection();
 			text.setText(str);
 			text.setSelection(selection);
