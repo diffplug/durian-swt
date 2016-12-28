@@ -23,7 +23,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
@@ -47,15 +46,13 @@ import org.eclipse.swt.widgets.Widget;
 
 import com.diffplug.common.base.Box.Nullable;
 import com.diffplug.common.primitives.Ints;
+import com.diffplug.common.rx.GuardedExecutor;
 import com.diffplug.common.rx.Rx;
 import com.diffplug.common.rx.RxExecutor;
-import com.diffplug.common.rx.RxListener;
 import com.diffplug.common.rx.RxSubscriber;
-import com.diffplug.common.util.concurrent.ListenableFuture;
 import com.diffplug.common.util.concurrent.MoreExecutors;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import io.reactivex.Observable;
 import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.disposables.Disposables;
@@ -88,6 +85,12 @@ import io.reactivex.schedulers.Schedulers;
  * less overhead (and safety) in {@link #swtOnly()} and {@link SwtExec#sameThread()}.  It is very rarely worth this sacrifice.
  */
 public class SwtExec extends AbstractExecutorService implements ScheduledExecutorService, RxExecutor.Has {
+	/** Returns true iff called from the UI thread. */
+	public static boolean isRunningOnUI() {
+		initSwtThreads();
+		return Thread.currentThread() == swtThread;
+	}
+
 	private static Display display;
 	private static Thread swtThread;
 
@@ -268,93 +271,31 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 * </pre>
 	 * @see com.diffplug.common.rx.Rx
 	 */
-	public static class Guarded implements Executor, RxSubscriber {
+	public static class Guarded extends GuardedExecutor.AbstractGuardedExecutor {
 		private final SwtExec parent;
-		private final Widget guard;
 
 		private Guarded(SwtExec parent, Widget guard) {
+			super(SwtRx.disposableEar(guard));
 			this.parent = parent;
-			this.guard = requireNonNull(guard);
 		}
 
 		public SwtExec getSwtExec() {
 			return parent;
 		}
 
-		/** Returns the guard widget. */
-		public Widget getGuard() {
-			return guard;
-		}
-
-		/** Creates a runnable which runs on this Executor iff the guard widget is not disposed. */
-		public Runnable wrap(Runnable runnable) {
-			return () -> execute(runnable);
-		}
-
-		/** Runs the given runnable iff the guard widget is not disposed. */
-		@Override
-		public void execute(Runnable runnable) {
-			parent.execute(guardedRunnable(runnable));
-		}
-
 		/** Runs the given runnable after the given delay iff the guard widget is not disposed. */
 		public void timerExec(int delayMs, Runnable runnable) {
-			display.timerExec(delayMs, guardedRunnable(runnable));
-		}
-
-		/** Returns a Runnable which guards on the guard widget. */
-		private Runnable guardedRunnable(Runnable toGuard) {
-			return () -> {
-				if (!guard.isDisposed()) {
-					toGuard.run();
-				}
-			};
+			display.timerExec(delayMs, guard().guard(runnable));
 		}
 
 		@Override
-		public <T> Disposable subscribeDisposable(Observable<? extends T> observable, RxListener<T> listener) {
-			return subscribe(() -> parent.rxExecutor.subscribeDisposable(observable, listener));
+		protected Executor delegateExecutor() {
+			return parent;
 		}
 
 		@Override
-		public <T> Disposable subscribeDisposable(ListenableFuture<? extends T> future, RxListener<T> listener) {
-			return subscribe(() -> parent.rxExecutor.subscribeDisposable(future, listener));
-		}
-
-		@Override
-		public <T> Disposable subscribeDisposable(CompletionStage<? extends T> future, RxListener<T> listener) {
-			return subscribe(() -> parent.rxExecutor.subscribeDisposable(future, listener));
-		}
-
-		private Disposable subscribe(Supplier<Disposable> subscriber) {
-			if (!guard.isDisposed()) {
-				Disposable subscription = subscriber.get();
-				SwtExec.immediate().execute(() -> {
-					if (!guard.isDisposed()) {
-						guard.addListener(SWT.Dispose, e -> subscription.dispose());
-					} else {
-						subscription.dispose();
-					}
-				});
-				return subscription;
-			} else {
-				return Disposables.disposed();
-			}
-		}
-
-		@Override
-		public <T> void subscribe(Observable<? extends T> observable, RxListener<T> listener) {
-			subscribeDisposable(observable, listener);
-		}
-
-		@Override
-		public <T> void subscribe(ListenableFuture<? extends T> future, RxListener<T> listener) {
-			subscribeDisposable(future, listener);
-		}
-
-		@Override
-		public <T> void subscribe(CompletionStage<? extends T> future, RxListener<T> listener) {
-			subscribeDisposable(future, listener);
+		protected RxSubscriber delegateSubscriber() {
+			return parent.rxExecutor;
 		}
 	}
 
