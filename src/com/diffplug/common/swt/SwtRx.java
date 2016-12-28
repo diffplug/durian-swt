@@ -32,6 +32,7 @@ import org.eclipse.swt.widgets.Widget;
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.common.primitives.Ints;
+import com.diffplug.common.rx.DisposableEar;
 import com.diffplug.common.rx.RxBox;
 
 import io.reactivex.Observable;
@@ -162,5 +163,35 @@ public class SwtRx {
 		SwtExec.immediate().guardOn(combo).subscribe(box, mdlValue -> {
 			combo.select(values.indexOf(mdlValue));
 		});
+	}
+
+	/** Wraps the given {@link ControlWrapper} in an {@link DisposableEar}. */
+	public static DisposableEar disposableEar(ControlWrapper wrapper) {
+		return disposableEar(wrapper.getRootControl());
+	}
+
+	/** Wraps the given {@link Widget} in an {@link DisposableEar}. */
+	public static DisposableEar disposableEar(Widget guard) {
+		if (guard.isDisposed()) {
+			return DisposableEar.alreadyDisposed();
+		} else {
+			DisposableEar.Settable settable = DisposableEar.settable();
+			if (SwtExec.isRunningOnUI()) {
+				hook(guard, settable);
+			} else {
+				SwtExec.async().execute(() -> {
+					if (guard.isDisposed()) {
+						settable.dispose();
+					} else {
+						hook(guard, settable);
+					}
+				});
+			}
+			return settable;
+		}
+	}
+
+	private static void hook(Widget guard, DisposableEar.Settable disposable) {
+		guard.addListener(SWT.Dispose, e -> disposable.dispose());
 	}
 }
