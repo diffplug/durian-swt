@@ -271,31 +271,14 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 * </pre>
 	 * @see com.diffplug.common.rx.Rx
 	 */
-	public static class Guarded extends GuardedExecutor.AbstractGuardedExecutor {
-		private final SwtExec parent;
-
+	public static class Guarded extends GuardedExecutor {
 		private Guarded(SwtExec parent, Widget guard) {
-			super(SwtRx.disposableEar(guard));
-			this.parent = parent;
-		}
-
-		public SwtExec getSwtExec() {
-			return parent;
+			super(parent.rxExecutor, SwtRx.disposableEar(guard));
 		}
 
 		/** Runs the given runnable after the given delay iff the guard widget is not disposed. */
 		public void timerExec(int delayMs, Runnable runnable) {
-			display.timerExec(delayMs, guard().guard(runnable));
-		}
-
-		@Override
-		protected Executor delegateExecutor() {
-			return parent;
-		}
-
-		@Override
-		protected RxSubscriber delegateSubscriber() {
-			return parent.rxExecutor;
+			display.timerExec(delayMs, getGuard().guard(runnable));
 		}
 	}
 
