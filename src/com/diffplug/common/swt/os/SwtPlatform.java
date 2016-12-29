@@ -132,6 +132,16 @@ public class SwtPlatform {
 		return new SwtPlatform(ws, os, arch);
 	}
 
+	/** Converts an SwtPlatform back to an OS. */
+	public OS toOS() {
+		for (OS os : OS.values()) {
+			if (fromOS(os).equals(this)) {
+				return os;
+			}
+		}
+		throw new IllegalArgumentException("No known OS matches this platform: " + this);
+	}
+
 	/** Returns all of the platforms. */
 	public static List<SwtPlatform> getAll() {
 		return Arrays.asList(OS.values()).stream()
