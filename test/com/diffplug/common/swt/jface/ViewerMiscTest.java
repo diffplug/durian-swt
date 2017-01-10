@@ -43,8 +43,6 @@ import com.diffplug.common.rx.RxBox;
 import com.diffplug.common.swt.InteractiveTest;
 import com.diffplug.common.swt.Layouts;
 import com.diffplug.common.swt.SwtMisc;
-import com.diffplug.common.swt.jface.ColumnViewerFormat;
-import com.diffplug.common.swt.jface.ViewerMisc;
 import com.diffplug.common.tree.TreeDef;
 import com.diffplug.common.tree.TreeNode;
 import com.diffplug.common.tree.TreeStream;
