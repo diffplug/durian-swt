@@ -94,12 +94,31 @@ public class SwtRx {
 	private static RxBox<String> textImp(Text text, int... events) {
 		RxBox<String> box = RxBox.of(text.getText());
 		// set the text when the box changes
-		SwtExec.immediate().guardOn(text).subscribe(box, str -> {
-			if (text.getText().equals(str)) {
+		SwtExec.immediate().guardOn(text).subscribe(box, newStr -> {
+			String oldStr = text.getText();
+			if (oldStr.equals(newStr)) {
 				return;
 			}
 			Point selection = text.getSelection();
-			text.setText(str);
+			// if the cursor is at the end of the text, it should stick to that as the text changes
+			boolean startsAtEnd = selection.x == oldStr.length();
+			boolean endsAtEnd = selection.y == oldStr.length();
+
+			text.setText(newStr);
+
+			// @formatter: off
+			if (startsAtEnd) {
+				selection.x = newStr.length();
+			}
+			if (endsAtEnd) {
+				selection.y = newStr.length();
+			}
+			if (selection.x > newStr.length()) {
+				selection.x = newStr.length();
+			}
+			if (selection.y > newStr.length()) {
+				selection.y = newStr.length();
+			}
 			text.setSelection(selection);
 		});
 		// set the box when the text changes
