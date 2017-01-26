@@ -38,7 +38,17 @@ import java.lang.annotation.Target;
  * {@link java.util.concurrent.CompletionStage}, and
  * it indicates that the given code should only be
  * set and listened to from SWT.
+ * 
+ * You can use `@SwtThread(SwtThread.Kind.THREADSAFE)`
+ * to mark exceptions (e.g. mark a class as SwtThread,
+ * but some methods as threadsafe).
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.TYPE, ElementType.PARAMETER, ElementType.FIELD})
-public @interface SwtThread {}
+public @interface SwtThread {
+	static public enum Kind {
+		REQUIRED, THREADSAFE
+	}
+
+	Kind value() default Kind.REQUIRED;
+}
