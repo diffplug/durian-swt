@@ -17,6 +17,10 @@ package com.diffplug.common.swt;
 
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 
 /** Positions within a rectangle (the corners, the center of the lines, and the center). */
 public enum Corner {
@@ -37,6 +41,21 @@ public enum Corner {
 		return new Point(
 				rectangle.x + (int) (x * rectangle.width),
 				rectangle.y + (int) (y * rectangle.height));
+	}
+
+	/** Returns this corner's position on the given control in display coordinates. */
+	public Point getPosition(Control control) {
+		if (control instanceof Shell) {
+			return getPosition(control.getBounds());
+		} else {
+			return control.getDisplay().map(control, null, getPosition(control.getBounds()));
+		}
+	}
+
+	/** Returns this corner's position on the given ToolItem in display coordinates. */
+	public Point getPosition(ToolItem item) {
+		ToolBar toolbar = item.getParent();
+		return toolbar.getDisplay().map(toolbar, null, getPosition(item.getBounds()));
 	}
 
 	/**
