@@ -41,6 +41,7 @@ public class Shells {
 	private final int style;
 	private String title = "";
 	private Image image;
+	private int alpha = SWT.DEFAULT;
 	private Point size;
 	private Map.Entry<Corner, Point> location = null;
 
@@ -63,6 +64,12 @@ public class Shells {
 	/** Sets the title image for this Shell. */
 	public Shells setImage(Image image) {
 		this.image = image;
+		return this;
+	}
+
+	/** Sets the alpha for this Shell. */
+	public Shells setAlpha(int alpha) {
+		this.alpha = alpha;
 		return this;
 	}
 
@@ -192,12 +199,15 @@ public class Shells {
 	}
 
 	private void setupShell(Shell shell) {
-		// set the text and image
+		// set the text, image, and alpha
 		if (title != null) {
 			shell.setText(title);
 		}
 		if (image != null) {
 			shell.setImage(image);
+		}
+		if (alpha != SWT.DEFAULT) {
+			shell.setAlpha(alpha);
 		}
 		// disable close on ESCAPE
 		shell.addListener(SWT.Traverse, e -> {
