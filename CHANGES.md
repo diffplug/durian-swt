@@ -12,6 +12,7 @@
 	* selections are now preserved in a more intuitive way when the text changes.
 * `@SwtThread` can now annotate exceptions to the rules with `@SwtThread(SwtThread.Kind.THREADSAFE)`.
 * Added `Corner.getPosition(Control | ToolItem)`.
+* Added `Shells.setAlpha(int alpha)`.
 
 ### Version 3.0.0.ALPHA - November 11th 2016 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/3.0.0.ALPHA/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/3.0.0.ALPHA/view))
 
