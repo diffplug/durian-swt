@@ -2,6 +2,17 @@
 
 ### Version 3.0.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/durian/durian-swt/))
 
+### Version 3.0.0.BETA - February 7th 2017 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/3.0.0.BETA/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/3.0.0.BETA/view))
+
+* `SwtExec.Guarded` is now a `GuardedExecutor`.
+* Added `SwtRx.disposableEar()`.
+* Added `SwtPlatform.toOS()`.
+* Improvements to `SwtRx.textImmediate` and `SwtRx.textConfirmed`:
+	* now prevents double-calls to `setText(String str)`.
+	* selections are now preserved in a more intuitive way when the text changes.
+* `@SwtThread` can now annotate exceptions to the rules with `@SwtThread(SwtThread.Kind.THREADSAFE)`.
+* Added `Corner.getPosition(Control | ToolItem)`.
+
 ### Version 3.0.0.ALPHA - November 11th 2016 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/3.0.0.ALPHA/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/3.0.0.ALPHA/view))
 
 * Bumped RxJava to 2.0, and dealt with some initial fallout from that change.
