@@ -32,14 +32,21 @@ import org.eclipse.swt.widgets.Widget;
  * ```
  */
 public class TypedDataField<T, W extends Widget> {
+	/** Creates a TypedDataField for `setData(String key, Object value)`. */
 	public static <T, W extends Widget> TypedDataField<T, W> create(String key) {
 		return new TypedDataField<>(key);
 	}
 
+	/** Creates a TypedDataField for `setData(Object value)`. */
+	public static <T, W extends Widget> TypedDataField<T, W> create() {
+		return new TypedDataField<>(null);
+	}
+
+	@Nullable
 	final String key;
 
-	TypedDataField(String key) {
-		this.key = Objects.requireNonNull(key);
+	TypedDataField(@Nullable String key) {
+		this.key = key;
 	}
 
 	public T get(Widget widget) {
@@ -49,14 +56,22 @@ public class TypedDataField<T, W extends Widget> {
 	@SuppressWarnings("unchecked")
 	@Nullable
 	public T getNullable(Widget widget) {
-		return (T) widget.getData(key);
+		if (key == null) {
+			return (T) widget.getData();
+		} else {
+			return (T) widget.getData(key);
+		}
 	}
 
 	public void set(W widget, T value) {
-		widget.setData(key, Objects.requireNonNull(value));
+		setNullable(widget, Objects.requireNonNull(value));
 	}
 
 	public void setNullable(W widget, @Nullable T value) {
-		widget.setData(key, value);
+		if (key == null) {
+			widget.setData(value);
+		} else {
+			widget.setData(key, value);
+		}
 	}
 }
