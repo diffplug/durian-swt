@@ -17,6 +17,8 @@ package com.diffplug.common.swt;
 
 import java.util.Objects;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.swt.widgets.Widget;
 
 /**
@@ -40,12 +42,21 @@ public class TypedDataField<T, W extends Widget> {
 		this.key = Objects.requireNonNull(key);
 	}
 
-	@SuppressWarnings("unchecked")
 	public T get(Widget widget) {
+		return Objects.requireNonNull(getNullable(widget));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Nullable
+	public T getNullable(Widget widget) {
 		return (T) widget.getData(key);
 	}
 
 	public void set(W widget, T value) {
+		widget.setData(key, Objects.requireNonNull(value));
+	}
+
+	public void setNullable(W widget, @Nullable T value) {
 		widget.setData(key, value);
 	}
 }
