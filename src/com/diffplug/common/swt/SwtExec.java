@@ -46,6 +46,7 @@ import org.eclipse.swt.widgets.Widget;
 
 import com.diffplug.common.base.Box.Nullable;
 import com.diffplug.common.primitives.Ints;
+import com.diffplug.common.rx.DisposableEar;
 import com.diffplug.common.rx.GuardedExecutor;
 import com.diffplug.common.rx.Rx;
 import com.diffplug.common.rx.RxExecutor;
@@ -251,8 +252,13 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	}
 
 	/** Returns an API for performing actions which are guarded on the given Widget. */
+	public Guarded guardOn(DisposableEar ear) {
+		return new Guarded(this, ear);
+	}
+
+	/** Returns an API for performing actions which are guarded on the given Widget. */
 	public Guarded guardOn(Widget widget) {
-		return new Guarded(this, widget);
+		return guardOn(SwtRx.disposableEar(widget));
 	}
 
 	/** Returns an API for performing actions which are guarded on the given ControlWrapper. */
@@ -272,8 +278,8 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 * @see com.diffplug.common.rx.Rx
 	 */
 	public static class Guarded extends GuardedExecutor {
-		private Guarded(SwtExec parent, Widget guard) {
-			super(parent.rxExecutor, SwtRx.disposableEar(guard));
+		private Guarded(SwtExec parent, DisposableEar ear) {
+			super(parent.rxExecutor, ear);
 		}
 
 		/** Runs the given runnable after the given delay iff the guard widget is not disposed. */
