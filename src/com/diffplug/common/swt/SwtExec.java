@@ -52,6 +52,7 @@ import com.diffplug.common.rx.Rx;
 import com.diffplug.common.rx.RxExecutor;
 import com.diffplug.common.rx.RxSubscriber;
 import com.diffplug.common.util.concurrent.MoreExecutors;
+import com.diffplug.common.util.concurrent.Runnables;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.Scheduler;
@@ -343,6 +344,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 *             or the security manager's <tt>checkAccess</tt> method
 	 *             denies access.
 	 */
+	@Deprecated
 	public void shutdown() {
 		throw new UnsupportedOperationException();
 	}
@@ -364,6 +366,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 *             or the security manager's <tt>checkAccess</tt> method
 	 *             denies access.
 	 */
+	@Deprecated
 	public List<Runnable> shutdownNow() {
 		throw new UnsupportedOperationException();
 	}
@@ -373,6 +376,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 *
 	 * @return <tt>true</tt> if this executor has been shut down
 	 */
+	@Deprecated
 	public boolean isShutdown() {
 		throw new UnsupportedOperationException();
 	}
@@ -384,6 +388,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 *
 	 * @return <tt>true</tt> if all tasks have completed following shut down
 	 */
+	@Deprecated
 	public boolean isTerminated() {
 		throw new UnsupportedOperationException();
 	}
@@ -401,6 +406,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 * @throws InterruptedException
 	 *             if interrupted while waiting
 	 */
+	@Deprecated
 	public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
 		throw new UnsupportedOperationException();
 	}
@@ -426,12 +432,10 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 * @throws NullPointerException
 	 *             if command is null
 	 */
+	@Override
 	public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
 		long delayMs = TimeUnit.MILLISECONDS.convert(delay, unit);
-		@SuppressWarnings({"rawtypes", "unchecked"})
-		RunnableScheduledFuture<?> future = new RunnableScheduledFuture(newTaskFor(command, null), delayMs);
-		display.timerExec(Ints.checkedCast(delayMs), future);
-		return future;
+		return submitFuture(new RunnableScheduledFuture<>(newTaskFor(command, null), delayMs));
 	}
 
 	/**
@@ -451,11 +455,10 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 * @throws NullPointerException
 	 *             if callable is null
 	 */
+	@Override
 	public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit) {
 		long delayMs = TimeUnit.MILLISECONDS.convert(delay, unit);
-		RunnableScheduledFuture<V> future = new RunnableScheduledFuture<V>(newTaskFor(callable), delayMs);
-		display.timerExec(Ints.checkedCast(delayMs), future);
-		return future;
+		return submitFuture(new RunnableScheduledFuture<>(newTaskFor(callable), delayMs));
 	}
 
 	/**
@@ -488,8 +491,11 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 * @throws IllegalArgumentException
 	 *             if period less than or equal to zero
 	 */
+	@Override
 	public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit) {
-		throw new UnsupportedOperationException();
+		long initialDelayMs = TimeUnit.MILLISECONDS.convert(initialDelay, unit);
+		long periodMs = TimeUnit.MILLISECONDS.convert(period, unit);
+		return submitFuture(new RunnableScheduledFuture<>(newTaskFor(Runnables.doNothing(), null), command, initialDelayMs, periodMs));
 	}
 
 	/**
@@ -521,76 +527,129 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 * @throws IllegalArgumentException
 	 *             if delay less than or equal to zero
 	 */
+	@Override
 	public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit) {
-		throw new UnsupportedOperationException();
+		long initialDelayMs = TimeUnit.MILLISECONDS.convert(initialDelay, unit);
+		long periodMs = -TimeUnit.MILLISECONDS.convert(delay, unit);
+		return submitFuture(new RunnableScheduledFuture<>(newTaskFor(Runnables.doNothing(), null), command, initialDelayMs, periodMs));
+	}
+
+	static <T> ScheduledFuture<T> submitFuture(RunnableScheduledFuture<T> future) {
+		if (Thread.currentThread() == swtThread) {
+			System.out.println("submitNow=" + future.delayInt());
+			display.timerExec(future.delayInt(), future);
+		} else {
+			display.asyncExec(() -> {
+				int delay = future.delayInt();
+				if (delay <= 0) {
+					future.run();
+				} else {
+					display.timerExec(delay, future);
+				}
+			});
+		}
+		return future;
 	}
 
 	/** Simple little mixin for making RunnableFutures schedulable. */
+	@SuppressFBWarnings(value = "EQ_COMPARETO_USE_OBJECT_EQUALS", justification = "changes as it runs")
 	private static class RunnableScheduledFuture<T> implements Runnable, ScheduledFuture<T> {
-		private RunnableFuture<T> runnableFuture;
-		private long delayMs;
+		private RunnableFuture<T> cancelDelegate;
+		private Runnable toRun;
+		private long time;
+		/**
+		 * = 0 -> no period
+		 * > 0 -> fixedRate
+		 * < 0 -> fixedDelay
+		 */
+		private long periodMs;
 
 		private RunnableScheduledFuture(RunnableFuture<T> runnableFuture, long delayMs) {
-			this.runnableFuture = runnableFuture;
-			this.delayMs = delayMs;
+			this.cancelDelegate = runnableFuture;
+			this.toRun = runnableFuture;
+			this.time = System.currentTimeMillis() + delayMs;
+			this.periodMs = 0;
+		}
+
+		private RunnableScheduledFuture(RunnableFuture<T> runnableFuture, Runnable toRun, long delayMs, long periodMs) {
+			this.cancelDelegate = runnableFuture;
+			this.toRun = toRun;
+			this.time = System.currentTimeMillis() + delayMs;
+			this.periodMs = periodMs;
+		}
+
+		int delayInt() {
+			return Ints.saturatedCast(time - System.currentTimeMillis());
 		}
 
 		// Runnable, overridden
 		@Override
 		public void run() {
-			runnableFuture.run();
-		}
-
-		// Delayed, implemented
-		@Override
-		public long getDelay(TimeUnit unit) {
-			return unit.convert(delayMs, TimeUnit.MILLISECONDS);
-		}
-
-		// Comparable<Delayed>, implemented
-		@Override
-		public int compareTo(Delayed other) {
-			return Ints.saturatedCast(delayMs - other.getDelay(TimeUnit.MILLISECONDS));
-		}
-
-		@Override
-		public boolean equals(Object other) {
-			if (other instanceof Delayed) {
-				return compareTo((Delayed) other) == 0;
-			} else {
-				return false;
+			if (cancelDelegate.isCancelled()) {
+				return;
+			}
+			if (periodMs > 0) {
+				// fixedRate
+				time += periodMs;
+			}
+			toRun.run();
+			if (periodMs < 0) {
+				// fixedDelay
+				time = System.currentTimeMillis() - periodMs;
+			}
+			if (periodMs != 0) {
+				long now = System.currentTimeMillis();
+				// if it's periodic, we need to reschedule
+				int delay = Ints.saturatedCast(time - now);
+				if (delay < 0) {
+					// if we blew a deadline, reset the schedule
+					time = now;
+					display.asyncExec(this);
+				} else {
+					display.timerExec(delay, this);
+				}
 			}
 		}
 
 		@Override
-		public int hashCode() {
-			return Objects.hash(delayMs);
+		public long getDelay(TimeUnit unit) {
+			return unit.convert(time - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+		}
+
+		@Override
+		public int compareTo(Delayed other) {
+			if (other instanceof RunnableScheduledFuture) {
+				return Ints.saturatedCast(time - ((RunnableScheduledFuture<?>) other).time);
+			} else {
+				int otherDelay = Ints.saturatedCast(other.getDelay(TimeUnit.MILLISECONDS));
+				return delayInt() - otherDelay;
+			}
 		}
 
 		// ScheduledFuture, delegated
 		@Override
 		public boolean cancel(boolean mayInterruptIfRunning) {
-			return runnableFuture.cancel(mayInterruptIfRunning);
+			return cancelDelegate.cancel(mayInterruptIfRunning);
 		}
 
 		@Override
 		public T get() throws InterruptedException, ExecutionException {
-			return runnableFuture.get();
+			return cancelDelegate.get();
 		}
 
 		@Override
 		public T get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-			return runnableFuture.get(timeout, unit);
+			return cancelDelegate.get(timeout, unit);
 		}
 
 		@Override
 		public boolean isCancelled() {
-			return runnableFuture.isCancelled();
+			return cancelDelegate.isCancelled();
 		}
 
 		@Override
 		public boolean isDone() {
-			return runnableFuture.isDone();
+			return cancelDelegate.isDone();
 		}
 	}
 

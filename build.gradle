@@ -47,6 +47,7 @@ dependencies {
 	compile "io.reactivex.rxjava2:rxjava:${VER_RXJAVA}"
 
 	testCompile "junit:junit:${VER_JUNIT}"
+	testCompile "org.assertj:assertj-core:${VER_ASSERTJ}"
 	testCompile "com.diffplug.durian:durian-debug:${VER_DURIAN_DEBUG}"
 }
 
