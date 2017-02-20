@@ -36,7 +36,6 @@ import org.eclipse.swt.widgets.Text;
 import com.diffplug.common.base.Box;
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.Preconditions;
-import com.diffplug.common.base.Unhandled;
 
 /**
  * InteractiveTest opens a {@link Coat} or {@link Shell}, and displays instructions
@@ -114,7 +113,7 @@ public class InteractiveTest {
 	}
 
 	/** A map containing the shells for the currently running test, mapped to the box which holds its result. */
-	private static Map<Shell, Box<TestResult>> shellToResult = new HashMap<>();
+	private static Map<Shell, Box<Optional<Throwable>>> shellToResult = new HashMap<>();
 
 	/**
 	 * @param instructions Instructions for the user to follow.
@@ -125,7 +124,7 @@ public class InteractiveTest {
 			Display display = SwtMisc.assertUI();
 
 			// the test is a failure until the user tells us otherwise
-			Box<TestResult> result = Box.ofVolatile(TestResult.FAIL);
+			Box<Optional<Throwable>> result = Box.ofVolatile(Optional.of(new FailedByUser(instructions)));
 
 			try {
 				// create the shell under test
@@ -146,7 +145,7 @@ public class InteractiveTest {
 						// dispose the test shell (we'll let the instructions shell dispose itself)
 						underTest.dispose();
 						// set the result to be a pass
-						result.set(TestResult.PASS);
+						result.set(Optional.empty());
 					});
 				});
 
@@ -154,13 +153,13 @@ public class InteractiveTest {
 				SwtMisc.loopUntilDisposed(underTest);
 
 				// take the appropriate action for that result
-				switch (result.get()) {
-				case PASS:
-					return;
-				case FAIL:
-					throw new AssertionError(instructions);
-				default:
-					throw Unhandled.enumException(result.get());
+				if (result.get().isPresent()) {
+					Throwable e = result.get().get();
+					if (e instanceof Error) {
+						throw (Error) e;
+					} else {
+						throw Errors.asRuntime(e);
+					}
 				}
 			} finally {
 				// dispose everything at the end
@@ -172,24 +171,32 @@ public class InteractiveTest {
 		});
 	}
 
-	private static void setResult(Control ctl, TestResult result) {
-		Shell shell = ctl.getShell();
+	private static void setResult(Control ctl, Optional<Throwable> result) {
 		SwtExec.async().guardOn(ctl).execute(() -> {
-			Box<TestResult> resultBox = shellToResult.remove(shell);
+			Shell shell = ctl.getShell();
+			Box<Optional<Throwable>> resultBox = shellToResult.remove(shell);
 			Objects.requireNonNull(resultBox, "No test shell for control.");
 			resultBox.set(result);
 			shell.dispose();
 		});
 	}
 
+	static class FailedByUser extends AssertionError {
+		public FailedByUser(String instructions) {
+			super(instructions);
+		}
+
+		private static final long serialVersionUID = 1L;
+	}
+
 	/** Closes the test for the given control, and passes. */
 	public static void closeAndPass(Control ctl) {
-		setResult(ctl, TestResult.PASS);
+		setResult(ctl, Optional.empty());
 	}
 
 	/** Closes the test for the given control, and fails. */
-	public static void closeAndFail(Control ctl) {
-		setResult(ctl, TestResult.FAIL);
+	public static void closeAndFail(Control ctl, Throwable e) {
+		setResult(ctl, Optional.of(e));
 	}
 
 	/**
@@ -218,11 +225,15 @@ public class InteractiveTest {
 
 	/** The result of a TestDialog. */
 	private enum TestResult {
-		PASS, FAIL
+		PASS, FAIL;
+
+		public <T> T passFail(T pass, T fail) {
+			return this == PASS ? pass : fail;
+		}
 	}
 
 	/** Opens the instructions dialog. */
-	private static Shell openInstructions(Shell underTest, String instructions, Box<TestResult> result) {
+	private static Shell openInstructions(Shell underTest, String instructions, Box<Optional<Throwable>> result) {
 		Shell instructionsShell = Shells.builder(SWT.TITLE | SWT.BORDER, cmp -> {
 			Layouts.setGrid(cmp).numColumns(3);
 
@@ -239,7 +250,7 @@ public class InteractiveTest {
 				Button btn = new Button(cmp, SWT.PUSH);
 				btn.setText(val.name());
 				btn.addListener(SWT.Selection, e -> {
-					result.set(val);
+					result.set(val.passFail(Optional.empty(), Optional.of(new FailedByUser(instructions))));
 					cmp.getShell().dispose();
 				});
 				Layouts.setGridData(btn).widthHint(SwtMisc.defaultButtonWidth());

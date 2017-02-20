@@ -101,10 +101,10 @@ public class InteractiveTestTest {
 		});
 	}
 
-	@Test(expected = AssertionError.class)
+	@Test(expected = RuntimeException.class)
 	public void testCloseAndFail() {
 		InteractiveTest.testCoat("Should fail itself very quickly.", cmp -> {
-			InteractiveTest.closeAndFail(cmp);
+			InteractiveTest.closeAndFail(cmp, new RuntimeException("Oh noes!"));
 		});
 	}
 
