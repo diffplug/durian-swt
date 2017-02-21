@@ -223,15 +223,6 @@ public class InteractiveTest {
 		});
 	}
 
-	/** The result of a TestDialog. */
-	private enum TestResult {
-		PASS, FAIL;
-
-		public <T> T passFail(T pass, T fail) {
-			return this == PASS ? pass : fail;
-		}
-	}
-
 	/** Opens the instructions dialog. */
 	private static Shell openInstructions(Shell underTest, String instructions, Box<Optional<Throwable>> result) {
 		Shell instructionsShell = Shells.builder(SWT.TITLE | SWT.BORDER, cmp -> {
@@ -246,17 +237,17 @@ public class InteractiveTest {
 			// pass / fail buttons
 			Layouts.newGridPlaceholder(cmp).grabHorizontal();
 
-			Consumer<TestResult> buttonCreator = val -> {
+			Consumer<Boolean> buttonCreator = isPass -> {
 				Button btn = new Button(cmp, SWT.PUSH);
-				btn.setText(val.name());
+				btn.setText(isPass ? "PASS" : "FAIL");
 				btn.addListener(SWT.Selection, e -> {
-					result.set(val.passFail(Optional.empty(), Optional.of(new FailedByUser(instructions))));
+					result.set(isPass ? Optional.empty() : Optional.of(new FailedByUser(instructions)));
 					cmp.getShell().dispose();
 				});
 				Layouts.setGridData(btn).widthHint(SwtMisc.defaultButtonWidth());
 			};
-			buttonCreator.accept(TestResult.PASS);
-			buttonCreator.accept(TestResult.FAIL);
+			buttonCreator.accept(true);
+			buttonCreator.accept(false);
 		})
 				.setTitle("PASS / FAIL")
 				.setSize(SwtMisc.scaleByFontHeight(18, 0))
