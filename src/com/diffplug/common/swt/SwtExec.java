@@ -536,7 +536,6 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 
 	static <T> ScheduledFuture<T> submitFuture(RunnableScheduledFuture<T> future) {
 		if (Thread.currentThread() == swtThread) {
-			System.out.println("submitNow=" + future.delayInt());
 			display.timerExec(future.delayInt(), future);
 		} else {
 			display.asyncExec(() -> {
