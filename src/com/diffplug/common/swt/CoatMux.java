@@ -31,6 +31,7 @@ import com.diffplug.common.rx.RxBox;
 import com.diffplug.common.rx.RxGetter;
 
 /** A widget that switches between multiple `Coat`s. */
+@SwtThread
 public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 	/** The StackLayout for switching between layers. */
 	private StackLayout stack = new StackLayout();
@@ -47,13 +48,18 @@ public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 		// when the current layer changes, set the topControl appropriately
 		Rx.subscribe(currentLayer, opt -> {
 			stack.topControl = opt.map(layer -> layer.control).orElse(null);
-			wrapped.layout(true, true);
+			wrapped.layout();
 		});
 	}
 
 	/** The current layer (if any). */
 	public RxGetter<Optional<Layer<?>>> rxCurrent() {
 		return currentLayer;
+	}
+
+	/** Sets the mux to be empty. */
+	public void setEmpty() {
+		currentLayer.set(Optional.empty());
 	}
 
 	/** The Control at the top of the stack (possibly null). */
