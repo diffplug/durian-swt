@@ -49,6 +49,7 @@ public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 		Rx.subscribe(currentLayer, opt -> {
 			stack.topControl = opt.map(layer -> layer.control).orElse(null);
 			wrapped.layout();
+			wrapped.requestLayout();
 		});
 	}
 
