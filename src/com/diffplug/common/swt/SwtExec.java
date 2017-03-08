@@ -287,6 +287,38 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 		public void timerExec(int delayMs, Runnable runnable) {
 			display.timerExec(delayMs, getGuard().guard(runnable));
 		}
+
+		/**
+		 * Same as {@link SwtExec#schedule(Runnable, long, TimeUnit)} but automatically
+		 * cancels when the guard is disposed.  Identical behavior for `immediate()`,
+		 * `async()`, etc.
+		 */
+		public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
+			return hook(SwtExec.async().schedule(getGuard().guard(command), delay, unit));
+		}
+
+		/**
+		 * Same as {@link SwtExec#scheduleWithFixedDelay(Runnable, long, long, TimeUnit)} but automatically
+		 * cancels when the guard is disposed.  Identical behavior for `immediate()`,
+		 * `async()`, etc.
+		 */
+		public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit) {
+			return hook(SwtExec.async().scheduleWithFixedDelay(getGuard().guard(command), initialDelay, delay, unit));
+		}
+
+		/**
+		 * Same as {@link SwtExec#scheduleAtFixedRate(Runnable, long, long, TimeUnit)} but automatically
+		 * cancels when the guard is disposed.  Identical behavior for `immediate()`,
+		 * `async()`, etc.
+		 */
+		public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long delay, TimeUnit unit) {
+			return hook(SwtExec.async().scheduleAtFixedRate(getGuard().guard(command), initialDelay, delay, unit));
+		}
+
+		private ScheduledFuture<?> hook(ScheduledFuture<?> future) {
+			getGuard().runWhenDisposed(() -> future.cancel(true));
+			return future;
+		}
 	}
 
 	protected final RxExecutor rxExecutor;
