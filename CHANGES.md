@@ -2,6 +2,15 @@
 
 ### Version 3.0.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/durian/durian-swt/))
 
+### Version 3.0.0.BETA2 - March 8th 2017 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/3.0.0.BETA2/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/3.0.0.BETA2/view))
+
+* Added `TypedDataField` for storing strongly-typed data into widgets.
+* Added `SwtExec.guardOn(DisposableEar ear)`.
+* `InteractiveTest.setResult()` can now be called from any thread, and the user can pass any exception.
+* Implemented `scheduleAtFixedRate` and `scheduleWithFixedDelay` for `SwtExec` and `SwtExec.Guarded`.
+* Improved `CoatMux`'s reliability.
+* Deprecated `SwtMisc.requestLayout`.
+
 ### Version 3.0.0.BETA - February 7th 2017 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/3.0.0.BETA/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/3.0.0.BETA/view))
 
 * `SwtExec.Guarded` is now a `GuardedExecutor`.
