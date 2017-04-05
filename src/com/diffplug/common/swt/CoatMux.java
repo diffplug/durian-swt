@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 import com.diffplug.common.base.Preconditions;
+import com.diffplug.common.rx.DisposableEar;
 import com.diffplug.common.rx.Rx;
 import com.diffplug.common.rx.RxBox;
 import com.diffplug.common.rx.RxGetter;
@@ -72,7 +73,6 @@ public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 	public class Layer<T> {
 		final Control control;
 		final T handle;
-		final RxGetter<Boolean> rxCurrent = currentLayer.map(opt -> opt.isPresent() && opt.get() == this);
 
 		private Layer(Control control, T handle) {
 			this.control = control;
@@ -81,7 +81,7 @@ public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 
 		/** {@link RxGetter} which keeps track of whether this `Layer` is currently on top. */
 		public RxGetter<Boolean> rxOnTop() {
-			return rxCurrent;
+			return currentLayer.map(opt -> opt.isPresent() && opt.get() == this);
 		}
 
 		/** The handle which was returned by the {@link Coat.Returning}. */
@@ -96,10 +96,14 @@ public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 
 		/** Disposes the contents of this layer. */
 		public void dispose() {
-			if (rxCurrent.get()) {
+			if (rxOnTop().get()) {
 				currentLayer.set(Optional.empty());
 			}
 			SwtExec.immediate().execute(control::dispose);
+		}
+
+		public DisposableEar ear() {
+			return SwtRx.disposableEar(control);
 		}
 	}
 
@@ -148,7 +152,7 @@ public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 		// bring it to the top
 		layer.bringToTop();
 		// dispose the layer when it's no longer current
-		SwtExec.immediate().guardOn(layer.control).subscribe(layer.rxCurrent, isCurrent -> {
+		SwtExec.immediate().guardOn(layer.control).subscribe(layer.rxOnTop(), isCurrent -> {
 			if (!isCurrent) {
 				layer.dispose();
 			}
