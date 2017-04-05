@@ -56,6 +56,16 @@ public interface ControlWrapper {
 		return getRootControl().getShell();
 	}
 
+	/** Disposes the underlying control. */
+	default void dispose() {
+		getRootControl().dispose();
+	}
+
+	/** Returns true iff the underlying control is disposed. */
+	default boolean isDisposed() {
+		return getRootControl().isDisposed();
+	}
+
 	/**
 	 * Returns the wrapped {@link Control} (only appropriate for limited purposes!).
 	 * <p>
