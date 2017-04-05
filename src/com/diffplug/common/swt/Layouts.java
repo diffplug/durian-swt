@@ -147,6 +147,26 @@ public class Layouts {
 		return setGridData(placeholder);
 	}
 
+	/**
+	 * Quick shortcut to add a row to to this parent.
+	 * 
+	 * - parent must have a GridLayout
+	 * - creates a new Composite that will take the full width of the parent, with no margins
+	 * - populates the new Composite using the Coat
+	 * - sets the layout on the new Composite to be a GridLayout with no margins and as many columns as there are child controls
+	 * - returns the new Composite
+	 */
+	public static Composite newGridRow(Composite parent, Coat coat) {
+		Composite cmp = new Composite(parent, SWT.NONE);
+		Layouts.setGridData(cmp)
+				.grabHorizontal()
+				.horizontalSpan(Layouts.modifyGrid(parent).getRaw().numColumns);
+		LayoutsGridLayout gridData = Layouts.setGrid(cmp).margin(0);
+		coat.putOn(cmp);
+		gridData.numColumns(cmp.getChildren().length);
+		return cmp;
+	}
+
 	///////////////
 	// RowLayout //
 	///////////////
