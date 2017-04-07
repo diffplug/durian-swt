@@ -8,7 +8,9 @@ plugins {
 	// github pages
 	id "org.ajoberstar.github-pages" version "1.6.0"
 	// code formatting
-	id "com.diffplug.gradle.spotless" version "3.0.0"
+	id "com.diffplug.gradle.spotless" version "3.2.0"
+	// errorprone
+	id "net.ltgt.errorprone" version "0.0.9"
 }
 
 repositories {

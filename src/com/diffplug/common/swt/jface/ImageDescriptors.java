@@ -15,6 +15,7 @@
  */
 package com.diffplug.common.swt.jface;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -68,7 +69,7 @@ public class ImageDescriptors {
 			@Override
 			public void set(ImageDescriptor newDesc) {
 				// make sure nobody else messed with the image
-				if (imageGetter.get() != lastImg) {
+				if (!Objects.equals(imageGetter.get(), lastImg)) {
 					// if someone else did mess with it, we can probably survive, so best to just
 					// log the failure and continue with setting the image
 					Errors.log().accept(new IllegalStateException("Setter must have exclusive control over the image field."));

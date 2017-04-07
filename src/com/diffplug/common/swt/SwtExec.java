@@ -56,6 +56,7 @@ import com.diffplug.common.util.concurrent.Runnables;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.Scheduler;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.schedulers.Schedulers;
@@ -377,6 +378,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 *             denies access.
 	 */
 	@Deprecated
+	@Override
 	public void shutdown() {
 		throw new UnsupportedOperationException();
 	}
@@ -399,6 +401,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 *             denies access.
 	 */
 	@Deprecated
+	@Override
 	public List<Runnable> shutdownNow() {
 		throw new UnsupportedOperationException();
 	}
@@ -409,6 +412,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 * @return <tt>true</tt> if this executor has been shut down
 	 */
 	@Deprecated
+	@Override
 	public boolean isShutdown() {
 		throw new UnsupportedOperationException();
 	}
@@ -421,6 +425,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 * @return <tt>true</tt> if all tasks have completed following shut down
 	 */
 	@Deprecated
+	@Override
 	public boolean isTerminated() {
 		throw new UnsupportedOperationException();
 	}
@@ -439,6 +444,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	 *             if interrupted while waiting
 	 */
 	@Deprecated
+	@Override
 	public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
 		throw new UnsupportedOperationException();
 	}
@@ -930,14 +936,15 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 
 			@Override
 			public Disposable schedule(Runnable action, long delayTime, TimeUnit unit) {
-				Disposable actionSubscription = Disposables.empty();
-				SwtExec.async().schedule(() -> {
-					if (!actionSubscription.isDisposed()) {
+				CompositeDisposable sub = new CompositeDisposable();
+				Future<?> future = SwtExec.async().schedule(() -> {
+					if (!sub.isDisposed()) {
 						action.run();
-						actionSubscription.dispose();
+						sub.dispose();
 					}
 				}, delayTime, unit);
-				return actionSubscription;
+				sub.add(Disposables.fromFuture(future));
+				return sub;
 			}
 
 			@Override
