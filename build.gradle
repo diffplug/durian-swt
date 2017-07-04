@@ -1,8 +1,8 @@
 plugins {
 	// swt deps
-	id "com.diffplug.gradle.swt.nativedeps" version "3.7.0"
+	id "com.diffplug.gradle.swt.nativedeps" version "3.7.3"
 	// osgi
-	id "com.diffplug.gradle.osgi.bndmanifest" version "3.7.0"
+	id "com.diffplug.gradle.osgi.bndmanifest" version "3.7.3"
 	// bintray uploading
 	id "com.jfrog.bintray" version "1.7.3"
 	// github pages
