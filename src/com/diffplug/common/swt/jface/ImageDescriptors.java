@@ -22,6 +22,7 @@ import java.util.function.Supplier;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
@@ -34,6 +35,15 @@ import com.diffplug.common.swt.OnePerWidget;
 
 /** Utilities for using {@link ImageDescriptor}s correctly. */
 public class ImageDescriptors {
+	/** Creates an image from the given data, and disposes it when the lifecycle widget is disposed. */
+	public static Image createManagedImage(ImageData data, Widget lifecycle) {
+		Image image = new Image(lifecycle.getDisplay(), data);
+		lifecycle.addListener(SWT.Dispose, e -> {
+			image.dispose();
+		});
+		return image;
+	}
+
 	/**
 	 * {@link ImageDescriptor} allows an {@link Image} to be shared in a pool using reference counting. In order to not screw-up the reference
 	 * counting, you need to be pretty careful with how you use them.
