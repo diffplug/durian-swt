@@ -55,7 +55,6 @@ import com.diffplug.common.tree.TreeDef;
 import com.diffplug.common.tree.TreeIterable;
 import com.diffplug.common.tree.TreeQuery;
 import com.diffplug.common.tree.TreeStream;
-import com.diffplug.common.util.concurrent.ListenableFuture;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /** Miscellaneous SWT functions. */
@@ -234,36 +233,7 @@ public class SwtMisc {
 	}
 
 	/** Runs the display loop until the given future has returned. */
-	public static <T> T loopUntilGet(ListenableFuture<T> future) throws Throwable {
-		Box.Nullable<T> result = Box.Nullable.ofNull();
-		Box.Nullable<Throwable> error = Box.Nullable.ofNull();
-		Rx.subscribe(future, Rx.onValueOnFailure(result::set, error::set));
-
-		loopUntil(display -> future.isDone());
-
-		if (error.get() != null) {
-			throw error.get();
-		} else {
-			return result.get();
-		}
-	}
-
-	/** Runs the display loop until the given future has returned. */
-	@SuppressWarnings("unchecked")
-	public static <T, E extends Throwable> T loopUntilGetChecked(ListenableFuture<T> future, Class<E> clazz) throws E {
-		try {
-			return loopUntilGet(future);
-		} catch (Throwable error) {
-			if (clazz.isAssignableFrom(error.getClass())) {
-				throw (E) error;
-			} else {
-				throw Errors.asRuntime(error);
-			}
-		}
-	}
-
-	/** Runs the display loop until the given future has returned. */
-	public static <T> T loopUntilGet(CompletionStage<T> future) throws Throwable {
+	public static <T> T loopUntilGet(CompletionStage<T> future) {
 		Box.Nullable<T> result = Box.Nullable.ofNull();
 		Box.Nullable<Throwable> error = Box.Nullable.ofNull();
 		Rx.subscribe(future, Rx.onValueOnFailure(result::set, error::set));
@@ -272,23 +242,9 @@ public class SwtMisc {
 		loopUntil(display -> actualFuture.isDone());
 
 		if (error.get() != null) {
-			throw error.get();
+			throw Errors.asRuntime(error.get());
 		} else {
 			return result.get();
-		}
-	}
-
-	/** Runs the display loop until the given future has returned. */
-	@SuppressWarnings("unchecked")
-	public static <T, E extends Throwable> T loopUntilGetChecked(CompletionStage<T> future, Class<E> clazz) throws E {
-		try {
-			return loopUntilGet(future);
-		} catch (Throwable error) {
-			if (clazz.isAssignableFrom(error.getClass())) {
-				throw (E) error;
-			} else {
-				throw Errors.asRuntime(error);
-			}
 		}
 	}
 
