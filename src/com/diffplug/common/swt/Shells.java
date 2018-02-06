@@ -73,6 +73,13 @@ public class Shells {
 		return this;
 	}
 
+	/** Sets the full bounds for this shell. */
+	public Shells setBounds(Rectangle bounds) {
+		this.location = Maps.immutableEntry(Corner.TOP_LEFT, new Point(bounds.x, bounds.y));
+		this.size = new Point(bounds.width, bounds.height);
+		return this;
+	}
+
 	/**
 	 * Sets the size for this Shell.
 	 * <ul>
