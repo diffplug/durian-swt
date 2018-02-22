@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -26,6 +27,7 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -38,7 +40,6 @@ import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Tree;
 
-import com.diffplug.common.base.Consumers;
 import com.diffplug.common.swt.ColumnFormat;
 
 /** Fluent API for creating {@link TableViewer}s and {@link TreeViewer}s with a certain format. */
@@ -132,7 +133,7 @@ public class ColumnViewerFormat<T> {
 	}
 
 	/** Builds a viewer. */
-	private <ViewerType extends StructuredViewer, ColumnType extends Item> ViewerType buildViewer(ViewerType viewer, List<ColumnType> columns, BiFunction<ViewerType, ColumnType, ViewerColumn> columnViewerCreator) {
+	private <ViewerType extends ColumnViewer, ColumnType extends Item> ViewerType buildViewer(ViewerType viewer, List<ColumnType> columns, BiFunction<ViewerType, ColumnType, ViewerColumn> columnViewerCreator) {
 		viewer.setUseHashlookup(useHashLookup);
 		for (int i = 0; i < columnBuilders.size(); ++i) {
 			ViewerColumn viewerColumn = columnViewerCreator.apply(viewer, columns.get(i));
@@ -140,7 +141,7 @@ public class ColumnViewerFormat<T> {
 			if (builder.provider != null) {
 				viewerColumn.setLabelProvider(builder.provider);
 			}
-			builder.finalSetup.accept(viewerColumn);
+			builder.finalSetup.accept(viewer, viewerColumn);
 		}
 		return viewer;
 	}
@@ -151,7 +152,7 @@ public class ColumnViewerFormat<T> {
 
 		@Nullable
 		private ColumnLabelProvider provider;
-		private Consumer<? super ViewerColumn> finalSetup = Consumers.doNothing();
+		private BiConsumer<ColumnViewer, ? super ViewerColumn> finalSetup = (viewer, column) -> {};
 
 		/** Uses the given as the label provider. */
 		public ColumnBuilder<T> setLabelProvider(ColumnLabelProvider provider) {
@@ -176,6 +177,11 @@ public class ColumnViewerFormat<T> {
 
 		/** Calls the given consumer after the ColumnViewer has been constructed. */
 		public ColumnBuilder<T> setFinalSetup(Consumer<? super ViewerColumn> finalSetup) {
+			return setFinalSetup((viewer, column) -> finalSetup.accept(column));
+		}
+
+		/** Calls the given consumer after the ColumnViewer has been constructed. */
+		public ColumnBuilder<T> setFinalSetup(BiConsumer<ColumnViewer, ? super ViewerColumn> finalSetup) {
 			this.finalSetup = finalSetup;
 			return this;
 		}
