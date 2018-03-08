@@ -48,8 +48,13 @@ public enum Corner {
 		if (control instanceof Shell) {
 			return getPosition(control.getBounds());
 		} else {
-			return control.getDisplay().map(control, null, getPosition(control.getBounds()));
+			return control.getDisplay().map(control.getParent(), null, getPosition(control.getBounds()));
 		}
+	}
+
+	/** Returns this corner's position on the given control in display coordinates. */
+	public Point getPosition(ControlWrapper wrapper) {
+		return getPosition(wrapper.getRootControl());
 	}
 
 	/** Returns this corner's position on the given ToolItem in display coordinates. */
