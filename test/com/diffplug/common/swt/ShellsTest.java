@@ -20,12 +20,15 @@ import java.util.function.Consumer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(InteractiveTest.class)
 public class ShellsTest {
+	private static final int UNIT = SwtMisc.systemFontWidth() * 20;
+
 	@Test
 	public void testPack() {
 		testCase("The shell should be a rectangle just large enough to see all the content.", shells -> {
@@ -36,29 +39,40 @@ public class ShellsTest {
 	@Test
 	public void testSquare() {
 		testCase("The shell should be a square too small to see all the content.", shells -> {
-			shells.setSize(new Point(100, 100));
+			shells.setSize(new Point(UNIT, UNIT));
 		});
 	}
 
 	@Test
 	public void testWidthFixed() {
 		testCase("The shell should be a skinny rectangle just big enough to see all the content.", shells -> {
-			shells.setSize(new Point(100, 0));
+			shells.setSize(new Point(UNIT, 0));
 		});
 	}
 
 	@Test
 	public void testHeightFixed() {
 		testCase("The shell should be a really wide rectangle too short to see all the content.", shells -> {
-			shells.setSize(new Point(0, 50));
+			shells.setSize(new Point(0, UNIT));
 		});
 	}
 
 	private void testCase(String instructions, Consumer<Shells> setSize) {
 		InteractiveTest.testShell(instructions, display -> {
-			Shells underTest = Shells.builder(SWT.DIALOG_TRIM, this::longText);
-			setSize.accept(underTest);
-			return underTest.openOnDisplay();
+			Shells includesTrim = Shells.builder(SWT.DIALOG_TRIM, this::longText);
+			setSize.accept(includesTrim);
+			includesTrim.setPositionIncludesTrim(true);
+			includesTrim.setTitle("Includes trim");
+			Shell includesTrimResult = includesTrim.openOnDisplay();
+
+			Shells notIncludesTrim = Shells.builder(SWT.DIALOG_TRIM, this::longText);
+			setSize.accept(notIncludesTrim);
+			notIncludesTrim.setPositionIncludesTrim(false);
+			notIncludesTrim.setTitle("Excludes trim");
+			notIncludesTrim.setLocation(Corner.TOP_LEFT, Corner.BOTTOM_LEFT.getPosition(includesTrimResult));
+			notIncludesTrim.openOn(includesTrimResult);
+
+			return includesTrimResult;
 		});
 	}
 

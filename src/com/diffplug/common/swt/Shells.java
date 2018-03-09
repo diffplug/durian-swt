@@ -24,7 +24,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
@@ -42,7 +42,8 @@ public class Shells {
 	private String title = "";
 	private Image image;
 	private int alpha = SWT.DEFAULT;
-	private Point size;
+	private final Point size = new Point(SWT.DEFAULT, SWT.DEFAULT);
+	private boolean positionIncludesTrim = true;
 	private Map.Entry<Corner, Point> location = null;
 
 	private Shells(int style, Coat coat) {
@@ -73,34 +74,61 @@ public class Shells {
 		return this;
 	}
 
-	/** Sets the full bounds for this shell. */
+	/**
+	 * Sets the full bounds for this shell.
+	 * Delegates to {@link #setRectangle(Rectangle)} and {@link #setPositionIncludesTrim(true)}.
+	 */
 	public Shells setBounds(Rectangle bounds) {
-		this.location = Maps.immutableEntry(Corner.TOP_LEFT, new Point(bounds.x, bounds.y));
-		this.size = new Point(bounds.width, bounds.height);
+		setRectangle(bounds);
+		setPositionIncludesTrim(true);
 		return this;
+	}
+
+	/** Calls {@link #setBounds(Rectangle)} to match this control. */
+	public Shells setBounds(Control control) {
+		return setBounds(SwtMisc.globalBounds(control));
+	}
+
+	/** Calls {@link #setBounds(Rectangle)} to match this control. */
+	public Shells setBounds(ControlWrapper wrapper) {
+		return setBounds(SwtMisc.globalBounds(wrapper.getRootControl()));
+	}
+
+	/**
+	 * Calls {@link #setLocation(Point)} and {@link #setSize(Point)} in one line.
+	 */
+	public Shells setRectangle(Rectangle rect) {
+		return setLocation(new Point(rect.x, rect.y)).setSize(new Point(rect.width, rect.height));
 	}
 
 	/**
 	 * Sets the size for this Shell.
 	 * <ul>
-	 * <li>If `size` is null, the shell will be packed as tightly as possible.</li>
+	 * <li>If `size` is null, or both components are `<= 0`, the shell will be packed as tightly as possible.</li>
 	 * <li>If both components are `> 0`, the shell will be set to that size.</li>
 	 * <li>If <i>one</i> component is `<= 0`, the positive dimension will be constrained and the other dimension will be packed as tightly as possible.</li>
-	 * <li>If both components are `<= 0`, you'll get an `IllegalArgumentException`.</li>
 	 * </ul>
 	 * @throws IllegalArgumentException if size is non-null and both components are negative
 	 */
 	public Shells setSize(@Nullable Point size) {
-		if (size != null && size.x <= 0 && size.y <= 0) {
-			throw new IllegalArgumentException("Size must either be null or have at least one positive dimension, this was: " + size);
+		if (size == null) {
+			this.size.x = SWT.DEFAULT;
+			this.size.y = SWT.DEFAULT;
+		} else {
+			setSize(size.x, size.y);
 		}
-		this.size = size;
 		return this;
 	}
 
 	/** @see #setSize(Point) */
 	public Shells setSize(int x, int y) {
-		return setSize(new Point(x, y));
+		this.size.x = sanitizeToDefault(x);
+		this.size.y = sanitizeToDefault(y);
+		return this;
+	}
+
+	private static int sanitizeToDefault(int val) {
+		return val > 0 ? val : SWT.DEFAULT;
 	}
 
 	/**
@@ -125,6 +153,16 @@ public class Shells {
 	 */
 	public Shells setLocation(Corner corner, Point position) {
 		this.location = Maps.immutableEntry(Objects.requireNonNull(corner), Objects.requireNonNull(position));
+		return this;
+	}
+
+	/**
+	 * If true, size and location will set the the "outside" of the Shell - including the trim.
+	 * If false, it will set the "inside" of the Shell - not including the trim.
+	 * Default value is true.
+	 */
+	public Shells setPositionIncludesTrim(boolean positionIncludesTrim) {
+		this.positionIncludesTrim = positionIncludesTrim;
 		return this;
 	}
 
@@ -223,40 +261,50 @@ public class Shells {
 			}
 		});
 		// find the composite we're going to draw on
-		Composite userCmp;
-		if (size == null) {
-			userCmp = shell;
-			size = new Point(0, 0);
+		coat.putOn(shell);
+
+		Rectangle bounds;
+		if (positionIncludesTrim) {
+			Point computedSize;
+			if (size.x == SWT.DEFAULT ^ size.y == SWT.DEFAULT) {
+				// if we're specifying only one side or the other,
+				// then we need to adjust for the trim
+				Rectangle trimFor100x100 = shell.computeTrim(100, 100, 100, 100);
+				int dwidth = trimFor100x100.width - 100;
+				int dheight = trimFor100x100.height - 100;
+				int widthHint = size.x == SWT.DEFAULT ? SWT.DEFAULT : size.x - dwidth;
+				int heightHint = size.y == SWT.DEFAULT ? SWT.DEFAULT : size.y - dheight;
+				computedSize = shell.computeSize(widthHint, heightHint);
+				computedSize.x += dwidth;
+				computedSize.y += dheight;
+			} else {
+				if (size.x == SWT.DEFAULT) {
+					// we're packing as tight as can
+					Preconditions.checkState(size.y == SWT.DEFAULT);
+					computedSize = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
+				} else {
+					// the size is specified completely
+					Preconditions.checkState(size.y != SWT.DEFAULT);
+					computedSize = size;
+				}
+			}
+			Point topLeft = location.getKey().topLeftRequiredFor(new Rectangle(0, 0, computedSize.x, computedSize.y), location.getValue());
+			bounds = new Rectangle(topLeft.x, topLeft.y, computedSize.x, computedSize.y);
 		} else {
-			// if there's a specific size, then we'll create a fake one
-			// and set its size appropriately
-			Layouts.setGrid(shell).margin(0);
-			userCmp = new Composite(shell, SWT.NONE);
-			LayoutsGridData gdUtil = Layouts.setGridData(userCmp).grabAll();
-			if (size.x > 0) {
-				gdUtil.widthHint(size.x);
-			}
-			if (size.y > 0) {
-				gdUtil.heightHint(size.y);
-			}
+			Point computedSize = shell.computeSize(size.x, size.y, true);
+			Point topLeft = location.getKey().topLeftRequiredFor(new Rectangle(0, 0, computedSize.x, computedSize.y), location.getValue());
+			bounds = shell.computeTrim(topLeft.x, topLeft.y, computedSize.x, computedSize.y);
 		}
-		// draw the composite
-		coat.putOn(userCmp);
-		shell.pack(true);
 
-		// calculate the opening size and nominal topLeft
-		Point size = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		Point topLeft = location.getKey().topLeftRequiredFor(new Rectangle(0, 0, size.x, size.y), location.getValue());
-
-		// constrain the position by the Display's bounds (getClientArea() takes the Start bar into account)	
-		Rectangle monitorBounds = SwtMisc.monitorFor(topLeft).orElse(SwtMisc.assertUI().getMonitors()[0]).getClientArea();
-		topLeft.x = Math.max(topLeft.x, monitorBounds.x);
-		topLeft.y = Math.max(topLeft.y, monitorBounds.y);
-		topLeft.x = Math.min(topLeft.x + size.x, monitorBounds.x + monitorBounds.width) - size.x;
-		topLeft.y = Math.min(topLeft.y + size.y, monitorBounds.y + monitorBounds.height) - size.y;
+		// constrain the position by the Display's bounds (getClientArea() takes the Start bar into account)
+		Rectangle monitorBounds = SwtMisc.monitorFor(new Point(bounds.x, bounds.y)).orElse(SwtMisc.assertUI().getMonitors()[0]).getClientArea();
+		bounds.x = Math.max(bounds.x, monitorBounds.x);
+		bounds.y = Math.max(bounds.y, monitorBounds.y);
+		bounds.x = Math.min(bounds.x + bounds.width, monitorBounds.x + monitorBounds.width) - bounds.width;
+		bounds.y = Math.min(bounds.y + bounds.height, monitorBounds.y + monitorBounds.height) - bounds.height;
 
 		// set the location and open it up!
-		shell.setLocation(topLeft);
+		shell.setBounds(bounds);
 		shell.open();
 	}
 
