@@ -104,7 +104,7 @@ public class SwtPlatform {
 
 	/** Parses ws.os.arch strings (which is how SWT bundles are specified). */
 	public static SwtPlatform parseWsOsArch(String unparsed) {
-		String[] pieces = unparsed.split("\\.");
+		String[] pieces = unparsed.split("\\.", -1);
 		if (pieces.length != 3) {
 			throw new IllegalArgumentException(unparsed + " should have the form 'ws.os.arch'.");
 		}

@@ -70,7 +70,7 @@ public class ViewerMiscTest {
 	private static Function<TreeNode<String>, String> getPlace(int place) {
 		return node -> {
 			String obj = node.getContent();
-			String[] pieces = obj.split(" ");
+			String[] pieces = obj.split(" ", -1);
 			return place < pieces.length ? pieces[place] : "";
 		};
 	}

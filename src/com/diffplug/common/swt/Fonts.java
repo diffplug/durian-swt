@@ -106,10 +106,10 @@ public class Fonts {
 				"Monaco:11;Courier:12;Courier New:12",
 				"Monospace:10");
 
-		String[] fonts = defaultFonts.split(";");
+		String[] fonts = defaultFonts.split(";", -1);
 		for (String font : fonts) {
 			// parse out each of the suggested fonts
-			String[] pieces = font.split(":");
+			String[] pieces = font.split(":", -1);
 			String fontName = pieces[0];
 			int fontSize = Integer.parseInt(pieces[1]);
 

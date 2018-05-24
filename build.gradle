@@ -1,16 +1,16 @@
 plugins {
 	// swt deps
-	id "com.diffplug.gradle.swt.nativedeps" version "3.7.3"
+	id "com.diffplug.gradle.eclipse.mavencentral" version "3.14.0"
 	// osgi
-	id "com.diffplug.gradle.osgi.bndmanifest" version "3.7.3"
+	id "com.diffplug.gradle.osgi.bndmanifest" version "3.14.0"
 	// bintray uploading
 	id "com.jfrog.bintray" version "1.7.3"
 	// github pages
 	id "org.ajoberstar.github-pages" version "1.6.0"
 	// code formatting
-	id "com.diffplug.gradle.spotless" version "3.2.0"
+	id "com.diffplug.gradle.spotless" version "3.12.0"
 	// errorprone
-	id "net.ltgt.errorprone" version "0.0.10"
+	id "net.ltgt.errorprone" version "0.0.14"
 }
 
 repositories {
@@ -41,12 +41,21 @@ sourceSets {
 sourceCompatibility = VER_JAVA
 targetCompatibility = VER_JAVA
 
+eclipseMavenCentral {
+	release '4.7.0', {
+		compile 'org.eclipse.swt'
+		compile 'org.eclipse.jface'
+		useNativesForRunningPlatform()
+	}
+}
 dependencies {
 	compile "com.diffplug.durian:durian-core:${VER_DURIAN}"
 	compile "com.diffplug.durian:durian-collect:${VER_DURIAN}"
 	compile "com.diffplug.durian:durian-concurrent:${VER_DURIAN}"
 	compile "com.diffplug.durian:durian-rx:${VER_DURIAN_RX}"
 	compile "io.reactivex.rxjava2:rxjava:${VER_RXJAVA}"
+	compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
+	compileOnly 'com.google.code.findbugs:annotations:3.0.1'
 
 	testCompile "junit:junit:${VER_JUNIT}"
 	testCompile "org.assertj:assertj-core:${VER_ASSERTJ}"
@@ -130,9 +139,9 @@ tasks.eclipse.dependsOn(cleanEclipse)
 ////////////
 spotless {
 	java {
-		licenseHeaderFile	rootProject.file('gradle/spotless.license.java')		// License header file
-		eclipseFormatFile	rootProject.file('gradle/spotless.eclipseformat.xml')	// XML file dumped out by the Eclipse formatter
-		importOrderFile		rootProject.file('gradle/spotless.importorder')			// An import ordering file, exported from Eclipse
+		licenseHeaderFile    rootProject.file('gradle/spotless.license.java')		// License header file
+		eclipse().configFile rootProject.file('gradle/spotless.eclipseformat.xml')	// XML file dumped out by the Eclipse formatter
+		importOrderFile	     rootProject.file('gradle/spotless.importorder')		// An import ordering file, exported from Eclipse
 		removeUnusedImports()
 	}
 	format 'misc', {
@@ -148,33 +157,6 @@ spotless {
 			it.put('group', 'com.diffplug.durian')
 		}
 	}
-}
-
-//////////////
-// FINDBUGS //
-//////////////
-apply plugin: 'findbugs'
-findbugs {
-	toolVersion = VER_FINDBUGS
-	sourceSets = [sourceSets.main]	// don't check the test code
-	ignoreFailures = false 	// bug free or it doesn't ship!
-	reportsDir = file('build/findbugs')
-	effort = 'max'			// min|default|max
-	reportLevel = 'low'		// low|medium|high (low = sensitive to even minor mistakes)
-	omitVisitors = []		// bugs that we want to ignore
-}
-// HTML instead of XML
-tasks.withType(FindBugs) {
-	reports {
-		xml.enabled = false
-		html.enabled = true
-	}
-}
-// we'll want the findbugs annotations (they don't have a 3.0.1 version)
-dependencies {
-	compile 'com.google.code.findbugs:annotations:3.0.0'
-	compile 'com.google.code.findbugs:jsr305:3.0.0'
-	errorprone 'com.google.errorprone:error_prone_core:2.0.19'
 }
 
 ///////////
