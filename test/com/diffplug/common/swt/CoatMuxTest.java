@@ -60,7 +60,7 @@ public class CoatMuxTest {
 					Layouts.setGridData(child).grabAll();
 					child.setBackground(color);
 				}
-			}, null);
+			});
 		});
 	}
 

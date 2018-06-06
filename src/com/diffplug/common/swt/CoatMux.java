@@ -162,12 +162,12 @@ public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 	}
 
 	/** Sets the current content of this `CoatMux`, gets disposed as soon as anything else becomes the top layer. */
-	public <T> T setCoat(Coat coat, @Nullable T value) {
-		return setCoat(Coat.Returning.fromNonReturning(coat, value));
+	public void setCoat(Coat coat) {
+		setCoatReturning(Coat.Returning.fromNonReturning(coat, null));
 	}
 
 	/** Sets the current content of this `CoatMux`, gets disposed as soon as anything else becomes the top layer. */
-	public <T> T setCoat(Coat.Returning<T> coat) {
+	public <T> T setCoatReturning(Coat.Returning<T> coat) {
 		return makeTemporary(addCoat(coat));
 	}
 
