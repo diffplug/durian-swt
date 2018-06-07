@@ -66,8 +66,19 @@ public enum OS {
 		}
 	}
 
+	/** SWT-style win32/linux/macosx */
+	public String os() {
+		return winMacLinux("win32", "linux", "macosx");
+	}
+
+	/** SWT-style x86/x86_64 */
+	public String arch() {
+		return getArch().x86x64("x86", "x86_64");
+	}
+
+	/** os().arch() */
 	public String osDotArch() {
-		return winMacLinux("win32", "linux", "macosx") + "." + getArch().x86x64("x86", "x86_64");
+		return os() + "." + arch();
 	}
 
 	/** Returns the native OS: 32-bit JVM on 64-bit Windows returns OS.WIN_64. */
