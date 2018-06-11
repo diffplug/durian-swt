@@ -30,14 +30,6 @@ repositories {
 // JAVA //
 //////////
 apply plugin: 'java'
-sourceSets {
-	main { java {
-			srcDir 'src'
-	} }
-	test { java {
-			srcDir 'test'
-	} }
-}
 sourceCompatibility = VER_JAVA
 targetCompatibility = VER_JAVA
 
@@ -114,14 +106,6 @@ task interactiveTest(type: Test) {
 /////////////
 apply plugin: 'eclipse'
 eclipse {
-	project {
-		natures 'org.eclipse.pde.PluginNature'
-		natures 'org.eclipse.jdt.core.javanature'
-
-		buildCommand 'org.eclipse.jdt.core.javabuilder'
-		buildCommand 'org.eclipse.pde.ManifestBuilder'
-		buildCommand 'org.eclipse.pde.SchemaBuilder'
-	}
 	classpath {
 		downloadSources true
 		downloadJavadoc true
