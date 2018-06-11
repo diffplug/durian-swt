@@ -29,7 +29,7 @@ import org.junit.experimental.categories.Category;
 
 import com.diffplug.common.base.Box;
 import com.diffplug.common.collect.ImmutableList;
-import com.diffplug.common.rx.DisposableEar;
+import com.diffplug.common.rx.Chit;
 import com.diffplug.common.rx.Rx;
 import com.diffplug.common.rx.RxBox;
 
@@ -92,19 +92,19 @@ public class SwtRxTest {
 	public void testDisposableEar() {
 		InteractiveTest.testCoat("Non-interactive, will pass itself", cmp -> {
 			Shell underTest = new Shell(cmp.getShell(), SWT.NONE);
-			DisposableEar ear = SwtRx.disposableEar(underTest);
-			Assert.assertFalse(ear.isDisposed());
+			Chit chit = SwtRx.chit(underTest);
+			Assert.assertFalse(chit.isDisposed());
 
 			Box<Boolean> hasBeenDisposed = Box.of(false);
-			ear.runWhenDisposed(() -> hasBeenDisposed.set(true));
+			chit.runWhenDisposed(() -> hasBeenDisposed.set(true));
 
 			Assert.assertFalse(hasBeenDisposed.get());
 			underTest.dispose();
 			Assert.assertTrue(hasBeenDisposed.get());
-			Assert.assertTrue(ear.isDisposed());
+			Assert.assertTrue(chit.isDisposed());
 
 			Box<Boolean> alreadyDisposed = Box.of(false);
-			ear.runWhenDisposed(() -> alreadyDisposed.set(true));
+			chit.runWhenDisposed(() -> alreadyDisposed.set(true));
 			Assert.assertTrue(alreadyDisposed.get());
 
 			InteractiveTest.closeAndPass(cmp);

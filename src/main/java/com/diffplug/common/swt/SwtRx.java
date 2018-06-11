@@ -32,7 +32,7 @@ import org.eclipse.swt.widgets.Widget;
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.common.primitives.Ints;
-import com.diffplug.common.rx.DisposableEar;
+import com.diffplug.common.rx.Chit;
 import com.diffplug.common.rx.RxBox;
 
 import io.reactivex.Observable;
@@ -184,17 +184,17 @@ public class SwtRx {
 		});
 	}
 
-	/** Wraps the given {@link ControlWrapper} in an {@link DisposableEar}. */
-	public static DisposableEar disposableEar(ControlWrapper wrapper) {
-		return disposableEar(wrapper.getRootControl());
+	/** Wraps the given {@link ControlWrapper} in an {@link Chit}. */
+	public static Chit chit(ControlWrapper wrapper) {
+		return chit(wrapper.getRootControl());
 	}
 
-	/** Wraps the given {@link Widget} in an {@link DisposableEar}. */
-	public static DisposableEar disposableEar(Widget guard) {
+	/** Wraps the given {@link Widget} in an {@link Chit}. */
+	public static Chit chit(Widget guard) {
 		if (guard.isDisposed()) {
-			return DisposableEar.alreadyDisposed();
+			return Chit.alreadyDisposed();
 		} else {
-			DisposableEar.Settable settable = DisposableEar.settable();
+			Chit.Settable settable = Chit.settable();
 			if (SwtExec.isRunningOnUI()) {
 				hook(guard, settable);
 			} else {
@@ -210,7 +210,7 @@ public class SwtRx {
 		}
 	}
 
-	private static void hook(Widget guard, DisposableEar.Settable disposable) {
+	private static void hook(Widget guard, Chit.Settable disposable) {
 		guard.addListener(SWT.Dispose, e -> disposable.dispose());
 	}
 }

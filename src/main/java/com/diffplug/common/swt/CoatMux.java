@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 import com.diffplug.common.base.Preconditions;
-import com.diffplug.common.rx.DisposableEar;
+import com.diffplug.common.rx.Chit;
 import com.diffplug.common.rx.Rx;
 import com.diffplug.common.rx.RxBox;
 import com.diffplug.common.rx.RxGetter;
@@ -102,8 +102,8 @@ public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 			SwtExec.immediate().execute(control::dispose);
 		}
 
-		public DisposableEar ear() {
-			return SwtRx.disposableEar(control);
+		public Chit chit() {
+			return SwtRx.chit(control);
 		}
 	}
 
