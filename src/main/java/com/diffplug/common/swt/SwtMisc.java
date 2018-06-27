@@ -222,7 +222,7 @@ public class SwtMisc {
 					display.sleep();
 				}
 			} catch (Throwable e) {
-				Errors.log().accept(e);
+				throw Errors.asRuntime(e);
 			}
 		}
 	}
