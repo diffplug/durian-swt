@@ -209,8 +209,11 @@ public class Shells {
 		//
 		// as a workaround, if an active shell is found, but it isn't visible, we count that as though
 		// there isn't an active shell
+		//
+		// we have a similar workaround for ON_TOP shells, which are commonly used for context-sensitive
+		// popups which may close soon after
 		Shell shell;
-		if (parent == null || parent.isVisible() == false) {
+		if (parent == null || parent.isVisible() == false || SwtMisc.flagIsSet(SWT.ON_TOP, parent)) {
 			shell = new Shell(display, style);
 		} else {
 			shell = new Shell(parent, style);
