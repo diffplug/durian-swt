@@ -1,7 +1,8 @@
 Manifest-Version: 1.0
-Bundle-DocURL: https://github.com/diffplug/durian-swt
-Bundle-License: https://github.com/diffplug/durian-swt/blob/v3.0.0-SNA
- PSHOT/LICENSE
+Bundle-DocURL: https://github.com/diffplug/durian-swt.cocoa.macosx.x86
+ _64
+Bundle-License: https://github.com/diffplug/durian-swt.cocoa.macosx.x8
+ 6_64/blob/v3.0.0-SNAPSHOT/LICENSE
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: com.diffplug.durian.swt
@@ -29,5 +30,5 @@ Import-Package: com.diffplug.common.base;version="[1.2,2)",com.diffplu
  ion,org.eclipse.jface.action,org.eclipse.jface.layout,org.eclipse.jfa
  ce.resource,org.eclipse.jface.util,org.eclipse.jface.viewers,org.ecli
  pse.swt,org.eclipse.swt.custom,org.eclipse.swt.graphics,org.eclipse.s
- wt.layout,org.eclipse.swt.widgets
+ wt.internal.cocoa,org.eclipse.swt.layout,org.eclipse.swt.widgets
 Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.8))"

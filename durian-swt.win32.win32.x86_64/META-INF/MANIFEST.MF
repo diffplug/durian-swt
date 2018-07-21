@@ -1,7 +1,8 @@
 Manifest-Version: 1.0
-Bundle-DocURL: https://github.com/diffplug/durian-swt
-Bundle-License: https://github.com/diffplug/durian-swt/blob/v3.0.0-SNA
- PSHOT/LICENSE
+Bundle-DocURL: https://github.com/diffplug/durian-swt.win32.win32.x86_
+ 64
+Bundle-License: https://github.com/diffplug/durian-swt.win32.win32.x86
+ _64/blob/v3.0.0-SNAPSHOT/LICENSE
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: com.diffplug.durian.swt

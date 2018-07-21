@@ -12,11 +12,3 @@ dependencies {
 	testCompile "org.assertj:assertj-core:$VER_ASSERTJ"
 	testCompile "com.diffplug.durian:durian-debug:$VER_DURIAN_DEBUG"
 }
-
-eclipseMavenCentral {
-	release SWT_VERSION, {
-		compile 'org.eclipse.swt'
-		compile 'org.eclipse.jface'
-		useNativesForRunningPlatform()
-	}
-}

@@ -11,7 +11,26 @@ plugins {
 	id "net.ltgt.errorprone" version "0.0.15" apply false
 }
 
-subprojects {
+allprojects {
+	apply plugin: 'com.diffplug.gradle.spotless'
+	spotless {
+		format 'misc', {
+			target '.gitignore', '*.gradle', '*.md', '.ci/*.sh'
+			indentWithTabs()
+			trimTrailingWhitespace()
+			endWithNewline()
+		}
+		freshmark {
+			target '*.md'
+			propertiesFile(rootProject.file('gradle.properties'))
+			properties {
+				it.put('group', 'com.diffplug.durian')
+			}
+		}
+	}
+}
+
+subprojects { subProject ->
 	repositories {
 		mavenCentral()
 		// SNAPSHOT versions are free to rely on other SNAPSHOT libraries
@@ -31,7 +50,32 @@ subprojects {
 	apply plugin: 'java'
 	sourceCompatibility = VER_JAVA
 	targetCompatibility = VER_JAVA
+
 	apply plugin: 'com.diffplug.gradle.eclipse.mavencentral'
+	eclipseMavenCentral {
+		release SWT_VERSION, {
+			if (subProject.name.startsWith('durian-swt.')) {
+				String platformCode = project.name.substring('durian-swt.'.length())
+				compile "org.eclipse.swt.$platformCode"
+			} else {
+				compile 'org.eclipse.swt'
+				compile 'org.eclipse.jface'
+				useNativesForRunningPlatform()
+			}
+		}
+	}
+	if (subProject.name.startsWith('durian-swt.')) {
+		dependencies {
+			compile project(':durian-swt')
+		}
+		configurations.all {
+			resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+				if (details.requested.name.contains('${osgi.platform}')) {
+					details.useTarget('org.eclipse.platform:org.eclipse.swt:' + details.requested.version)
+				}
+			}
+		}
+	}
 
 	//////////
 	// OSGI //
@@ -45,6 +89,7 @@ subprojects {
 		'Bundle-DocURL': "https://github.com/${project.org}/${project.name}",
 		'Bundle-License': "https://github.com/${project.org}/${project.name}/blob/v${project.version}/LICENSE",
 		'-removeheaders': 'Bnd-LastModified,Bundle-Name,Created-By,Tool',
+		'-nodefaultversion': 'true'
 	)
 	// copy the manifest into the WC
 	osgiBndManifest {
@@ -109,26 +154,12 @@ subprojects {
 	////////////
 	// FORMAT //
 	////////////
-	apply plugin: 'com.diffplug.gradle.spotless'
 	spotless {
 		java {
 			licenseHeaderFile    rootProject.file('gradle/spotless.license.java')		// License header file
 			eclipse().configFile rootProject.file('gradle/spotless.eclipseformat.xml')	// XML file dumped out by the Eclipse formatter
 			importOrderFile	     rootProject.file('gradle/spotless.importorder')		// An import ordering file, exported from Eclipse
 			removeUnusedImports()
-		}
-		format 'misc', {
-			target '.gitignore', '*.gradle', '*.md', '.ci/*.sh'
-			indentWithTabs()
-			trimTrailingWhitespace()
-			endWithNewline()
-		}
-		freshmark {
-			target '*.md'
-			propertiesFile('gradle.properties')
-			properties {
-				it.put('group', 'com.diffplug.durian')
-			}
 		}
 	}
 
