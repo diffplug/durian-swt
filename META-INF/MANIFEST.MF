@@ -6,18 +6,17 @@ Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: com.diffplug.durian.swt
 Bundle-Vendor: DiffPlug
-Bundle-Version: 3.0.0.I201707041540
+Bundle-Version: 3.0.0.I201807211107
 Export-Package: com.diffplug.common.swt;uses:="com.diffplug.common.bas
  e,com.diffplug.common.collect,com.diffplug.common.rx,com.diffplug.com
- mon.tree,com.diffplug.common.util.concurrent,io.reactivex,io.reactive
- x.disposables,javax.annotation,org.eclipse.jface.viewers,org.eclipse.
- swt.graphics,org.eclipse.swt.layout,org.eclipse.swt.widgets";version=
- "3.0.0",com.diffplug.common.swt.jface;uses:="com.diffplug.common.base
- ,com.diffplug.common.collect,com.diffplug.common.rx,com.diffplug.comm
- on.swt,com.diffplug.common.tree,javax.annotation,org.eclipse.jface.ac
- tion,org.eclipse.jface.resource,org.eclipse.jface.viewers,org.eclipse
- .swt.graphics,org.eclipse.swt.widgets";version="3.0.0",com.diffplug.c
- ommon.swt.os;version="3.0.0"
+ mon.tree,io.reactivex,io.reactivex.disposables,javax.annotation,org.e
+ clipse.jface.viewers,org.eclipse.swt.graphics,org.eclipse.swt.layout,
+ org.eclipse.swt.widgets";version="3.0.0",com.diffplug.common.swt.jfac
+ e;uses:="com.diffplug.common.base,com.diffplug.common.collect,com.dif
+ fplug.common.rx,com.diffplug.common.swt,com.diffplug.common.tree,java
+ x.annotation,org.eclipse.jface.action,org.eclipse.jface.resource,org.
+ eclipse.jface.viewers,org.eclipse.swt.graphics,org.eclipse.swt.widget
+ s";version="3.0.0",com.diffplug.common.swt.os;version="3.0.0"
 Import-Package: com.diffplug.common.base;version="[1.2,2)",com.diffplu
  g.common.collect;version="[1.2,2)",com.diffplug.common.primitives;ver
  sion="[1.2,2)",com.diffplug.common.rx;version="[3.0,4)",com.diffplug.
