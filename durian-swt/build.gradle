@@ -1,0 +1,22 @@
+
+dependencies {
+	compile "com.diffplug.durian:durian-core:$VER_DURIAN"
+	compile "com.diffplug.durian:durian-collect:$VER_DURIAN"
+	compile "com.diffplug.durian:durian-concurrent:$VER_DURIAN"
+	compile "com.diffplug.durian:durian-rx:$VER_DURIAN_RX"
+	compile "io.reactivex.rxjava2:rxjava:$VER_RXJAVA"
+	compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
+	compileOnly 'com.google.code.findbugs:annotations:3.0.1'
+
+	testCompile "junit:junit:$VER_JUNIT"
+	testCompile "org.assertj:assertj-core:$VER_ASSERTJ"
+	testCompile "com.diffplug.durian:durian-debug:$VER_DURIAN_DEBUG"
+}
+
+eclipseMavenCentral {
+	release SWT_VERSION, {
+		compile 'org.eclipse.swt'
+		compile 'org.eclipse.jface'
+		useNativesForRunningPlatform()
+	}
+}

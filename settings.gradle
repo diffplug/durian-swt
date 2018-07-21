@@ -1,0 +1,2 @@
+include 'durian-swt'
+enableFeaturePreview('STABLE_PUBLISHING')
