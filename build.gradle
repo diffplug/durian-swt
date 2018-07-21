@@ -52,19 +52,17 @@ subprojects { subProject ->
 	targetCompatibility = VER_JAVA
 
 	apply plugin: 'com.diffplug.gradle.eclipse.mavencentral'
-	eclipseMavenCentral {
-		release SWT_VERSION, {
-			if (subProject.name.startsWith('durian-swt.')) {
-				String platformCode = project.name.substring('durian-swt.'.length())
-				compile "org.eclipse.swt.$platformCode"
-			} else {
-				compile 'org.eclipse.swt'
-				compile 'org.eclipse.jface'
-				useNativesForRunningPlatform()
-			}
-		}
-	}
-	if (subProject.name.startsWith('durian-swt.')) {
+	if (subProject.name == 'durian-swt') {
+		eclipseMavenCentral { release SWT_VERSION, {
+			compile 'org.eclipse.swt'
+			compile 'org.eclipse.jface'
+			useNativesForRunningPlatform()
+		} }
+	} else {
+		String platformCode = project.name.substring('durian-swt.'.length())
+		eclipseMavenCentral { release SWT_VERSION, {
+			compile "org.eclipse.swt.$platformCode"
+		} }
 		dependencies {
 			compile project(':durian-swt')
 		}
@@ -75,6 +73,12 @@ subprojects { subProject ->
 				}
 			}
 		}
+		// the manifest should be a fragment
+		def swtPlatform = com.diffplug.common.swt.os.SwtPlatform.parseWsOsArch(platformCode)
+		jar.manifest.attributes (
+			'Fragment-Host': 'durian-swt',
+			'Eclipse-PlatformFilter': swtPlatform.platformFilter(),
+		)
 	}
 
 	//////////
