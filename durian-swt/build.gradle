@@ -1,3 +1,6 @@
+plugins {
+	id 'org.ajoberstar.github-pages' version '1.6.0'
+}
 
 apply plugin: 'com.diffplug.gradle.eclipse.mavencentral'
 eclipseMavenCentral { release SWT_VERSION, {
@@ -48,3 +51,30 @@ task interactiveTest(type: Test) {
 		includeCategories 'com.diffplug.common.swt.InteractiveTest'
 	}
 }
+
+//////////////////
+// GITHUB PAGES //
+//////////////////
+def verSnapshot = { it.endsWith('-SNAPSHOT') ? 'snapshot' : it }
+def cred = {
+	if (System.env[it] != null) {
+		return System.env[it]
+	} else if (project.hasProperty(it)) {
+		return project[it]
+	} else {
+		return 'unknown_' + it
+	}
+}
+githubPages {
+	repoUri = "https://github.com/diffplug/durian-swt"
+	deleteExistingFiles = false
+	pages {
+		from javadoc.destinationDir
+		into "javadoc/${verSnapshot(project.version)}"
+	}
+	credentials {
+		username = cred('gh_token')
+		password = ''
+	}
+}
+tasks.prepareGhPages.dependsOn(":javadoc")
