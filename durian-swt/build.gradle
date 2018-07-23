@@ -1,5 +1,12 @@
 
+apply plugin: 'com.diffplug.gradle.eclipse.mavencentral'
+eclipseMavenCentral { release SWT_VERSION, {
+	compile 'org.eclipse.swt'
+	compile 'org.eclipse.jface'
+	useNativesForRunningPlatform()
+} }
 dependencies {
+	compile project(':durian-swt.os')
 	compile "com.diffplug.durian:durian-core:$VER_DURIAN"
 	compile "com.diffplug.durian:durian-collect:$VER_DURIAN"
 	compile "com.diffplug.durian:durian-concurrent:$VER_DURIAN"
@@ -11,4 +18,33 @@ dependencies {
 	testCompile "junit:junit:$VER_JUNIT"
 	testCompile "org.assertj:assertj-core:$VER_ASSERTJ"
 	testCompile "com.diffplug.durian:durian-debug:$VER_DURIAN_DEBUG"
+}
+
+/////////////////////////
+// INTERACTIVE TESTING //
+/////////////////////////
+// standard `gradlew test` will autoclose after 500ms
+test {
+	systemProperty 'com.diffplug.test.autoclose.milliseconds', '500'
+	useJUnit {
+		// there are some tests that can't pass without a user, so we'll exclude them
+		excludeCategories 'com.diffplug.common.swt.InteractiveTest$FailsWithoutUser'
+		// SWT tests don't work in gradle on OS X (https://github.com/ReadyTalk/swt-bling/issues/4)
+		boolean isMac = System.getProperty("os.name").toLowerCase().contains("mac");
+		if (isMac) {
+			excludeCategories 'com.diffplug.common.swt.InteractiveTest'
+		}
+	}
+	// log all test events
+	testLogging {
+		events "failed", "passed", "skipped", "standard_error", "standard_out", "started"
+	}
+}
+
+// only run the interactive tests
+task interactiveTest(type: Test) {
+	systemProperty 'com.diffplug.test.autoclose.milliseconds', null
+	useJUnit {
+		includeCategories 'com.diffplug.common.swt.InteractiveTest'
+	}
 }

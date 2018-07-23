@@ -51,14 +51,15 @@ subprojects { subProject ->
 	sourceCompatibility = VER_JAVA
 	targetCompatibility = VER_JAVA
 
-	apply plugin: 'com.diffplug.gradle.eclipse.mavencentral'
 	if (subProject.name == 'durian-swt') {
-		eclipseMavenCentral { release SWT_VERSION, {
-			compile 'org.eclipse.swt'
-			compile 'org.eclipse.jface'
-			useNativesForRunningPlatform()
-		} }
+		// configured there
+	} else if (subProject.name == 'durian-swt.os') {
+		dependencies {
+			compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
+			testCompile "junit:junit:$VER_JUNIT"
+		}
 	} else {
+		apply plugin: 'com.diffplug.gradle.eclipse.mavencentral'
 		String platformCode = project.name.substring('durian-swt.'.length())
 		eclipseMavenCentral { release SWT_VERSION, {
 			compile "org.eclipse.swt.$platformCode"
@@ -85,6 +86,9 @@ subprojects { subProject ->
 	// OSGI //
 	//////////
 	apply plugin: 'com.diffplug.gradle.osgi.bndmanifest'
+	osgiBndManifest {
+		copyTo 'META-INF/MANIFEST.MF'
+	}
 	jar.manifest.attributes (
 		'Export-Package': 'com.diffplug.common.swt.*',
 		'Bundle-SymbolicName': 'com.diffplug.durian.swt',
@@ -95,10 +99,6 @@ subprojects { subProject ->
 		'-removeheaders': 'Bnd-LastModified,Bundle-Name,Created-By,Tool',
 		'-nodefaultversion': 'true'
 	)
-	// copy the manifest into the WC
-	osgiBndManifest {
-		copyTo 'META-INF/MANIFEST.MF'
-	}
 
 	////////////////
 	// ERRORPRONE //
@@ -107,35 +107,6 @@ subprojects { subProject ->
 	dependencies {
 		errorprone 'com.google.errorprone:error_prone_core:2.3.1'
 		compileOnly 'com.google.errorprone:error_prone_annotations:2.3.1'
-	}
-
-	/////////////////////////
-	// INTERACTIVE TESTING //
-	/////////////////////////
-	// standard `gradlew test` will autoclose after 500ms
-	test {
-		systemProperty 'com.diffplug.test.autoclose.milliseconds', '500'
-		useJUnit {
-			// there are some tests that can't pass without a user, so we'll exclude them
-			excludeCategories 'com.diffplug.common.swt.InteractiveTest$FailsWithoutUser'
-			// SWT tests don't work in gradle on OS X (https://github.com/ReadyTalk/swt-bling/issues/4)
-			boolean isMac = System.getProperty("os.name").toLowerCase().contains("mac");
-			if (isMac) {
-				excludeCategories 'com.diffplug.common.swt.InteractiveTest'
-			}
-		}
-		// log all test events
-		testLogging {
-			events "failed", "passed", "skipped", "standard_error", "standard_out", "started"
-		}
-	}
-
-	// only run the interactive tests
-	task interactiveTest(type: Test) {
-		systemProperty 'com.diffplug.test.autoclose.milliseconds', null
-		useJUnit {
-			includeCategories 'com.diffplug.common.swt.InteractiveTest'
-		}
 	}
 
 	/////////////

@@ -6,7 +6,7 @@ Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: com.diffplug.durian.swt
 Bundle-Vendor: DiffPlug
-Bundle-Version: 3.0.0.I201807211431
+Bundle-Version: 3.0.0.I201807221733
 Eclipse-PlatformFilter: (& (osgi.ws=win32) (osgi.os=win32) (osgi.arch=
  x86) )
 Export-Package: com.diffplug.common.swt;uses:="com.diffplug.common.bas
