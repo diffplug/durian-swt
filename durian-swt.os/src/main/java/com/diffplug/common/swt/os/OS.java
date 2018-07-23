@@ -81,6 +81,11 @@ public enum OS {
 		return os() + "." + arch();
 	}
 
+	/** windowing.os.arch */
+	public String toSwt() {
+		return winMacLinux("win32", "cocoa", "gtk") + "." + winMacLinux("win32", "macosx", "linux") + "." + getArch().x86x64("x86", "x86_64");
+	}
+
 	/** Returns the native OS: 32-bit JVM on 64-bit Windows returns OS.WIN_64. */
 	public static OS getNative() {
 		return NATIVE_OS;
