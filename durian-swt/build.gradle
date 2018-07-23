@@ -77,4 +77,4 @@ githubPages {
 		password = ''
 	}
 }
-tasks.prepareGhPages.dependsOn(":javadoc")
+tasks.prepareGhPages.dependsOn("javadoc")
