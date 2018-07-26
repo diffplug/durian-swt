@@ -1,14 +1,12 @@
 Manifest-Version: 1.0
-Bundle-DocURL: https://github.com/diffplug/durian-swt.gtk.linux.x86_64
-Bundle-License: https://github.com/diffplug/durian-swt.gtk.linux.x86_6
- 4/blob/v3.0.0-SNAPSHOT/LICENSE
+Bundle-DocURL: https://github.com/diffplug/durian-swt
+Bundle-License: https://github.com/diffplug/durian-swt/blob/v3.0.0-SNA
+ PSHOT/LICENSE
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: com.diffplug.durian.swt
 Bundle-Vendor: DiffPlug
-Bundle-Version: 3.0.0.I201807221733
-Eclipse-PlatformFilter: (& (osgi.ws=gtk) (osgi.os=linux) (osgi.arch=x8
- 6_64) )
+Bundle-Version: 3.0.0.I201807251936
 Export-Package: com.diffplug.common.swt;uses:="com.diffplug.common.bas
  e,com.diffplug.common.collect,com.diffplug.common.rx,com.diffplug.com
  mon.tree,io.reactivex,io.reactivex.disposables,javax.annotation,org.e
@@ -20,7 +18,6 @@ Export-Package: com.diffplug.common.swt;uses:="com.diffplug.common.bas
  ewers,org.eclipse.swt.graphics,org.eclipse.swt.widgets",com.diffplug.
  common.swt.os,com.diffplug.common.swt.widgets;uses:="org.eclipse.swt.
  widgets"
-Fragment-Host: durian-swt
 Import-Package: com.diffplug.common.base;version="[1.2,2)",com.diffplu
  g.common.collect;version="[1.2,2)",com.diffplug.common.primitives;ver
  sion="[1.2,2)",com.diffplug.common.rx;version="[3.0,4)",com.diffplug.

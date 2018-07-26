@@ -87,7 +87,7 @@ subprojects { subProject ->
 	//////////
 	apply plugin: 'com.diffplug.gradle.osgi.bndmanifest'
 	osgiBndManifest {
-		copyTo 'META-INF/MANIFEST.MF'
+		copyTo 'src/main/resources/META-INF/MANIFEST.MF'
 	}
 	jar.manifest.attributes (
 		'Export-Package': 'com.diffplug.common.swt.*',
