@@ -278,8 +278,6 @@ public class Shells {
 				int widthHint = size.x == SWT.DEFAULT ? SWT.DEFAULT : size.x - dwidth;
 				int heightHint = size.y == SWT.DEFAULT ? SWT.DEFAULT : size.y - dheight;
 				computedSize = shell.computeSize(widthHint, heightHint);
-				computedSize.x += dwidth;
-				computedSize.y += dheight;
 			} else {
 				if (size.x == SWT.DEFAULT) {
 					// we're packing as tight as can
