@@ -164,7 +164,13 @@ public class InteractiveTest {
 			} finally {
 				// dispose everything at the end
 				for (Shell shell : display.getShells()) {
-					shell.dispose();
+					try {
+						shell.dispose();
+					} catch (Throwable e) {
+						// we don't care about these failures, we care about
+						// the failure that was thrown above (if any)
+						e.printStackTrace();
+					}
 					shellToResult.remove(shell);
 				}
 			}
