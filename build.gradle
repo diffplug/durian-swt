@@ -198,12 +198,6 @@ subprojects { subProject ->
 				artifact sourcesJar
 				artifact javadocJar
 				pom.withXml {
-					// don't force our weird p2 ivy/p2 solution on our users
-					asNode().dependencies.'*'.each() {
-						if (it.groupId.text() == SWT_P2_GROUP) {
-							it.parent().remove(it)
-						}
-					}
 					// findbugs annotations should have scope "provided"
 					asNode().dependencies.'*'.findAll() { it.groupId.text() == 'com.google.code.findbugs' }.each() { it.scope*.value = 'provided' }
 					// add MavenCentral requirements to the POM
