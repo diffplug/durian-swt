@@ -6,7 +6,7 @@ Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: com.diffplug.durian.swt
 Bundle-Vendor: DiffPlug
-Bundle-Version: 3.0.0.I201808010139
+Bundle-Version: 3.0.0.I201808010242
 Export-Package: com.diffplug.common.swt.os
 Import-Package: javax.annotation
 Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.8))"
