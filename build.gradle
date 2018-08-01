@@ -32,7 +32,7 @@ allprojects {
 
 subprojects { subProject ->
 	repositories {
-		jcenter()
+		mavenCentral()
 		// SNAPSHOT versions are free to rely on other SNAPSHOT libraries
 		if (project.version.endsWith('-SNAPSHOT')) {
 			maven {

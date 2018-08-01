@@ -2,12 +2,12 @@ Manifest-Version: 1.0
 Bundle-DocURL: https://github.com/diffplug/durian-swt.win32.win32.x86_
  64
 Bundle-License: https://github.com/diffplug/durian-swt.win32.win32.x86
- _64/blob/v3.0.0/LICENSE
+ _64/blob/v3.1.0-SNAPSHOT/LICENSE
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: com.diffplug.durian.swt
 Bundle-Vendor: DiffPlug
-Bundle-Version: 3.0.0
+Bundle-Version: 3.1.0.I201808011118
 Eclipse-PlatformFilter: (& (osgi.ws=win32) (osgi.os=win32) (osgi.arch=
  x86_64) )
 Export-Package: com.diffplug.common.swt;uses:="com.diffplug.common.bas
