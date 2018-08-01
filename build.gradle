@@ -4,7 +4,7 @@ plugins {
 	// osgi
 	id "com.diffplug.gradle.osgi.bndmanifest" version "3.14.0" apply false
 	// bintray uploading
-	id "com.jfrog.bintray" version "1.7.3" apply false
+	id "com.jfrog.bintray" version "1.8.4" apply false
 	// code formatting
 	id "com.diffplug.gradle.spotless" version "3.12.0" apply false
 	// errorprone
@@ -32,7 +32,7 @@ allprojects {
 
 subprojects { subProject ->
 	repositories {
-		mavenCentral()
+		jcenter()
 		// SNAPSHOT versions are free to rely on other SNAPSHOT libraries
 		if (project.version.endsWith('-SNAPSHOT')) {
 			maven {
@@ -243,6 +243,7 @@ subprojects { subProject ->
 
 	if (!isSnapshot) {
 		// upload releases to bintray and then mavenCentral
+		apply plugin: 'com.jfrog.bintray'
 		bintray {
 			user = cred('bintray_user')
 			key = cred('bintray_pass')
