@@ -11,3 +11,6 @@ build/
 .classpath
 .settings/
 bin/
+
+# manifests
+MANIFEST.MF
