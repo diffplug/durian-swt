@@ -1,6 +1,14 @@
 # DurianSwt releases
 
-### Version 3.0.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/durian/durian-swt/))
+### Version 3.1.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/durian/durian-swt/))
+
+### Version 3.0.0 - August 1st 2018 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/3.0.0/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/3.0.0/view))
+
+* Extracted the `com.diffplug.common.swt.os` package into its own jar with no dependencies, published to `com.diffplug.durian:durian-swt.os`.
+* Added `com.diffplug.durian:durian-swt.{SWT_PLATFORM_CODE}` for each of `win x86`, `win x64`, `linux x86`, `linux x64`, `mac x64`.
+	+ Only used for `SmoothTable`, if you don't use `SmoothTable` then you don't need the platform-specific jar.
++ Added useful DnD stuff to `com.diffplug.common.swt.dnd.`
++ Added useful widgets to `com.diffplug.common.swt.widgets.`
 
 ### Version 3.0.0.BETA2 - March 8th 2017 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/3.0.0.BETA2/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/3.0.0.BETA2/view))
 
