@@ -6,20 +6,23 @@ Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: com.diffplug.durian.swt
 Bundle-Vendor: DiffPlug
-Bundle-Version: 3.0.0.I201807251936
+Bundle-Version: 3.0.0.I201808010139
 Eclipse-PlatformFilter: (& (osgi.ws=gtk) (osgi.os=linux) (osgi.arch=x8
  6_64) )
 Export-Package: com.diffplug.common.swt;uses:="com.diffplug.common.bas
  e,com.diffplug.common.collect,com.diffplug.common.rx,com.diffplug.com
  mon.tree,io.reactivex,io.reactivex.disposables,javax.annotation,org.e
  clipse.jface.viewers,org.eclipse.swt.graphics,org.eclipse.swt.layout,
- org.eclipse.swt.widgets",com.diffplug.common.swt.jface;uses:="com.dif
- fplug.common.base,com.diffplug.common.collect,com.diffplug.common.rx,
- com.diffplug.common.swt,com.diffplug.common.tree,javax.annotation,org
- .eclipse.jface.action,org.eclipse.jface.resource,org.eclipse.jface.vi
- ewers,org.eclipse.swt.graphics,org.eclipse.swt.widgets",com.diffplug.
- common.swt.os,com.diffplug.common.swt.widgets;uses:="org.eclipse.swt.
- widgets"
+ org.eclipse.swt.widgets",com.diffplug.common.swt.dnd;uses:="com.diffp
+ lug.common.base,com.diffplug.common.collect,com.diffplug.common.rx,co
+ m.diffplug.common.swt,javax.annotation,org.eclipse.jface.action,org.e
+ clipse.swt.dnd,org.eclipse.swt.graphics,org.eclipse.swt.widgets",com.
+ diffplug.common.swt.jface;uses:="com.diffplug.common.base,com.diffplu
+ g.common.collect,com.diffplug.common.rx,com.diffplug.common.swt,com.d
+ iffplug.common.tree,javax.annotation,org.eclipse.jface.action,org.ecl
+ ipse.jface.resource,org.eclipse.jface.viewers,org.eclipse.swt.graphic
+ s,org.eclipse.swt.widgets",com.diffplug.common.swt.os,com.diffplug.co
+ mmon.swt.widgets;uses:="org.eclipse.swt.widgets"
 Fragment-Host: durian-swt
 Import-Package: com.diffplug.common.base;version="[1.2,2)",com.diffplu
  g.common.collect;version="[1.2,2)",com.diffplug.common.primitives;ver
@@ -31,6 +34,6 @@ Import-Package: com.diffplug.common.base;version="[1.2,2)",com.diffplu
  rsion="[2.0,3)",io.reactivex.subjects;version="[2.0,3)",javax.annotat
  ion,org.eclipse.jface.action,org.eclipse.jface.layout,org.eclipse.jfa
  ce.resource,org.eclipse.jface.util,org.eclipse.jface.viewers,org.ecli
- pse.swt,org.eclipse.swt.custom,org.eclipse.swt.graphics,org.eclipse.s
- wt.layout,org.eclipse.swt.widgets
+ pse.swt,org.eclipse.swt.custom,org.eclipse.swt.dnd,org.eclipse.swt.gr
+ aphics,org.eclipse.swt.layout,org.eclipse.swt.widgets
 Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.8))"
