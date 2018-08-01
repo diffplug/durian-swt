@@ -20,7 +20,8 @@ import java.util.function.Predicate;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 
-public enum MouseBtn implements Predicate<Event> {
+/** Enum to help model different mouse clicks. */
+public enum MouseClick implements Predicate<Event> {
 	LEFT, MIDDLE, RIGHT;
 
 	public int code() {
@@ -32,5 +33,6 @@ public enum MouseBtn implements Predicate<Event> {
 		return e.button == code();
 	}
 
+	/** Should we use MouseDown or MouseUp for right-clicks?  This (down) is the answer. */
 	public static final int RIGHT_CLICK_EVENT = SWT.MouseDown;
 }
