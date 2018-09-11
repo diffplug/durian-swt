@@ -1,3 +1,5 @@
+rootProject.name = 'durian-swt-root'
+
 include 'durian-swt'
 include 'durian-swt.os'
 include 'durian-swt.cocoa.macosx.x86_64'
