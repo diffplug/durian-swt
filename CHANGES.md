@@ -2,6 +2,8 @@
 
 ### Version 3.1.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/durian/durian-swt/))
 
+- `Shells` now detects the monitor using the center of the proposed bounds, rather than the top-left.
+
 ### Version 3.0.0 - August 1st 2018 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/3.0.0/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/3.0.0/view))
 
 * Extracted the `com.diffplug.common.swt.os` package into its own jar with no dependencies, published to `com.diffplug.durian:durian-swt.os`.

@@ -298,7 +298,7 @@ public class Shells {
 		}
 
 		// constrain the position by the Display's bounds (getClientArea() takes the Start bar into account)
-		Rectangle monitorBounds = SwtMisc.monitorFor(new Point(bounds.x, bounds.y)).orElse(SwtMisc.assertUI().getMonitors()[0]).getClientArea();
+		Rectangle monitorBounds = SwtMisc.monitorFor(Corner.CENTER.getPosition(bounds)).orElse(SwtMisc.assertUI().getMonitors()[0]).getClientArea();
 		bounds.x = Math.max(bounds.x, monitorBounds.x);
 		bounds.y = Math.max(bounds.y, monitorBounds.y);
 		bounds.x = Math.min(bounds.x + bounds.width, monitorBounds.x + monitorBounds.width) - bounds.width;
