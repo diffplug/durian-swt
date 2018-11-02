@@ -15,10 +15,12 @@
  */
 package com.diffplug.common.swt.dnd;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -75,6 +77,18 @@ public class StructuredDndMappingTest {
 					dndCtl.setText("Drag and drop");
 					drag.applyTo(dndCtl, DndOp.COPY);
 					drop.applyTo(dndCtl);
+
+					Composite btnCmp = new Composite(txtGrp, SWT.NONE);
+					Layouts.setGridData(btnCmp).grabHorizontal();
+					Layouts.setGrid(btnCmp).margin(0).numColumns(2);
+					BiConsumer<String, Runnable> addBtn = (lbl, toRun) -> {
+						Button btn = new Button(btnCmp, SWT.PUSH | SWT.FLAT);
+						Layouts.setGridData(btn).grabHorizontal();
+						btn.setText(lbl);
+						btn.addListener(SWT.Selection, e -> toRun.run());
+					};
+					addBtn.accept("Copy", () -> drag.getListener().copyToClipboard());
+					addBtn.accept("Paste", () -> drop.getListener().pasteFromClipboard());
 				}
 			}
 			Adder adder = new Adder();
