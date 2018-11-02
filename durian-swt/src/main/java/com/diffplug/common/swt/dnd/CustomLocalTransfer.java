@@ -43,23 +43,30 @@ public abstract class CustomLocalTransfer<T> extends TypedTransfer<T> implements
 		return new String[]{TYPE_NAME};
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void javaToNative(Object object, TransferData transferData) {
+		if (object != null) {
+			set((T) object);
+		}
 		byte[] check = TYPE_NAME.getBytes(StandardCharsets.UTF_8);
 		super.javaToNative(check, transferData);
 	}
 
 	@Override
 	public Object nativeToJava(TransferData transferData) {
-		Object result = super.nativeToJava(transferData);
+		if (obj == null) {
+			return null;
+		} else {
+			// check result
+			Object result = super.nativeToJava(transferData);
+			Preconditions.checkArgument(result instanceof byte[], "%s should have been byte[]", result.getClass());
+			String resultStr = new String((byte[]) result, StandardCharsets.UTF_8);
+			Preconditions.checkArgument(TYPE_NAME.equals(resultStr), "%s should have been %s", resultStr, TYPE_NAME);
 
-		// check result
-		Preconditions.checkArgument(result instanceof byte[], "%s should have been byte[]", result.getClass());
-		String resultStr = new String((byte[]) result, StandardCharsets.UTF_8);
-		Preconditions.checkArgument(TYPE_NAME.equals(resultStr), "%s should have been %s", resultStr, TYPE_NAME);
-
-		// return this transfer object itself
-		return this;
+			// return this transfer object itself
+			return get();
+		}
 	}
 
 	@Override
