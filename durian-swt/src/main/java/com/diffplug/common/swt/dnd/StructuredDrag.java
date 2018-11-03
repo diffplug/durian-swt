@@ -27,6 +27,7 @@ import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
+import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
 import org.eclipse.swt.dnd.DragSourceEvent;
@@ -42,6 +43,7 @@ import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.common.collect.ImmutableMap;
 import com.diffplug.common.rx.RxBox;
 import com.diffplug.common.rx.RxGetter;
+import com.diffplug.common.swt.SwtMisc;
 
 /**
  * Typed mechanism for implementing drag listeners.
@@ -55,7 +57,8 @@ public class StructuredDrag {
 
 	@FunctionalInterface
 	public interface TypedDragHandler<T> {
-		T dragStartData(DragSourceEvent e);
+		/** DragSourceEvent will be null if it's starting from a 'Ctrl+C' copy. */
+		T dragStartData(@Nullable DragSourceEvent e);
 
 		default void dropped(DragSourceEvent e, T value, DropResult result) {}
 
@@ -246,13 +249,29 @@ public class StructuredDrag {
 			transfers = map.keySet().toArray(new Transfer[map.size()]);
 		}
 
+		public void copyToClipboard() {
+			Clipboard clipboard = new Clipboard(SwtMisc.assertUI());
+			try {
+				populateData(null);
+				Object[] dataPer = new Object[data.size()];
+				Transfer[] transferPer = new Transfer[data.size()];
+				int i = 0;
+				for (Map.Entry<Transfer, Object> entry : data.entrySet()) {
+					dataPer[i] = entry.getValue();
+					transferPer[i] = entry.getKey();
+					++i;
+				}
+				clipboard.setContents(dataPer, transferPer);
+			} finally {
+				clipboard.dispose();
+			}
+		}
+
 		public Transfer[] transferArray() {
 			return Arrays.copyOf(transfers, transfers.length);
 		}
 
-		@Override
-		public void dragStart(DragSourceEvent event) {
-			dragInProgress.set(true);
+		private void populateData(@Nullable DragSourceEvent event) {
 			data.clear();
 			handlers.forEach((transfer, handler) -> {
 				// get the drag data
@@ -261,6 +280,12 @@ public class StructuredDrag {
 					data.put(transfer, value);
 				}
 			});
+		}
+
+		@Override
+		public void dragStart(DragSourceEvent event) {
+			dragInProgress.set(true);
+			populateData(event);
 			event.doit = data.size() > 0;
 			if (event.doit) {
 				Transfer[] validTransfers = data.keySet().stream().toArray(Transfer[]::new);

@@ -27,6 +27,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import javax.annotation.Nullable;
+
+import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetEvent;
@@ -40,6 +43,7 @@ import org.eclipse.swt.widgets.Control;
 import com.diffplug.common.base.Predicates;
 import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.common.collect.ImmutableMap;
+import com.diffplug.common.swt.SwtMisc;
 
 /**
  * Typed mechanism for implementing drop listeners.
@@ -53,7 +57,8 @@ public class StructuredDrop {
 
 	@FunctionalInterface
 	public interface TypedDropHandler<T> {
-		void onEvent(DropMethod method, DropTargetEvent e, T value);
+		/** If it's the result of a "paste", then DropTargetEvent will be null. */
+		void onEvent(DropMethod method, @Nullable DropTargetEvent e, T value);
 
 		default <R> TypedDropHandler<R> map(Function<? super R, ? extends T> mapper) {
 			return new MappedTypedDropHandler<R, T>(this, mapper);
@@ -225,6 +230,21 @@ public class StructuredDrop {
 			transfers = map.keySet().toArray(new Transfer[map.size()]);
 		}
 
+		public void pasteFromClipboard() {
+			Clipboard clipboard = new Clipboard(SwtMisc.assertUI());
+			try {
+				for (Transfer transfer : transfers) {
+					Object data = clipboard.getContents(transfer);
+					if (data != null) {
+						handlers.get(transfer).handler.onEvent(DropMethod.drop, null, data);
+						break;
+					}
+				}
+			} finally {
+				clipboard.dispose();
+			}
+		}
+
 		public Transfer[] transferArray() {
 			return Arrays.copyOf(transfers, transfers.length);
 		}
@@ -279,16 +299,21 @@ public class StructuredDrop {
 		}
 
 		@Override
-		public void onEvent(DropMethod method, DropTargetEvent e, T value) {
+		public void onEvent(DropMethod method, @Nullable DropTargetEvent e, T value) {
 			if (method == DropMethod.dragLeave) {
 				return;
 			} else {
 				if (value == null) {
 					// this means that we don't know what the data is yet
-					operation.trySetDetail(e);
+					if (e != null) {
+						operation.trySetDetail(e);
+					}
 				} else if (accept(value)) {
-					if (operation.trySetDetail(e) && method == DropMethod.drop) {
-						drop(e, value, e.detail == DND.DROP_MOVE);
+					if (e == null) {
+						drop(null, value, false);
+					} else if (operation.trySetDetail(e) && method == DropMethod.drop) {
+						boolean moved = e.detail == DND.DROP_MOVE;
+						drop(e, value, moved);
 					}
 				}
 			}
