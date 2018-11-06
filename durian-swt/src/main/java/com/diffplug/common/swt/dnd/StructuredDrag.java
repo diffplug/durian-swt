@@ -207,11 +207,14 @@ public class StructuredDrag {
 	/** Adds the ability to drop files. */
 	public TypeMapper<ImmutableList<File>> addFile(TypedDragHandler<ImmutableList<File>> onEvent) {
 		return add(FileTransfer.getInstance(), files -> files != null && !files.isEmpty(), (transfer, e, files) -> {
-			if (files.isEmpty()) {} else {
-				String[] paths = files.stream().map(File::getAbsolutePath).toArray(String[]::new);
-				e.data = paths;
+			if (!files.isEmpty()) {
+				e.data = convertFilesToNative(files);
 			}
 		}, onEvent);
+	}
+
+	private static String[] convertFilesToNative(ImmutableList<File> files) {
+		return files.stream().map(File::getAbsolutePath).toArray(String[]::new);
 	}
 
 	public Listener getListener() {
@@ -249,6 +252,7 @@ public class StructuredDrag {
 			transfers = map.keySet().toArray(new Transfer[map.size()]);
 		}
 
+		@SuppressWarnings("unchecked")
 		public void copyToClipboard() {
 			Clipboard clipboard = new Clipboard(SwtMisc.assertUI());
 			try {
@@ -257,8 +261,12 @@ public class StructuredDrag {
 				Transfer[] transferPer = new Transfer[data.size()];
 				int i = 0;
 				for (Map.Entry<Transfer, Object> entry : data.entrySet()) {
-					dataPer[i] = entry.getValue();
 					transferPer[i] = entry.getKey();
+					if (transferPer[i] instanceof FileTransfer) {
+						dataPer[i] = convertFilesToNative((ImmutableList<File>) entry.getValue());
+					} else {
+						dataPer[i] = entry.getValue();
+					}
 					++i;
 				}
 				clipboard.setContents(dataPer, transferPer);

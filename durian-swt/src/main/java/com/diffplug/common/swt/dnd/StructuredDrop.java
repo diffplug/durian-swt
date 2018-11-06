@@ -16,10 +16,8 @@
 package com.diffplug.common.swt.dnd;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
@@ -43,6 +41,7 @@ import org.eclipse.swt.widgets.Control;
 import com.diffplug.common.base.Predicates;
 import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.common.collect.ImmutableMap;
+import com.diffplug.common.collect.Immutables;
 import com.diffplug.common.swt.SwtMisc;
 
 /**
@@ -169,13 +168,14 @@ public class StructuredDrop {
 			if (e.data == null) {
 				return null;
 			}
-			String[] paths = (String[]) e.data;
-			List<File> files = new ArrayList<>(paths.length);
-			for (int i = 0; i < paths.length; ++i) {
-				files.add(new File(paths[i]));
-			}
-			return ImmutableList.copyOf(files);
+			return convertNativeToFiles((String[]) e.data);
 		}, onEvent);
+	}
+
+	private static ImmutableList<File> convertNativeToFiles(String[] paths) {
+		return Arrays.stream(paths)
+				.map(File::new)
+				.collect(Immutables.toList(paths.length));
 	}
 
 	public Listener getListener() {
@@ -236,6 +236,9 @@ public class StructuredDrop {
 				for (Transfer transfer : transfers) {
 					Object data = clipboard.getContents(transfer);
 					if (data != null) {
+						if (transfer instanceof FileTransfer) {
+							data = convertNativeToFiles((String[]) data);
+						}
 						handlers.get(transfer).handler.onEvent(DropMethod.drop, null, data);
 						break;
 					}
