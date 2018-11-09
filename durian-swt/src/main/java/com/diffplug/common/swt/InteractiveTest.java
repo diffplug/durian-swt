@@ -167,9 +167,14 @@ public class InteractiveTest {
 					try {
 						shell.dispose();
 					} catch (Throwable e) {
-						// we don't care about these failures, we care about
-						// the failure that was thrown above (if any)
-						e.printStackTrace();
+						if (e instanceof NullPointerException && e.getStackTrace()[0].getClassName().equals("org.eclipse.swt.widgets.Composite")) {
+							// do nothing
+						} else {
+							// we don't care about these failures, we care about
+							// the failure that was thrown above (if any), but we'll
+							// go ahead and dump these just in case
+							e.printStackTrace();
+						}
 					}
 					shellToResult.remove(shell);
 				}
