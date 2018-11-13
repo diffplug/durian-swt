@@ -5,6 +5,7 @@
 - `Shells` now detects the monitor using the center of the proposed bounds, rather than the top-left.
 - Added `StructuredDrag.copyToClipboard()` and `StructuredDrop.pasteFromClipboard()` [(#2)](https://github.com/diffplug/durian-swt/pull/2).
 - Reduced noise in `InteractiveTest` failures.
+- Added `ImageDescriptors.getFromPool()`.
 
 ### Version 3.0.0 - August 1st 2018 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/3.0.0/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/3.0.0/view))
 

@@ -15,6 +15,8 @@
  */
 package com.diffplug.common.swt.jface;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -135,5 +137,22 @@ public class ImageDescriptors {
 	/** Sets the given {@link Label} to have the image described by the given descriptor, maintaining proper reference counting. */
 	public static void set(Label widget, ImageDescriptor image) {
 		globalSetter.forWidget(widget).set(image);
+	}
+
+	private static final OnePerWidget<Widget, Map<ImageDescriptor, Image>> globalPool = OnePerWidget.from(widget -> {
+		Map<ImageDescriptor, Image> map = new HashMap<>();
+		widget.addListener(SWT.Dispose, e -> map.values().forEach(Image::dispose));
+		return map;
+	});
+
+	/** Returns an image which will be bound to the lifecycle of the owner widget. */
+	public static Image getFromPool(Widget owner, ImageDescriptor descriptor) {
+		Map<ImageDescriptor, Image> map = globalPool.forWidget(owner);
+		Image image = map.get(descriptor);
+		if (image == null) {
+			image = descriptor.createImage(true, owner.getDisplay());
+			map.put(descriptor, image);
+		}
+		return image;
 	}
 }
