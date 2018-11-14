@@ -291,4 +291,23 @@ public class Actions {
 	/** Unicode for the Mac cmd icon. */
 	public static final String UC_CMD = "\u2318";
 
+	/** Updates the `isChecked()` property of the given IAction (if necessary), then calls IAction::run. */
+	public static void run(IAction action) {
+		updateCheckedState(action);
+		action.run();
+	}
+
+	/** Updates the `isChecked()` property of the given IAction (if necessary), then calls IAction::runWithEvent. */
+	public static void run(IAction action, Event e) {
+		updateCheckedState(action);
+		action.runWithEvent(e);
+	}
+
+	private static void updateCheckedState(IAction action) {
+		int style = action.getStyle();
+		if (style == IAction.AS_CHECK_BOX || style == IAction.AS_RADIO_BUTTON) {
+			action.setChecked(!action.isChecked());
+		}
+	}
+
 }
