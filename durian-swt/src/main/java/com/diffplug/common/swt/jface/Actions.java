@@ -273,6 +273,9 @@ public class Actions {
 			case SWT.ESC:
 				end = "Esc";
 				break;
+			case SWT.SPACE:
+				end = "Spacebar";
+				break;
 			default:
 				end = Character.toString((char) accelerator).toUpperCase(Locale.getDefault());
 				break;
