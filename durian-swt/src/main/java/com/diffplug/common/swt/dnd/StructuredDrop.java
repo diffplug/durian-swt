@@ -166,7 +166,7 @@ public class StructuredDrop {
 	public TypeMapper<ImmutableList<File>> addFile(TypedDropHandler<ImmutableList<File>> onEvent) {
 		return add(FileTransfer.getInstance(), (transfer, e) -> {
 			if (e.data == null) {
-				return null;
+				return ImmutableList.of();
 			}
 			return convertNativeToFiles((String[]) e.data);
 		}, onEvent);
