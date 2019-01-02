@@ -7,6 +7,8 @@
 - Reduced noise in `InteractiveTest` failures.
 - Added `ImageDescriptors.getFromPool()`.
 - Added `Actions.run()` which updates the `IAction.isChecked`.
+- Made the spacebar visible in `Actions.getAcceleratorString()`.
+- Fix `StructuredDrop` for files when executing multiple drags from the desktop.
 
 ### Version 3.0.0 - August 1st 2018 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/3.0.0/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/3.0.0/view))
 
