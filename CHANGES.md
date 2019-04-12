@@ -2,6 +2,8 @@
 
 ### Version 3.2.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/durian/durian-swt/))
 
+- Fixed a bug in `StructuredDrop` which caused `dragLeave` events to get swallowed.
+
 ### Version 3.1.0 - January 2nd 2019 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/3.1.0/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/3.1.0/view))
 
 - `Shells` now detects the monitor using the center of the proposed bounds, rather than the top-left.

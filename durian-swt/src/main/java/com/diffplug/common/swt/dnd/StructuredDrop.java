@@ -282,9 +282,15 @@ public class StructuredDrop {
 			onEvent(DropMethod.drop, event);
 		}
 
+		Transfer lastPreferred;
+
 		private void onEvent(DropMethod method, DropTargetEvent event) {
 			Transfer preferred = StructuredDrop.preferDropTransfer(event, transfers);
+			if (preferred == null) {
+				preferred = lastPreferred;
+			}
 			if (preferred != null) {
+				lastPreferred = preferred;
 				Handler handler = handlers.get(preferred);
 				Object value = handler.valueGetter.apply(preferred, event);
 				handler.handler.onEvent(method, event, value);
