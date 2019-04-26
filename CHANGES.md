@@ -2,6 +2,8 @@
 
 ### Version 3.2.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/durian/durian-swt/))
 
+- `Fonts.systemLarge()` was hardcoded to 12 points.  This worked well on standard DPI windows, but was actually smaller than the normal font on retina mac.  Now adds 33% to the normal size, which exactly matches the previous behavior on Windows, but works better on other platforms.
+
 ### Version 3.1.1 - April 24th 2019 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/3.1.1/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/3.1.1/view))
 
 - Fixed a bug in `StructuredDrop` which caused `dragLeave` events to get swallowed.
