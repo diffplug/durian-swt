@@ -21,6 +21,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.annotation.Nullable;
 
@@ -37,6 +38,7 @@ import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.collect.Maps;
 import com.diffplug.common.tree.TreeIterable;
 import com.diffplug.common.tree.TreeQuery;
+import com.diffplug.common.tree.TreeStream;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.disposables.Disposables;
@@ -249,23 +251,20 @@ public class Shells {
 				activeLocation = active.getLocation();
 			}
 		}
+		// we now have the location of the cursor, all we have to do is find which shell is underneath it
 
-		// on Windows and OS X, the active shell is the one that currently has user focus
-		// on Linux, the last created shell (even if it is invisible) will count as the active shell
-		//
-		// This is a problem because some things create a fake hidden shell to act as a parent for other
-		// operations (specifically our right-click infrastructure). This means that on linux, the user
-		// right-clicks, a fake shell is created to show a menu, the selected action opens a new shell
-		// which uses "openOnActive", then the menu closes and disposes its fake shell, which promptly
-		// closes the newly created shell.
-		//
-		// as a workaround, if an active shell is found, but it isn't visible, we count that as though
-		// there isn't an active shell
-		//
-		// we have a similar workaround for no-trim ON_TOP shells, which are commonly used for
-		// context-sensitive popups which may close soon after
+		// first we'll look at the direct ancestors of the active shell
+		if (active != null) {
+			Optional<Shell> validParentOfActive = TreeStream.toParent(SwtMisc.treeDefShell(), active)
+					.filter(Shells::isValidActiveShell)
+					.filter(shell -> shell.getBounds().contains(activeLocation))
+					.findFirst();
+			if (validParentOfActive.isPresent()) {
+				return validParentOfActive.get();
+			}
+		}
 
-		// we now have the ulocation of the cursor, all we have to do is find which shell is underneath it
+		// then we'll look at every valid shell
 		List<Shell> shellsUnderActiveLocation = new ArrayList<>();
 		Shell[] shells = display.getShells();
 		for (Shell rootShell : shells) {
