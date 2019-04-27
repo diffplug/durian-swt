@@ -45,6 +45,7 @@ public class Shells {
 	private final Point size = new Point(SWT.DEFAULT, SWT.DEFAULT);
 	private boolean positionIncludesTrim = true;
 	private Map.Entry<Corner, Point> location = null;
+	private boolean dontOpen = false;
 
 	private Shells(int style, Coat coat) {
 		this.style = style;
@@ -166,6 +167,15 @@ public class Shells {
 		return this;
 	}
 
+	/**
+	 * If true, the "openOn" methods will create the shell but not actually open them.
+	 * This is rare and a little awkward, might get changed someday: https://github.com/diffplug/durian-swt/issues/4
+	 */
+	public Shells setDontOpen(boolean dontOpen) {
+		this.dontOpen = dontOpen;
+		return this;
+	}
+
 	/** Opens the shell on this parent shell. */
 	public Shell openOn(Shell parent) {
 		Preconditions.checkNotNull(parent);
@@ -191,6 +201,7 @@ public class Shells {
 
 	/** Opens the shell on this parent and blocks. */
 	public void openOnBlocking(Shell parent) {
+		Preconditions.checkArgument(!dontOpen);
 		SwtMisc.loopUntilDisposed(openOn(parent));
 	}
 
@@ -227,6 +238,7 @@ public class Shells {
 
 	/** Opens the shell on the currently active shell and blocks. */
 	public void openOnActiveBlocking() {
+		Preconditions.checkArgument(!dontOpen);
 		SwtMisc.loopUntilDisposed(openOnActive());
 	}
 
@@ -243,6 +255,7 @@ public class Shells {
 
 	/** Opens the shell as a root shell and blocks. */
 	public void openOnDisplayBlocking() {
+		Preconditions.checkArgument(!dontOpen);
 		SwtMisc.loopUntilDisposed(openOnDisplay());
 	}
 
@@ -306,7 +319,9 @@ public class Shells {
 
 		// set the location and open it up!
 		shell.setBounds(bounds);
-		shell.open();
+		if (!dontOpen) {
+			shell.open();
+		}
 	}
 
 	/** Prevents the given shell from closing without prompting.  Returns a Subscription which can cancel this blocking. */
