@@ -15,6 +15,10 @@
  */
 package com.diffplug.common.swt;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -31,6 +35,8 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.collect.Maps;
+import com.diffplug.common.tree.TreeIterable;
+import com.diffplug.common.tree.TreeQuery;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.disposables.Disposables;
@@ -203,6 +209,88 @@ public class Shells {
 	public void openOnBlocking(Shell parent) {
 		Preconditions.checkArgument(!dontOpen);
 		SwtMisc.loopUntilDisposed(openOn(parent));
+	}
+
+	/**
+	 * Returns the active shell using the following logic:
+	 * 
+	 * - the active shell needs to be visible, and it can't be a temporary pop-up (it needs to have a toolbar)
+	 * - if it's invisible or temporary, we trust its top-left position as the "user position"
+	 * - if there's no shell at all, we use the mouse cursor as the "user position"
+	 * - we iterate over every shell, and find the ones that are underneath the "user position"
+	 * - of the candidate shells, we return the one which is nested the deepest
+	 * 
+	 * on Windows and OS X, the active shell is the one that currently has user focus
+	 * on Linux, the last created shell (even if it is invisible) will count as the active shell
+	 *
+	 * This is a problem because some things create a fake hidden shell to act as a parent for other
+	 * operations (specifically our right-click infrastructure). This means that on linux, the user
+	 * right-clicks, a fake shell is created to show a menu, the selected action opens a new shell
+	 * which uses "openOnActive", then the menu closes and disposes its fake shell, which promptly
+	 * closes the newly created shell.
+	 *
+	 * as a workaround, if an active shell is found, but it isn't visible, we count that as though
+	 * there isn't an active shell
+	 *
+	 * we have a similar workaround for no-trim ON_TOP shells, which are commonly used for
+	 * context-sensitive popups which may close soon after
+	 */
+	public static Shell active() {
+		Display display = SwtMisc.assertUI();
+		Shell active = display.getActiveShell();
+
+		Point activeLocation;
+		if (active == null) {
+			activeLocation = display.getCursorLocation();
+		} else {
+			if (isValidActiveShell(active)) {
+				return active;
+			} else {
+				activeLocation = active.getLocation();
+			}
+		}
+
+		// on Windows and OS X, the active shell is the one that currently has user focus
+		// on Linux, the last created shell (even if it is invisible) will count as the active shell
+		//
+		// This is a problem because some things create a fake hidden shell to act as a parent for other
+		// operations (specifically our right-click infrastructure). This means that on linux, the user
+		// right-clicks, a fake shell is created to show a menu, the selected action opens a new shell
+		// which uses "openOnActive", then the menu closes and disposes its fake shell, which promptly
+		// closes the newly created shell.
+		//
+		// as a workaround, if an active shell is found, but it isn't visible, we count that as though
+		// there isn't an active shell
+		//
+		// we have a similar workaround for no-trim ON_TOP shells, which are commonly used for
+		// context-sensitive popups which may close soon after
+
+		// we now have the ulocation of the cursor, all we have to do is find which shell is underneath it
+		List<Shell> shellsUnderActiveLocation = new ArrayList<>();
+		Shell[] shells = display.getShells();
+		for (Shell rootShell : shells) {
+			// only look at valid shells
+			for (Shell shell : TreeIterable.breadthFirst(SwtMisc.treeDefShell()
+					.filter(Shells::isValidActiveShell), rootShell)) {
+				if (shell.getBounds().contains(activeLocation)) {
+					shellsUnderActiveLocation.add(shell);
+				}
+			}
+		}
+		if (shellsUnderActiveLocation.isEmpty()) {
+			return null;
+		} else if (shellsUnderActiveLocation.size() == 1) {
+			return shellsUnderActiveLocation.get(0);
+		}
+		// otherwise, we prefer the deepest shell
+		Comparator<Shell> byDepth = Comparator.comparingInt(shell -> {
+			return TreeQuery.toRoot(SwtMisc.treeDefShell(), shell).size();
+		});
+		return Collections.max(shellsUnderActiveLocation, byDepth);
+	}
+
+	private static boolean isValidActiveShell(Shell shell) {
+		return shell.isVisible() && SwtMisc.flagIsSet(SWT.TITLE, shell);
 	}
 
 	/** Opens the shell on the currently active shell. */

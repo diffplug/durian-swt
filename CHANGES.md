@@ -5,6 +5,7 @@
 - `Fonts.systemLarge()` was hardcoded to 12 points.  This worked well on standard DPI windows, but was actually smaller than the normal font on retina mac.  Now adds 33% to the normal size, which exactly matches the previous behavior on Windows, but works better on other platforms.
 - Added `SwtMisc.getSystemCursor` and `getSystemIcon`.
 - Added `Shells.dontOpen` which makes it possible to create a shell that doesn't open.
+- Added `Shells.active` which finds the currently active shell
 
 ### Version 3.1.1 - April 24th 2019 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/3.1.1/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/3.1.1/view))
 
