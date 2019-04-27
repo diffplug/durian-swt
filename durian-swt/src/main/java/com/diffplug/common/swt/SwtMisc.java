@@ -29,6 +29,7 @@ import javax.annotation.Nullable;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
@@ -100,9 +101,19 @@ public class SwtMisc {
 		Preconditions.checkArgument(current == null, "Must not be called from the UI thread.");
 	}
 
-	/** Returns the given system color. */
+	/** Returns the given system color.  SWT.COLOR_* */
 	public static Color getSystemColor(int code) {
 		return assertUI().getSystemColor(code);
+	}
+
+	/** Returns the given system color.  SWT.CURSOR_* */
+	public static Cursor getSystemCursor(int cursor) {
+		return assertUI().getSystemCursor(cursor);
+	}
+
+	/** Returns the given system icon.  SWT.ICON_* */
+	public static Image getSystemIcon(int icon) {
+		return assertUI().getSystemImage(icon);
 	}
 
 	/**
