@@ -65,40 +65,45 @@ public class RadioGroup<T> {
 		return this;
 	}
 
+	public RxBox<T> buildOn(Composite cmp) {
+		// object which will hold the current selection
+		RxBox<T> selection = source.orElseGet(() -> RxBox.of(Iterables.get(options.values(), 0)));
+
+		// mapping from button to objects
+		BiMap<Button, T> mapping = HashBiMap.create();
+
+		for (Map.Entry<String, T> entry : options.entrySet()) {
+			// create a button
+			Button btn = new Button(cmp, SWT.RADIO);
+			btn.setText(entry.getKey());
+			// update the mapping
+			mapping.put(btn, entry.getValue());
+			// update selection when a button is clicked
+			btn.addListener(SWT.Selection, e -> {
+				selection.set(mapping.get(btn));
+			});
+		}
+
+		// when the selection is changed, set the button
+		Button firstBtn = Iterables.get(mapping.keySet(), 0);
+		SwtExec.immediate().guardOn(firstBtn).subscribe(selection.asObservable(), obj -> {
+			Button selectedBtn = mapping.inverse().get(obj);
+			for (Button btn : mapping.keySet()) {
+				btn.setSelection(btn == selectedBtn);
+			}
+		});
+		return selection;
+
+	}
+
 	public Coat.Returning<RxBox<T>> getCoat() {
 		Preconditions.checkArgument(options.size() > 0, "Must be at least one option!");
 		ImmutableMap<String, T> options = ImmutableMap.copyOf(this.options);
 		return new Coat.Returning<RxBox<T>>() {
 			@Override
 			public RxBox<T> putOn(Composite cmp) {
-				// object which will hold the current selection
-				RxBox<T> selection = source.orElseGet(() -> RxBox.of(Iterables.get(options.values(), 0)));
-
-				// mapping from button to objects
-				BiMap<Button, T> mapping = HashBiMap.create();
-
 				Layouts.setFill(cmp).vertical().margin(0);
-				for (Map.Entry<String, T> entry : options.entrySet()) {
-					// create a button
-					Button btn = new Button(cmp, SWT.RADIO);
-					btn.setText(entry.getKey());
-					// update the mapping
-					mapping.put(btn, entry.getValue());
-					// update selection when a button is clicked
-					btn.addListener(SWT.Selection, e -> {
-						selection.set(mapping.get(btn));
-					});
-				}
-
-				// when the selection is changed, set the button
-				Button firstBtn = Iterables.get(mapping.keySet(), 0);
-				SwtExec.immediate().guardOn(firstBtn).subscribe(selection.asObservable(), obj -> {
-					Button selectedBtn = mapping.inverse().get(obj);
-					for (Button btn : mapping.keySet()) {
-						btn.setSelection(btn == selectedBtn);
-					}
-				});
-				return selection;
+				return buildOn(cmp);
 			}
 		};
 	}
