@@ -295,23 +295,9 @@ public class Shells {
 	/** Opens the shell on the currently active shell. */
 	public Shell openOnActive() {
 		Display display = SwtMisc.assertUI();
-		Shell parent = display.getActiveShell();
-		// on Windows and OS X, the active shell is the one that currently has user focus
-		// on Linux, the last created shell (even if it is invisible) will count as the active shell
-		//
-		// This is a problem because some things create a fake hidden shell to act as a parent for other
-		// operations (specifically our right-click infrastructure). This means that on linux, the user
-		// right-clicks, a fake shell is created to show a menu, the selected action opens a new shell
-		// which uses "openOnActive", then the menu closes and disposes its fake shell, which promptly
-		// closes the newly created shell.
-		//
-		// as a workaround, if an active shell is found, but it isn't visible, we count that as though
-		// there isn't an active shell
-		//
-		// we have a similar workaround for ON_TOP shells, which are commonly used for context-sensitive
-		// popups which may close soon after
 		Shell shell;
-		if (parent == null || parent.isVisible() == false || SwtMisc.flagIsSet(SWT.ON_TOP, parent)) {
+		Shell parent = Shells.active();
+		if (parent == null) {
 			shell = new Shell(display, style);
 		} else {
 			shell = new Shell(parent, style);
