@@ -27,7 +27,6 @@ import org.eclipse.swt.widgets.Composite;
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.collect.BiMap;
 import com.diffplug.common.collect.HashBiMap;
-import com.diffplug.common.collect.ImmutableMap;
 import com.diffplug.common.collect.Iterables;
 import com.diffplug.common.collect.Maps;
 import com.diffplug.common.rx.RxBox;
@@ -98,7 +97,6 @@ public class RadioGroup<T> {
 
 	public Coat.Returning<RxBox<T>> getCoat() {
 		Preconditions.checkArgument(options.size() > 0, "Must be at least one option!");
-		ImmutableMap<String, T> options = ImmutableMap.copyOf(this.options);
 		return new Coat.Returning<RxBox<T>>() {
 			@Override
 			public RxBox<T> putOn(Composite cmp) {
