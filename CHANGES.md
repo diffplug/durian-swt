@@ -1,11 +1,18 @@
 # DurianSwt releases
 
-### Version 3.2.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/durian/durian-swt/))
+### Version 3.3.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/durian/durian-swt/))
+
+### Version 3.2.1 - August 7th 2019 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/3.2.1/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/3.2.1/view))
+
+- Added a non-coat version of `RadioGroup`.
+- Fixed `Shells.openOnActive()` to take advantage of `Shells.active()`.
+
+### Version 3.2.0 - April 29th 2019 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/3.2.0/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/3.2.0/view))
 
 - `Fonts.systemLarge()` was hardcoded to 12 points.  This worked well on standard DPI windows, but was actually smaller than the normal font on retina mac.  Now adds 33% to the normal size, which exactly matches the previous behavior on Windows, but works better on other platforms.
 - Added `SwtMisc.getSystemCursor` and `getSystemIcon`.
 - Added `Shells.dontOpen` which makes it possible to create a shell that doesn't open.
-- Added `Shells.active` which finds the currently active shell
+- Added `Shells.active` which finds the currently active shell.
 
 ### Version 3.1.1 - April 24th 2019 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/3.1.1/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/3.1.1/view))
 
