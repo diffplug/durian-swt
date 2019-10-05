@@ -309,6 +309,14 @@ public class Shells {
 		return shell;
 	}
 
+	private static final Map.Entry<Corner, Point> SENTINEL_DONT_SET_POSITION_OR_SIZE = Maps.immutableEntry(null, null);
+
+	/** Prevents setting any size or position.  Does not prevent changing the location and size to ensure that the shell is on-screen. */
+	public Shells dontSetPositionOrSize() {
+		location = SENTINEL_DONT_SET_POSITION_OR_SIZE;
+		return this;
+	}
+
 	/** Opens the shell on the currently active shell and blocks. */
 	public void openOnActiveBlocking() {
 		Preconditions.checkArgument(!dontOpen);
@@ -353,42 +361,43 @@ public class Shells {
 		coat.putOn(shell);
 
 		Rectangle bounds;
-		if (positionIncludesTrim) {
-			Point computedSize;
-			if (size.x == SWT.DEFAULT ^ size.y == SWT.DEFAULT) {
-				// if we're specifying only one side or the other,
-				// then we need to adjust for the trim
-				Rectangle trimFor100x100 = shell.computeTrim(100, 100, 100, 100);
-				int dwidth = trimFor100x100.width - 100;
-				int dheight = trimFor100x100.height - 100;
-				int widthHint = size.x == SWT.DEFAULT ? SWT.DEFAULT : size.x - dwidth;
-				int heightHint = size.y == SWT.DEFAULT ? SWT.DEFAULT : size.y - dheight;
-				computedSize = shell.computeSize(widthHint, heightHint);
-			} else {
-				if (size.x == SWT.DEFAULT) {
-					// we're packing as tight as can
-					Preconditions.checkState(size.y == SWT.DEFAULT);
-					computedSize = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
-				} else {
-					// the size is specified completely
-					Preconditions.checkState(size.y != SWT.DEFAULT);
-					computedSize = size;
-				}
-			}
-			Point topLeft = location.getKey().topLeftRequiredFor(new Rectangle(0, 0, computedSize.x, computedSize.y), location.getValue());
-			bounds = new Rectangle(topLeft.x, topLeft.y, computedSize.x, computedSize.y);
+		if (location == SENTINEL_DONT_SET_POSITION_OR_SIZE) {
+			bounds = shell.getBounds();
 		} else {
-			Point computedSize = shell.computeSize(size.x, size.y, true);
-			Point topLeft = location.getKey().topLeftRequiredFor(new Rectangle(0, 0, computedSize.x, computedSize.y), location.getValue());
-			bounds = shell.computeTrim(topLeft.x, topLeft.y, computedSize.x, computedSize.y);
+			if (positionIncludesTrim) {
+				Point computedSize;
+				if (size.x == SWT.DEFAULT ^ size.y == SWT.DEFAULT) {
+					// if we're specifying only one side or the other,
+					// then we need to adjust for the trim
+					Rectangle trimFor100x100 = shell.computeTrim(100, 100, 100, 100);
+					int dwidth = trimFor100x100.width - 100;
+					int dheight = trimFor100x100.height - 100;
+					int widthHint = size.x == SWT.DEFAULT ? SWT.DEFAULT : size.x - dwidth;
+					int heightHint = size.y == SWT.DEFAULT ? SWT.DEFAULT : size.y - dheight;
+					computedSize = shell.computeSize(widthHint, heightHint);
+				} else {
+					if (size.x == SWT.DEFAULT) {
+						// we're packing as tight as can
+						Preconditions.checkState(size.y == SWT.DEFAULT);
+						computedSize = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
+					} else {
+						// the size is specified completely
+						Preconditions.checkState(size.y != SWT.DEFAULT);
+						computedSize = size;
+					}
+				}
+				Point topLeft = location.getKey().topLeftRequiredFor(new Rectangle(0, 0, computedSize.x, computedSize.y), location.getValue());
+				bounds = new Rectangle(topLeft.x, topLeft.y, computedSize.x, computedSize.y);
+			} else {
+				Point computedSize = shell.computeSize(size.x, size.y, true);
+				Point topLeft = location.getKey().topLeftRequiredFor(new Rectangle(0, 0, computedSize.x, computedSize.y), location.getValue());
+				bounds = shell.computeTrim(topLeft.x, topLeft.y, computedSize.x, computedSize.y);
+			}
 		}
 
 		// constrain the position by the Display's bounds (getClientArea() takes the Start bar into account)
 		Rectangle monitorBounds = SwtMisc.monitorFor(Corner.CENTER.getPosition(bounds)).orElse(SwtMisc.assertUI().getMonitors()[0]).getClientArea();
-		bounds.x = Math.max(bounds.x, monitorBounds.x);
-		bounds.y = Math.max(bounds.y, monitorBounds.y);
-		bounds.x = Math.min(bounds.x + bounds.width, monitorBounds.x + monitorBounds.width) - bounds.width;
-		bounds.y = Math.min(bounds.y + bounds.height, monitorBounds.y + monitorBounds.height) - bounds.height;
+		bounds.intersect(monitorBounds);
 
 		// set the location and open it up!
 		shell.setBounds(bounds);
