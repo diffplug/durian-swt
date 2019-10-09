@@ -113,4 +113,24 @@ public interface ControlWrapper {
 			return wrapped.getRootControl();
 		}
 	}
+
+	/** Most-efficient way to transparently pass a Control to a ControlWrapper API. */
+	public static <T extends Control> Transparent<T> transparent(T control) {
+		return new Transparent<>(control);
+	}
+
+	public static final class Transparent<T extends Control> implements ControlWrapper {
+		/** The wrapped control. */
+		protected final T wrapped;
+
+		/** Creates a ControlWrapper which wraps the given control. */
+		public Transparent(T wrapped) {
+			this.wrapped = wrapped;
+		}
+
+		@Override
+		public T getRootControl() {
+			return wrapped;
+		}
+	}
 }

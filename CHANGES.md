@@ -3,6 +3,7 @@
 ### Version 3.3.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/durian/durian-swt/))
 
 - Added `Shells.dontSetPositionOrSize`, and fixed a bug that could push shells just slightly off-screen.
+- Added `ControlWrapper.transparent` for efficiently passing `Control` to `ControlWrapper`.
 
 ### Version 3.2.1 - August 7th 2019 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/3.2.1/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/3.2.1/view))
 
