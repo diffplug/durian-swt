@@ -71,4 +71,9 @@ public class FlatBtn extends ControlWrapper.AroundControl<ToolBar> {
 	public void setEnabled(boolean enabled) {
 		item.setEnabled(enabled);
 	}
+
+	/** Sets the selection state. */
+	public void setSelection(boolean selected) {
+		item.setSelection(selected);
+	}
 }
