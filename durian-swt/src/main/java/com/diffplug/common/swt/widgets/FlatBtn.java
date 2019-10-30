@@ -16,6 +16,7 @@
 package com.diffplug.common.swt.widgets;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Listener;
@@ -75,5 +76,10 @@ public class FlatBtn extends ControlWrapper.AroundControl<ToolBar> {
 	/** Sets the selection state. */
 	public void setSelection(boolean selected) {
 		item.setSelection(selected);
+	}
+
+	/** Sets the background color of the button. */
+	public void setBackground(Color color) {
+		wrapped.setBackground(color);
 	}
 }
