@@ -20,10 +20,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
@@ -38,7 +38,6 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.widgets.Control;
 
-import com.diffplug.common.base.Predicates;
 import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.common.collect.ImmutableMap;
 import com.diffplug.common.collect.Immutables;
@@ -221,6 +220,24 @@ public class StructuredDrop {
 		return null;
 	}
 
+	public static <T> TypedDropHandler<T> handler(DndOp op, Consumer<T> onValue) {
+		return handler(op, (unusedEvent, value) -> onValue.accept(value));
+	}
+
+	public static <T> TypedDropHandler<T> handler(DndOp op, BiConsumer<DropTargetEvent, T> onValue) {
+		return new AbstractTypedDropHandler<T>(op) {
+			@Override
+			protected boolean accept(T value) {
+				return true;
+			}
+
+			@Override
+			protected void drop(DropTargetEvent event, T value, boolean moved) {
+				onValue.accept(event, value);
+			}
+		};
+	}
+
 	public static class Listener implements DropTargetListener {
 		final ImmutableMap<Transfer, Handler> handlers;
 		final Transfer[] transfers;
@@ -331,25 +348,5 @@ public class StructuredDrop {
 		protected abstract boolean accept(T value);
 
 		protected abstract void drop(DropTargetEvent event, T value, boolean moved);
-	}
-
-	/** Creates a TypedDropHandler for the given type. */
-	public static <T> TypedDropHandler<T> handler(DndOp op, Predicate<T> predicate, Consumer<T> onDrop) {
-		return new AbstractTypedDropHandler<T>(op) {
-			@Override
-			protected boolean accept(T value) {
-				return predicate.test(value);
-			}
-
-			@Override
-			protected void drop(DropTargetEvent event, T value, boolean moved) {
-				onDrop.accept(value);
-			}
-		};
-	}
-
-	/** Creates a TypedDropHandler for the given type. */
-	public static <T> TypedDropHandler<T> handler(DndOp op, Consumer<T> onDrop) {
-		return handler(op, Predicates.alwaysTrue(), onDrop);
 	}
 }
