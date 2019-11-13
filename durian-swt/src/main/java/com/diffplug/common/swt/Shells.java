@@ -397,7 +397,33 @@ public class Shells {
 
 		// constrain the position by the Display's bounds (getClientArea() takes the Start bar into account)
 		Rectangle monitorBounds = SwtMisc.monitorFor(Corner.CENTER.getPosition(bounds)).orElse(SwtMisc.assertUI().getMonitors()[0]).getClientArea();
-		bounds.intersect(monitorBounds);
+		Rectangle inbounds = monitorBounds.intersection(bounds);
+		if (!inbounds.equals(bounds)) {
+			// push left if needed
+			if (inbounds.x > bounds.x) {
+				bounds.x = inbounds.x;
+			}
+			// push down if needed
+			if (inbounds.y > bounds.y) {
+				bounds.y = inbounds.y;
+			}
+			// push right, but not past the edge of the monitor (better to hang off to the right)
+			int pushRight = bounds.x + bounds.width - (inbounds.x + inbounds.width);
+			if (pushRight > 0) {
+				bounds.x -= pushRight;
+				if (bounds.x < monitorBounds.x) {
+					bounds.x = monitorBounds.x;
+				}
+			}
+			// push up, but not past the edge of the monitor (better to hang off to the bottom)
+			int pushUp = bounds.y + bounds.height - (inbounds.y + inbounds.height);
+			if (pushUp > 0) {
+				bounds.y -= pushUp;
+				if (bounds.y < monitorBounds.y) {
+					bounds.y = monitorBounds.y;
+				}
+			}
+		}
 
 		// set the location and open it up!
 		shell.setBounds(bounds);
