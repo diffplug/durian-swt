@@ -54,6 +54,7 @@ public class Shells {
 	private boolean positionIncludesTrim = true;
 	private Map.Entry<Corner, Point> location = null;
 	private boolean dontOpen = false;
+	private boolean closeOnEscape = false;
 
 	private Shells(int style, Coat coat) {
 		this.style = style;
@@ -181,6 +182,14 @@ public class Shells {
 	 */
 	public Shells setDontOpen(boolean dontOpen) {
 		this.dontOpen = dontOpen;
+		return this;
+	}
+
+	/**
+	 * Determines whether the shell will close on escape, defaults to false.
+	 */
+	public Shells setCloseOnEscape(boolean closeOnEscape) {
+		this.closeOnEscape = closeOnEscape;
 		return this;
 	}
 
@@ -352,11 +361,13 @@ public class Shells {
 			shell.setAlpha(alpha);
 		}
 		// disable close on ESCAPE
-		shell.addListener(SWT.Traverse, e -> {
-			if (e.detail == SWT.TRAVERSE_ESCAPE) {
-				e.doit = false;
-			}
-		});
+		if (!closeOnEscape) {
+			shell.addListener(SWT.Traverse, e -> {
+				if (e.detail == SWT.TRAVERSE_ESCAPE) {
+					e.doit = false;
+				}
+			});
+		}
 		// find the composite we're going to draw on
 		coat.putOn(shell);
 
