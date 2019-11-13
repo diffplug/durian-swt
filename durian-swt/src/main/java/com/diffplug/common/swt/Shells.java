@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.collect.Maps;
+import com.diffplug.common.swt.os.WS;
 import com.diffplug.common.tree.TreeIterable;
 import com.diffplug.common.tree.TreeQuery;
 import com.diffplug.common.tree.TreeStream;
@@ -354,7 +355,7 @@ public class Shells {
 		if (title != null) {
 			shell.setText(title);
 		}
-		if (image != null) {
+		if (image != null && WS.getRunning() != WS.COCOA) {
 			shell.setImage(image);
 		}
 		if (alpha != SWT.DEFAULT) {

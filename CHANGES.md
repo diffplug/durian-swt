@@ -5,6 +5,7 @@
 - Added `FlatBtn.setBackground` and `FlatBtn.setSelection`.
 - Added `Shells.dontSetPositionOrSize` and `Shells.setCloseOnEscape`.
 - Shells now reposition themselves if they were going to open offscreen.
+- Shells no longer set their image on Mac, so that they don't hijack the dock icon.
 - Added `ControlWrapper.transparent` for efficiently passing `Control` to `ControlWrapper`.
 - Improved `StructuredDrop.handler`.
 
