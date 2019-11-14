@@ -7,6 +7,7 @@
 - Shells now reposition themselves if they were going to open offscreen.
 - Shells no longer set their image on Mac, so that they don't hijack the dock icon.
 - Added `ControlWrapper.transparent` for efficiently passing `Control` to `ControlWrapper`.
+- Added `ControlWrapper.setParent` which is a pure delegation to `Control.setParent`.
 - Improved `StructuredDrop.handler`.
 - Added `SwtMisc.globalBounds` for `ControlWrapper`.
 

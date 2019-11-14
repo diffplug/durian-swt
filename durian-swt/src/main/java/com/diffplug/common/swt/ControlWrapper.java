@@ -67,6 +67,14 @@ public interface ControlWrapper {
 	}
 
 	/**
+	 * Changes the parent of the widget to be the one provided.
+	 * Returns <code>true</code> if the parent is successfully changed
+	 */
+	default boolean setParent(Composite parent) {
+		return getRootControl().setParent(parent);
+	}
+
+	/**
 	 * Returns the wrapped {@link Control} (only appropriate for limited purposes!).
 	 * <p>
 	 * The implementor of this ControlWrapper is free to change the wrapped Control
