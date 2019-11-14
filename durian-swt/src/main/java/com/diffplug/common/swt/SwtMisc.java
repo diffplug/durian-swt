@@ -452,6 +452,11 @@ public class SwtMisc {
 		return new Rectangle(topLeft.x, topLeft.y, size.x, size.y);
 	}
 
+	/** Returns the global bounds of the given ControlWrapper. */
+	public static Rectangle globalBounds(ControlWrapper control) {
+		return globalBounds(control.getRootControl());
+	}
+
 	/** Converts a rectangle to global coordinates using the given control as a reference frame. */
 	public static Rectangle toDisplay(Control control, Rectangle rect) {
 		Point topLeft = control.toDisplay(rect.x, rect.y);
