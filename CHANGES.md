@@ -10,6 +10,7 @@
 - Added `ControlWrapper.setParent` which is a pure delegation to `Control.setParent`.
 - Improved `StructuredDrop.handler`.
 - Added `SwtMisc.globalBounds` for `ControlWrapper`.
+- `SwtDebug.dumpEvent` is now null-safe.
 
 ### Version 3.2.1 - August 7th 2019 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/3.2.1/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/3.2.1/view))
 

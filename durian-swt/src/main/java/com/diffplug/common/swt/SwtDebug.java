@@ -43,12 +43,16 @@ import com.diffplug.common.rx.Rx;
  */
 public class SwtDebug {
 	/** Dumps the given SWT event to System.out. */
-	public static void dumpEvent(String name, Event e) {
+	public static void dumpEvent(String name, @Nullable Event e) {
 		dumpEvent(name, e, StringPrinter.systemOut());
 	}
 
 	/** Dumps the given SWT event to the given StringPrinter. */
-	public static void dumpEvent(String name, Event e, StringPrinter to) {
+	public static void dumpEvent(String name, @Nullable Event e, StringPrinter to) {
+		if (e == null) {
+			to.println(name + ": null");
+			return;
+		}
 		// print the name
 		to.println(name + ": " + eventType(e));
 		// print the non-null / non-zero fields
