@@ -1,6 +1,8 @@
 # DurianSwt releases
 
-### Version 3.3.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/durian/durian-swt/))
+### Version 3.4.0 - TBD ([javadoc](http://diffplug.github.io/durian-swt/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/durian/durian-swt/))
+
+### Version 3.3.0 - November 22nd 2019 ([javadoc](http://diffplug.github.io/durian-swt/javadoc/3.3.0/), [jcenter](https://bintray.com/diffplug/opensource/durian-swt/3.3.0/view))
 
 - Added `FlatBtn.setBackground` and `FlatBtn.setSelection`.
 - Added `Shells.dontSetPositionOrSize` and `Shells.setCloseOnEscape`.
