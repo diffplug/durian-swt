@@ -13,24 +13,25 @@ apply from: 干.file('spotless/freshmark.gradle')
 
 subprojects { subProject ->
 	apply from: 干.file('base/java8.gradle')
+	apply plugin: 'java-library'
 
 	if (subProject.name == 'durian-swt') {
 		// configured there
 	} else if (subProject.name == 'durian-swt.os') {
 		dependencies {
 			compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
-			testCompile "junit:junit:$VER_JUNIT"
+			testImplementation "junit:junit:$VER_JUNIT"
 		}
 	} else {
 		apply plugin: 'com.diffplug.gradle.eclipse.mavencentral'
 		String platformCode = project.name.substring('durian-swt.'.length())
 		eclipseMavenCentral {
 			release SWT_VERSION, {
-				compile "org.eclipse.swt.$platformCode"
+				implementation "org.eclipse.swt.$platformCode"
 			}
 		}
 		dependencies {
-			compile project(':durian-swt')
+			api project(':durian-swt')
 		}
 		configurations.all {
 			resolutionStrategy.eachDependency { DependencyResolveDetails details ->
