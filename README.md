@@ -6,7 +6,7 @@ output = [
     link(shield('Apache 2.0', 'license', 'apache-2.0', 'blue'), 'https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)'),
     '',
     link(shield('Changelog', 'changelog', versionLast, 'brightgreen'), 'CHANGES.md'),
-    link(shield('Javadoc', 'javadoc', 'yes', 'brightgreen'), 'https://javadoc.io/doc/com.diffplug.durian/durian-swt/{{versionLast}}/'),
+    link(shield('Javadoc', 'javadoc', 'yes', 'brightgreen'), 'https://javadoc.io/static/com.diffplug.durian/durian-swt/{{versionLast}}/overview-summary.html'),
     link(shield('Live chat', 'gitter', 'chat', 'brightgreen'), 'https://gitter.im/diffplug/durian'),
     link(image('Travis CI', 'https://travis-ci.org/diffplug/durian-swt.svg?branch=master'), 'https://travis-ci.org/diffplug/durian-swt'),
     ].join('\n');
@@ -15,7 +15,7 @@ output = [
 [![Apache 2.0](https://img.shields.io/badge/license-apache--2.0-blue.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
 
 [![Changelog](https://img.shields.io/badge/changelog-3.3.1-brightgreen.svg)](CHANGES.md)
-[![Javadoc](https://img.shields.io/badge/javadoc-yes-brightgreen.svg)](https://javadoc.io/doc/com.diffplug.durian/durian-swt/3.3.1/)
+[![Javadoc](https://img.shields.io/badge/javadoc-yes-brightgreen.svg)](https://javadoc.io/static/com.diffplug.durian/durian-swt/3.3.1/overview-summary.html)
 [![Live chat](https://img.shields.io/badge/gitter-chat-brightgreen.svg)](https://gitter.im/diffplug/durian)
 [![Travis CI](https://travis-ci.org/diffplug/durian-swt.svg?branch=master)](https://travis-ci.org/diffplug/durian-swt)
 <!---freshmark /shields -->
