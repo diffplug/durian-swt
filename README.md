@@ -2,28 +2,28 @@
 
 <!---freshmark shields
 output = [
-	link(shield('Maven artifact', 'mavenCentral', '{{group}}:{{name}}', 'blue'), 'https://bintray.com/{{org}}/opensource/{{name}}/view'),
-	link(shield('Latest version', 'latest', '{{stable}}', 'blue'), 'https://github.com/{{org}}/{{name}}/releases/latest'),
-	link(shield('Javadoc', 'javadoc', 'OK', 'blue'), 'https://{{org}}.github.io/{{name}}/javadoc/{{stable}}/'),
-	link(shield('License Apache', 'license', 'Apache', 'blue'), 'https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)'),
-	'',
-	link(shield('Changelog', 'changelog', '{{version}}', 'brightgreen'), 'CHANGES.md'),
-	link(image('Travis CI', 'https://travis-ci.org/{{org}}/{{name}}.svg?branch=master'), 'https://travis-ci.org/{{org}}/{{name}}'),
-	link(shield('Live chat', 'gitter', 'live chat', 'brightgreen'), 'https://gitter.im/diffplug/durian')
-	].join('\n');
+  link(shield('Maven artifact', 'mavenCentral', 'com.diffplug.durian:durian-swt', 'blue'), 'https://bintray.com/diffplug/opensource/durian-swt/view'),
+  link(shield('Latest version', 'latest', '{{versionLast}}', 'blue'), 'https://github.com/diffplug/durian-swt/releases/latest'),
+  link(shield('Javadoc', 'javadoc', 'OK', 'blue'), 'https://diffplug.github.io/durian-swt/javadoc/{{versionLast}}/'),
+  link(shield('License Apache', 'license', 'Apache', 'blue'), 'https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)'),
+  '',
+  link(shield('Changelog', 'changelog', '{{versionLast}}', 'brightgreen'), 'CHANGES.md'),
+  link(image('Travis CI', 'https://travis-ci.org/diffplug/durian-swt.svg?branch=master'), 'https://travis-ci.org/diffplug/durian-swt'),
+  link(shield('Live chat', 'gitter', 'live chat', 'brightgreen'), 'https://gitter.im/diffplug/durian')
+  ].join('\n');
 -->
 [![Maven artifact](https://img.shields.io/badge/mavenCentral-com.diffplug.durian%3Adurian--swt-blue.svg)](https://bintray.com/diffplug/opensource/durian-swt/view)
 [![Latest version](https://img.shields.io/badge/latest-3.3.0-blue.svg)](https://github.com/diffplug/durian-swt/releases/latest)
 [![Javadoc](https://img.shields.io/badge/javadoc-OK-blue.svg)](https://diffplug.github.io/durian-swt/javadoc/3.3.0/)
 [![License Apache](https://img.shields.io/badge/license-Apache-blue.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
 
-[![Changelog](https://img.shields.io/badge/changelog-3.4.0--SNAPSHOT-brightgreen.svg)](CHANGES.md)
+[![Changelog](https://img.shields.io/badge/changelog-3.3.0-brightgreen.svg)](CHANGES.md)
 [![Travis CI](https://travis-ci.org/diffplug/durian-swt.svg?branch=master)](https://travis-ci.org/diffplug/durian-swt)
 [![Live chat](https://img.shields.io/badge/gitter-live_chat-brightgreen.svg)](https://gitter.im/diffplug/durian)
 <!---freshmark /shields -->
 
 <!---freshmark javadoc
-output = prefixDelimiterReplace(input, 'https://{{org}}.github.io/{{name}}/javadoc/', '/', stable);
+output = prefixDelimiterReplace(input, 'https://diffplug.github.io/durian-swt/javadoc/', '/', versionLast);
 -->
 ### Infrastructure
 
@@ -35,7 +35,7 @@ output = prefixDelimiterReplace(input, 'https://{{org}}.github.io/{{name}}/javad
 
 ```java
 SwtExec.async().guardOn(textBox).subscribe(serverResponse, txt -> {
-	textBox.setText(txt);
+  textBox.setText(txt);
 });
 ```
 
@@ -45,18 +45,18 @@ SwtExec.async().guardOn(textBox).subscribe(serverResponse, txt -> {
 
 ```java
 void textOkCanel(Composite cmp) {
-	Layouts.setGrid(cmp).numColumns(3);
+  Layouts.setGrid(cmp).numColumns(3);
 
-	// instructions fill the full width
-	Text text = new Text(cmp, SWT.WRAP);
-	Layouts.setGridData(text).horizontalSpan(3).grabAll();
+  // instructions fill the full width
+  Text text = new Text(cmp, SWT.WRAP);
+  Layouts.setGridData(text).horizontalSpan(3).grabAll();
 
-	// right-justified ok / cancel buttons
-	Layouts.newGridPlaceholder(cmp).grabHorizontal();
-	Button btnOk = new Button(cmp, SWT.PUSH);
-	Layouts.setGridData(btn).widthHint(SwtMisc.defaultButtonWidth());
-	Button btnCancel = new Button(cmp, SWT.PUSH);
-	Layouts.setGridData(btn).widthHint(SwtMisc.defaultButtonWidth());
+  // right-justified ok / cancel buttons
+  Layouts.newGridPlaceholder(cmp).grabHorizontal();
+  Button btnOk = new Button(cmp, SWT.PUSH);
+  Layouts.setGridData(btn).widthHint(SwtMisc.defaultButtonWidth());
+  Button btnCancel = new Button(cmp, SWT.PUSH);
+  Layouts.setGridData(btn).widthHint(SwtMisc.defaultButtonWidth());
 }
 ```
 
@@ -64,9 +64,9 @@ void textOkCanel(Composite cmp) {
 
 ```java
 Shells.builder(SWT.DIALOG_TRIM, this::textOkCanel)
-	.setTitle("Confirm operation")
-	.setSize(SwtMisc.defaultDialogWidth(), 0) // set the width, pack height to fit contents
-	.openOnDisplayBlocking();
+  .setTitle("Confirm operation")
+  .setSize(SwtMisc.defaultDialogWidth(), 0) // set the width, pack height to fit contents
+  .openOnDisplayBlocking();
 ```
 
 * [`Actions`](https://diffplug.github.io/durian-swt/javadoc/3.3.0/com/diffplug/common/swt/jface/Actions.html) - builder and one-liner:
@@ -109,45 +109,45 @@ From [`ViewerMiscTest.java`](https://github.com/diffplug/durian-swt/blob/master/
 
 ```java
 String message = StringPrinter.buildStringFromLines(
-	"- The table and the tree should keep their selection in sync.",
-	"- The table and the tree should not allow multi-selection.",
-	"- The categories in the tree should not be selectable.");
+  "- The table and the tree should keep their selection in sync.",
+  "- The table and the tree should not allow multi-selection.",
+  "- The categories in the tree should not be selectable.");
 InteractiveTest.testCoat(message, cmp -> {
-	TableAndTree tableAndTree = new TableAndTree(cmp, SWT.SINGLE);
+  TableAndTree tableAndTree = new TableAndTree(cmp, SWT.SINGLE);
 
-	// get the selection of the tree
-	RxBox<Optional<TreeNode<String>>> treeSelection = ViewerMisc.<TreeNode<String>> singleSelection(tableAndTree.tree)
-			// only names can be selected - not categories
-			.enforce(opt -> opt.map(val -> isName(val) ? val : null));
+  // get the selection of the tree
+  RxBox<Optional<TreeNode<String>>> treeSelection = ViewerMisc.<TreeNode<String>> singleSelection(tableAndTree.tree)
+      // only names can be selected - not categories
+      .enforce(opt -> opt.map(val -> isName(val) ? val : null));
 
-	// sync the tree and the table
-	RxOptional<TreeNode<String>> tableSelection = ViewerMisc.singleSelection(tableAndTree.table);
-	Rx.subscribe(treeSelection, tableSelection::set);
-	Rx.subscribe(tableSelection, treeSelection::set);
+  // sync the tree and the table
+  RxOptional<TreeNode<String>> tableSelection = ViewerMisc.singleSelection(tableAndTree.table);
+  Rx.subscribe(treeSelection, tableSelection::set);
+  Rx.subscribe(tableSelection, treeSelection::set);
 });
 ```
 
 ### Miscellaneous stuff
 
 * [`SwtMisc`](https://diffplug.github.io/durian-swt/javadoc/3.3.0/com/diffplug/common/swt/SwtMisc.html) - useful static methods.
-	+ `blockForError`, `blockForSuccess`, `blockForQuestion`, etc. - opens a dialog and blocks for the user's response, can be called from any thread.
-	+ `loopUntil`, `loopUntilDisposed`, `loopUntilGet` - spins the SWT display loop until some condition is satisfied.
-	+ `systemFontHeight/Width`, `scaleByFont`, `scaleByFontHeight` - resolution-independent sizes.
-	+ `treeDefControl`, `treeDefComposite` - a [`TreeDef`](http://diffplug.github.io/durian/javadoc/snapshot/com/diffplug/common/base/TreeDef.html) for traversing UI elements.
-	+ `setEnabledDeep` - sets the enabled status of every child, grandchild, etc. of the given composite.
+  + `blockForError`, `blockForSuccess`, `blockForQuestion`, etc. - opens a dialog and blocks for the user's response, can be called from any thread.
+  + `loopUntil`, `loopUntilDisposed`, `loopUntilGet` - spins the SWT display loop until some condition is satisfied.
+  + `systemFontHeight/Width`, `scaleByFont`, `scaleByFontHeight` - resolution-independent sizes.
+  + `treeDefControl`, `treeDefComposite` - a [`TreeDef`](http://diffplug.github.io/durian/javadoc/snapshot/com/diffplug/common/base/TreeDef.html) for traversing UI elements.
+  + `setEnabledDeep` - sets the enabled status of every child, grandchild, etc. of the given composite.
 * [`SwtRx`](https://diffplug.github.io/durian-swt/javadoc/3.3.0/com/diffplug/common/swt/SwtRx.html) - methods for converting SWT events and models to RxJava Observables.
 * [`SwtDebug`](https://diffplug.github.io/durian-swt/javadoc/3.3.0/com/diffplug/common/swt/SwtDebug.html) - utilities for debugging SWT events.
 * [`OS`](https://diffplug.github.io/durian-swt/javadoc/3.3.0/com/diffplug/common/swt/os/OS.html), [`Arch`](https://diffplug.github.io/durian-swt/javadoc/3.3.0/com/diffplug/common/swt/os/Arch.html), and [`SwtPlatform`](https://diffplug.github.io/durian-swt/javadoc/3.3.0/com/diffplug/common/swt/os/SwtPlatform.html) - detect things about the running system, and manipulate the SWT jars for build tools.
-	+ These do not require SWT or JFace, so you can add DurianSwt to your gradle or maven dependencies without needing to also figure out the SWT messiness.
-	+ You can also just copy-paste these straight into your own code - they have no external dependencies.
+  + These do not require SWT or JFace, so you can add DurianSwt to your gradle or maven dependencies without needing to also figure out the SWT messiness.
+  + You can also just copy-paste these straight into your own code - they have no external dependencies.
 ```java
 String installerExtension = OS.getNative().winMacLinux("exe","dmg","sh");
 String helperBinary = "driver_" + Arch.getNative().x86x64("", "_64") + ".dll";
 String swtJarName = "org.eclipse.swt." + SwtPlatform.getRunning();
 ```
 * [`ViewerMisc`](https://diffplug.github.io/durian-swt/javadoc/3.3.0/com/diffplug/common/swt/jface/ViewerMisc.html) - useful static methods for JFace viewers.
-	+ `singleSelection`, `multiSelection` - returns an RxBox for listening to and setting the selection of a viewer.
-	+ `setTreeContentProvider`, `setLazyTreeContentProvider` - uses a TreeDef to provide the content of a TreeViewer.
+  + `singleSelection`, `multiSelection` - returns an RxBox for listening to and setting the selection of a viewer.
+  + `setTreeContentProvider`, `setLazyTreeContentProvider` - uses a TreeDef to provide the content of a TreeViewer.
 
 <!---freshmark /javadoc -->
 
@@ -158,7 +158,7 @@ Durian requires:
 * [Durian](https://github.com/diffplug/durian) and [DurianRx](https://github.com/diffplug/durian-rx)
 * [Guava](https://github.com/google/guava) and [RxJava](https://github.com/reactivex/rxjava)
 * SWT and JFace from Eclipse 4.4+
-	+ SWT and JFace are not included in the Maven POM, but everything else is.
+  + SWT and JFace are not included in the Maven POM, but everything else is.
 
 ## Acknowledgements
 
