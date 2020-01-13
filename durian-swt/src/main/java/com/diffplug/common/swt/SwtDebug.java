@@ -1,11 +1,11 @@
 /*
- * Copyright 2018 DiffPlug
+ * Copyright 2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,6 +15,13 @@
  */
 package com.diffplug.common.swt;
 
+
+import com.diffplug.common.base.Predicates;
+import com.diffplug.common.base.StringPrinter;
+import com.diffplug.common.base.Throwing;
+import com.diffplug.common.collect.ImmutableMap;
+import com.diffplug.common.collect.Maps;
+import com.diffplug.common.rx.Rx;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -24,19 +31,10 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javax.annotation.Nullable;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Widget;
-
-import com.diffplug.common.base.Predicates;
-import com.diffplug.common.base.StringPrinter;
-import com.diffplug.common.base.Throwing;
-import com.diffplug.common.collect.ImmutableMap;
-import com.diffplug.common.collect.Maps;
-import com.diffplug.common.rx.Rx;
 
 /**
  * Helpful utilities for debugging SWT.

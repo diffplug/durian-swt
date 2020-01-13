@@ -1,11 +1,11 @@
 /*
- * Copyright 2018 DiffPlug
+ * Copyright 2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,6 +15,11 @@
  */
 package com.diffplug.common.swt.dnd;
 
+
+import com.diffplug.common.swt.InteractiveTest;
+import com.diffplug.common.swt.Layouts;
+import com.diffplug.common.swt.jface.Actions;
+import com.diffplug.common.util.concurrent.Runnables;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
@@ -23,11 +28,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-
-import com.diffplug.common.swt.InteractiveTest;
-import com.diffplug.common.swt.Layouts;
-import com.diffplug.common.swt.jface.Actions;
-import com.diffplug.common.util.concurrent.Runnables;
 
 @Category(InteractiveTest.class)
 public class ToolBarDropTest {

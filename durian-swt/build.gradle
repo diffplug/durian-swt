@@ -1,9 +1,11 @@
 apply plugin: 'com.diffplug.gradle.eclipse.mavencentral'
-eclipseMavenCentral { release SWT_VERSION, {
-	implementation 'org.eclipse.swt'
-	implementation 'org.eclipse.jface'
-	useNativesForRunningPlatform()
-} }
+eclipseMavenCentral {
+	release SWT_VERSION, {
+		implementation 'org.eclipse.swt'
+		implementation 'org.eclipse.jface'
+		useNativesForRunningPlatform()
+	}
+}
 dependencies {
 	implementation project(':durian-swt.os')
 	implementation "com.diffplug.durian:durian-rx:$VER_DURIAN_RX"

@@ -1,11 +1,11 @@
 /*
- * Copyright 2018 DiffPlug
+ * Copyright 2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,19 +15,18 @@
  */
 package com.diffplug.common.swt.jface;
 
+
+import com.diffplug.common.base.Preconditions;
+import com.diffplug.common.swt.SwtMisc;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.function.BiConsumer;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
-
-import com.diffplug.common.base.Preconditions;
-import com.diffplug.common.swt.SwtMisc;
 
 /** Provides a fluent interface for constructing actions. */
 public class Actions {
