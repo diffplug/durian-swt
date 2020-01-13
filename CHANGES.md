@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [3.3.1] - 2020-01-13
+### Fixed
+- Improved javadoc publishing (though SWT is still broken)
+
 ## [3.3.0] - 2019-11-02
 - Added `FlatBtn.setBackground` and `FlatBtn.setSelection`.
 - Added `Shells.dontSetPositionOrSize` and `Shells.setCloseOnEscape`.
