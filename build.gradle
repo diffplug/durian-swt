@@ -1,69 +1,58 @@
 plugins {
-	// swt deps
-	id "com.diffplug.gradle.eclipse.mavencentral" version "3.17.6" apply false
-	// osgi
-	id "com.diffplug.gradle.osgi.bndmanifest" version "3.17.6" apply false
-	// bintray uploading
-	id "com.jfrog.bintray" version "1.8.4" apply false
-	// code formatting
-	id "com.diffplug.gradle.spotless" version "3.20.0" apply false
+	id 'com.diffplug.blowdryer'
+	id 'com.diffplug.spotless-changelog'
 }
 
-allprojects {
-	apply plugin: 'com.diffplug.gradle.spotless'
-	spotless {
-		format 'misc', {
-			target '.gitignore', '*.gradle', '*.md', '.ci/*.sh'
-			indentWithTabs()
-			trimTrailingWhitespace()
-			endWithNewline()
-		}
-		freshmark {
-			target '*.md'
-			propertiesFile(rootProject.file('gradle.properties'))
-			properties {
-				it.put('group', 'com.diffplug.durian')
-			}
-		}
-	}
+spotlessChangelog {
+	changelogFile 'CHANGES.md'
 }
+allprojects {
+	apply from: 干.file('base/changelog.gradle')
+}
+apply from: 干.file('spotless/freshmark.gradle')
+apply from: 干.file('helper/javadoc-markdown.gradle')
 
 subprojects { subProject ->
-	repositories {
-		mavenCentral()
-		// SNAPSHOT versions are free to rely on other SNAPSHOT libraries
-		if (project.version.endsWith('-SNAPSHOT')) {
-			maven {
-				url 'https://oss.sonatype.org/content/repositories/snapshots/'
-			}
-			configurations.all {
-				resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-			}
-		}
+	apply plugin: 'java-library'
+	apply from: 干.file('base/java8.gradle')
+	apply from: 干.file('spotless/java.gradle')
+
+	ext.maven_name = subProject.name
+	ext.javadoc_links = [
+		"https://javadoc.io/doc/com.diffplug.durian/durian-core/${VER_DURIAN}",
+		"https://javadoc.io/doc/com.diffplug.durian/durian-collect/${VER_DURIAN}",
+		"https://javadoc.io/doc/com.diffplug.durian/durian-concurrent/${VER_DURIAN}",
+		"https://javadoc.io/doc/com.diffplug.durian/durian-debug/${VER_DURIAN_DEBUG}",
+		"https://javadoc.io/doc/com.diffplug.durian/durian-rx/${VER_DURIAN_RX}",
+		"https://javadoc.io/doc/io.reactivex.rxjava2/rxjava/${VER_RXJAVA}",
+		'https://docs.oracle.com/javase/8/docs/api/'
+	].join(' ')
+
+	apply from: 干.file('base/maven.gradle')
+	apply from: 干.file('base/bintray.gradle')
+	javadoc {
+		options.linksOffline 'https://help.eclipse.org/2019-12/topic/org.eclipse.platform.doc.isv/reference/api/', rootProject.file('gradle/javadoc-eclipse').absolutePath
 	}
 
-	//////////
-	// JAVA //
-	//////////
-	apply plugin: 'java'
-	sourceCompatibility = VER_JAVA
-	targetCompatibility = VER_JAVA
+	apply from: 干.file('base/osgi.gradle')
 
 	if (subProject.name == 'durian-swt') {
 		// configured there
 	} else if (subProject.name == 'durian-swt.os') {
 		dependencies {
 			compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
-			testCompile "junit:junit:$VER_JUNIT"
+			testImplementation "junit:junit:$VER_JUNIT"
 		}
 	} else {
 		apply plugin: 'com.diffplug.gradle.eclipse.mavencentral'
 		String platformCode = project.name.substring('durian-swt.'.length())
-		eclipseMavenCentral { release SWT_VERSION, {
-			compile "org.eclipse.swt.$platformCode"
-		} }
+		eclipseMavenCentral {
+			release SWT_VERSION, {
+				api "org.eclipse.swt.$platformCode"
+			}
+		}
 		dependencies {
-			compile project(':durian-swt')
+			api project(':durian-swt')
 		}
 		configurations.all {
 			resolutionStrategy.eachDependency { DependencyResolveDetails details ->
@@ -75,184 +64,8 @@ subprojects { subProject ->
 		// the manifest should be a fragment
 		def swtPlatform = com.diffplug.common.swt.os.SwtPlatform.parseWsOsArch(platformCode)
 		jar.manifest.attributes (
-			'Fragment-Host': 'durian-swt',
-			'Eclipse-PlatformFilter': swtPlatform.platformFilter(),
-		)
-	}
-
-	//////////
-	// OSGI //
-	//////////
-	apply plugin: 'com.diffplug.gradle.osgi.bndmanifest'
-	osgiBndManifest {
-		copyTo 'src/main/resources/META-INF/MANIFEST.MF'
-	}
-	jar.manifest.attributes (
-		'Export-Package': 'com.diffplug.common.swt.*',
-		'Bundle-SymbolicName': 'com.diffplug.durian.swt',
-		'Bundle-RequiredExecutionEnvironment': 'JavaSE-1.8',
-		'Bundle-Vendor': 'DiffPlug',
-		'Bundle-DocURL': "https://github.com/${project.org}/${project.name}",
-		'Bundle-License': "https://github.com/${project.org}/${project.name}/blob/v${project.version}/LICENSE",
-		'-removeheaders': 'Bnd-LastModified,Bundle-Name,Created-By,Tool',
-		'-nodefaultversion': 'true'
-	)
-
-	/////////////
-	// ECLIPSE //
-	/////////////
-	apply plugin: 'eclipse'
-	eclipse {
-		classpath {
-			downloadSources true
-			downloadJavadoc true
-		}
-		jdt {
-			sourceCompatibility VER_JAVA
-			targetCompatibility VER_JAVA
-		}
-	}
-	// always create fresh projects
-	tasks.eclipse.dependsOn(cleanEclipse)
-
-	////////////
-	// FORMAT //
-	////////////
-	spotless {
-		java {
-			licenseHeaderFile    rootProject.file('gradle/spotless.license.java')		// License header file
-			eclipse().configFile rootProject.file('gradle/spotless.eclipseformat.xml')	// XML file dumped out by the Eclipse formatter
-			importOrderFile	     rootProject.file('gradle/spotless.importorder')		// An import ordering file, exported from Eclipse
-			removeUnusedImports()
-		}
-	}
-
-	///////////
-	// MAVEN //
-	///////////
-	apply plugin: 'maven-publish'
-	group='com.diffplug.durian'
-
-	task sourcesJar(type: Jar) {
-		classifier = 'sources'
-		from sourceSets.main.allJava
-	}
-
-	def verSnapshot = { it.endsWith('-SNAPSHOT') ? 'snapshot' : it }
-	// Where it's possible to name parameters and methods clearly enough
-	// that javadoc is not necessary, why make the code bigger?
-	//
-	// Thus, no javadoc warnings.
-	def makeLink = { url, text -> "<a href=\"${url}\" style=\"text-transform: none;\">${text}</a>" }
-	def javadocInfo = '<h2>' + makeLink("https://github.com/${org}/${name}", "${group}:${name}:${version}") +
-	' by ' + makeLink('http://www.diffplug.com', 'DiffPlug') + '</h2>'
-	javadoc {
-		options.addStringOption('Xdoclint:none', '-quiet')
-		options.header javadocInfo
-		options.footer javadocInfo
-		options.links('https://diffplug.github.io/durian/javadoc/durian-core/' + verSnapshot(VER_DURIAN) + '/')
-		options.links('https://diffplug.github.io/durian/javadoc/durian-collect/' + verSnapshot(VER_DURIAN) + '/')
-		options.links('https://diffplug.github.io/durian/javadoc/durian-concurrent/' + verSnapshot(VER_DURIAN) + '/')
-		options.links('https://diffplug.github.io/durian-debug/javadoc/' + verSnapshot(VER_DURIAN_DEBUG) + '/')
-		options.links('https://diffplug.github.io/durian-rx/javadoc/' + verSnapshot(VER_DURIAN_RX) + '/')
-		options.links('https://docs.oracle.com/javase/8/docs/api/')
-		options.links('http://reactivex.io/RxJava/javadoc/')
-		options.links('http://help.eclipse.org/luna/nftopic/org.eclipse.platform.doc.isv/reference/api/')
-	}
-
-	task javadocJar(type: Jar, dependsOn: javadoc) {
-		classifier = 'javadoc'
-		from javadoc.destinationDir
-	}
-
-	////////////////
-	// PUBLISHING //
-	////////////////
-	def isSnapshot = project.version.endsWith('-SNAPSHOT')
-	// pulls the credentials from either the environment variable or gradle.properties
-	def cred = {
-		if (System.env[it] != null) {
-			return System.env[it]
-		} else if (project.hasProperty(it)) {
-			return project[it]
-		} else {
-			return 'unknown_' + it
-		}
-	}
-
-	publishing {
-		publications {
-			mavenJava(MavenPublication) {
-				from components.java
-				artifact sourcesJar
-				artifact javadocJar
-				pom.withXml {
-					// findbugs annotations should have scope "provided"
-					asNode().dependencies.'*'.findAll() { it.groupId.text() == 'com.google.code.findbugs' }.each() { it.scope*.value = 'provided' }
-					// add MavenCentral requirements to the POM
-					asNode().children().last() + {
-						resolveStrategy = Closure.DELEGATE_FIRST
-						name project.name
-						description project.description
-						url "https://github.com/${project.org}/${project.name}"
-						scm {
-							url "https://github.com/${project.org}/${project.name}"
-							connection "scm:git:git://github.com/${project.org}/${project.name}"
-							developerConnection "scm:git:ssh:git@github.com/${project.org}/${project.name}"
-						}
-						licenses {
-							license {
-								name 'The Apache Software License, Version 2.0'
-								url 'http://www.apache.org/license/LICENSE-2.0.txt'
-								distribution 'repo'
-							}
-						}
-						developers {
-							developer {
-								id 'nedtwigg'
-								name 'Ned Twigg'
-								email 'ned.twigg@diffplug.com'
-							}
-						}
-					}
-				}
-			}
-		}
-		if (isSnapshot) {
-			// upload snapshots to oss.sonatype.org
-			repositories { maven {
-				url = 'https://oss.sonatype.org/content/repositories/snapshots'
-				credentials {
-					username = cred('nexus_user')
-					password = cred('nexus_pass')
-				}
-			} }
-		}
-	}
-
-	if (!isSnapshot) {
-		// upload releases to bintray and then mavenCentral
-		apply plugin: 'com.jfrog.bintray'
-		bintray {
-			user = cred('bintray_user')
-			key = cred('bintray_pass')
-			publications = ['mavenJava']
-			publish = true
-			pkg {
-				repo = 'opensource'
-				name = project.name
-				userOrg = project.org
-				version {
-					name = project.version
-					mavenCentralSync {
-						user = cred('nexus_user')
-						password = cred('nexus_pass')
-					}
-				}
-			}
-		}
-
-		publish.dependsOn(bintrayUpload)
-		bintrayUpload.dependsOn(['generatePomFileForMavenJavaPublication', jar, sourcesJar, javadocJar])
+				'Fragment-Host': 'durian-swt',
+				'Eclipse-PlatformFilter': swtPlatform.platformFilter(),
+				)
 	}
 }

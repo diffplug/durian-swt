@@ -1,11 +1,11 @@
 /*
- * Copyright 2018 DiffPlug
+ * Copyright 2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,6 +15,15 @@
  */
 package com.diffplug.common.swt;
 
+
+import com.diffplug.common.base.Preconditions;
+import com.diffplug.common.collect.Maps;
+import com.diffplug.common.swt.os.WS;
+import com.diffplug.common.tree.TreeIterable;
+import com.diffplug.common.tree.TreeQuery;
+import com.diffplug.common.tree.TreeStream;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.Disposables;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -22,9 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-
 import javax.annotation.Nullable;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -33,16 +40,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-
-import com.diffplug.common.base.Preconditions;
-import com.diffplug.common.collect.Maps;
-import com.diffplug.common.swt.os.WS;
-import com.diffplug.common.tree.TreeIterable;
-import com.diffplug.common.tree.TreeQuery;
-import com.diffplug.common.tree.TreeStream;
-
-import io.reactivex.disposables.Disposable;
-import io.reactivex.disposables.Disposables;
 
 /** A fluent builder for creating SWT {@link Shell}s. */
 public class Shells {

@@ -1,11 +1,11 @@
 /*
- * Copyright 2018 DiffPlug
+ * Copyright 2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,13 +15,17 @@
  */
 package com.diffplug.common.swt.dnd;
 
+
+import com.diffplug.common.base.Unhandled;
+import com.diffplug.common.swt.OnePerWidget;
+import com.diffplug.common.swt.SwtThread;
+import com.diffplug.common.swt.dnd.StructuredDrop.DropMethod;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.ToolBarManager;
@@ -33,11 +37,6 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
-
-import com.diffplug.common.base.Unhandled;
-import com.diffplug.common.swt.OnePerWidget;
-import com.diffplug.common.swt.SwtThread;
-import com.diffplug.common.swt.dnd.StructuredDrop.DropMethod;
 
 /** Mechanism for adding drop to toolbars. */
 @SwtThread

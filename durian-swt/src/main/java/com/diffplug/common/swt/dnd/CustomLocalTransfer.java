@@ -1,11 +1,11 @@
 /*
- * Copyright 2018 DiffPlug
+ * Copyright 2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,15 +15,14 @@
  */
 package com.diffplug.common.swt.dnd;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Objects;
-
-import org.eclipse.swt.dnd.DragSourceEvent;
-import org.eclipse.swt.dnd.DropTargetEvent;
-import org.eclipse.swt.dnd.TransferData;
 
 import com.diffplug.common.base.Box;
 import com.diffplug.common.base.Preconditions;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
+import org.eclipse.swt.dnd.DragSourceEvent;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.TransferData;
 
 /** Custom implementation of a local transfer class. The "data" object will be this Transfer itself. */
 public abstract class CustomLocalTransfer<T> extends TypedTransfer<T> implements Box<T> {

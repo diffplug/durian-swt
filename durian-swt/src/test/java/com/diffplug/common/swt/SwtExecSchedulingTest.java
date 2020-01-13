@@ -1,11 +1,11 @@
 /*
- * Copyright 2018 DiffPlug
+ * Copyright 2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,19 +15,18 @@
  */
 package com.diffplug.common.swt;
 
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
-import org.assertj.core.api.Assertions;
-import org.junit.Assert;
-import org.junit.Test;
 
 import com.diffplug.common.base.Box;
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.Throwing;
 import com.diffplug.common.primitives.Ints;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import org.assertj.core.api.Assertions;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class SwtExecSchedulingTest {
 	static void testOffUiThread(Throwing.Runnable test) {
