@@ -1,13 +1,13 @@
 Manifest-Version: 1.0
-Bundle-DocURL: https://github.com/diffplug/durian-swt
-Bundle-License: https://github.com/diffplug/durian-swt/blob/v3.3.0/LIC
- ENSE
+Bundle-Description: DurianSwt - Reactive utilities and fluent builders
+  for SWT
+Bundle-DocURL: https://https://github.com/diffplug/durian-swt
+Bundle-License: https://www.apache.org/licenses/LICENSE-2.0.txt
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: com.diffplug.durian.swt
 Bundle-Vendor: DiffPlug
 Bundle-Version: 3.3.0
 Export-Package: com.diffplug.common.swt.os
-Import-Package: javax.annotation
 Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.8))"
 

@@ -1,7 +1,8 @@
 Manifest-Version: 1.0
-Bundle-DocURL: https://github.com/diffplug/durian-swt
-Bundle-License: https://github.com/diffplug/durian-swt/blob/v3.3.0/LIC
- ENSE
+Bundle-Description: DurianSwt - Reactive utilities and fluent builders
+  for SWT
+Bundle-DocURL: https://https://github.com/diffplug/durian-swt
+Bundle-License: https://www.apache.org/licenses/LICENSE-2.0.txt
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: com.diffplug.durian.swt
@@ -9,20 +10,19 @@ Bundle-Vendor: DiffPlug
 Bundle-Version: 3.3.0
 Export-Package: com.diffplug.common.swt;uses:="com.diffplug.common.bas
  e,com.diffplug.common.collect,com.diffplug.common.rx,com.diffplug.com
- mon.tree,io.reactivex,io.reactivex.disposables,javax.annotation,org.e
- clipse.jface.viewers,org.eclipse.swt.graphics,org.eclipse.swt.layout,
- org.eclipse.swt.widgets",com.diffplug.common.swt.dnd;uses:="com.diffp
- lug.common.base,com.diffplug.common.collect,com.diffplug.common.rx,co
- m.diffplug.common.swt,javax.annotation,org.eclipse.jface.action,org.e
- clipse.swt.dnd,org.eclipse.swt.graphics,org.eclipse.swt.widgets",com.
- diffplug.common.swt.jface;uses:="com.diffplug.common.base,com.diffplu
- g.common.collect,com.diffplug.common.rx,com.diffplug.common.swt,com.d
- iffplug.common.tree,javax.annotation,org.eclipse.jface.action,org.ecl
- ipse.jface.resource,org.eclipse.jface.viewers,org.eclipse.swt.graphic
- s,org.eclipse.swt.widgets",com.diffplug.common.swt.os,com.diffplug.co
- mmon.swt.widgets;uses:="com.diffplug.common.collect,com.diffplug.comm
- on.rx,com.diffplug.common.swt,io.reactivex,org.eclipse.swt.graphics,o
- rg.eclipse.swt.widgets"
+ mon.tree,io.reactivex,io.reactivex.disposables,org.eclipse.jface.view
+ ers,org.eclipse.swt.graphics,org.eclipse.swt.layout,org.eclipse.swt.w
+ idgets",com.diffplug.common.swt.dnd;uses:="com.diffplug.common.base,c
+ om.diffplug.common.collect,com.diffplug.common.rx,com.diffplug.common
+ .swt,org.eclipse.jface.action,org.eclipse.swt.dnd,org.eclipse.swt.gra
+ phics,org.eclipse.swt.widgets",com.diffplug.common.swt.jface;uses:="c
+ om.diffplug.common.base,com.diffplug.common.collect,com.diffplug.comm
+ on.rx,com.diffplug.common.swt,com.diffplug.common.tree,org.eclipse.jf
+ ace.action,org.eclipse.jface.resource,org.eclipse.jface.viewers,org.e
+ clipse.swt.graphics,org.eclipse.swt.widgets",com.diffplug.common.swt.
+ widgets;uses:="com.diffplug.common.collect,com.diffplug.common.rx,com
+ .diffplug.common.swt,io.reactivex,org.eclipse.swt.graphics,org.eclips
+ e.swt.widgets"
 Import-Package: com.diffplug.common.base;version="[1.2,2)",com.diffplu
  g.common.collect;version="[1.2,2)",com.diffplug.common.primitives;ver
  sion="[1.2,2)",com.diffplug.common.rx;version="[3.0,4)",com.diffplug.
@@ -30,10 +30,10 @@ Import-Package: com.diffplug.common.base;version="[1.2,2)",com.diffplu
  n="[1.2,2)",com.diffplug.common.util.concurrent;version="[1.2,2)",io.
  reactivex;version="[2.0,3)",io.reactivex.disposables;version="[2.0,3)
  ",io.reactivex.functions;version="[2.0,3)",io.reactivex.schedulers;ve
- rsion="[2.0,3)",io.reactivex.subjects;version="[2.0,3)",javax.annotat
- ion,org.eclipse.jface.action,org.eclipse.jface.layout,org.eclipse.jfa
- ce.resource,org.eclipse.jface.util,org.eclipse.jface.viewers,org.ecli
- pse.swt,org.eclipse.swt.custom,org.eclipse.swt.dnd,org.eclipse.swt.gr
- aphics,org.eclipse.swt.layout,org.eclipse.swt.widgets
+ rsion="[2.0,3)",io.reactivex.subjects;version="[2.0,3)",org.eclipse.j
+ face.action,org.eclipse.jface.layout,org.eclipse.jface.resource,org.e
+ clipse.jface.util,org.eclipse.jface.viewers,org.eclipse.swt,org.eclip
+ se.swt.custom,org.eclipse.swt.dnd,org.eclipse.swt.graphics,org.eclips
+ e.swt.layout,org.eclipse.swt.widgets
 Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.8))"
 

@@ -32,6 +32,8 @@ subprojects { subProject ->
 		options.linksOffline 'https://help.eclipse.org/2019-12/topic/org.eclipse.platform.doc.isv/reference/api/', rootProject.file('gradle/javadoc-eclipse').absolutePath
 	}
 
+	apply from: 干.file('base/osgi.gradle')
+
 	if (subProject.name == 'durian-swt') {
 		// configured there
 	} else if (subProject.name == 'durian-swt.os') {
@@ -64,22 +66,4 @@ subprojects { subProject ->
 				'Eclipse-PlatformFilter': swtPlatform.platformFilter(),
 				)
 	}
-
-	//////////
-	// OSGI //
-	//////////
-	apply plugin: 'com.diffplug.gradle.osgi.bndmanifest'
-	osgiBndManifest {
-		copyTo 'src/main/resources/META-INF/MANIFEST.MF'
-	}
-	jar.manifest.attributes (
-			'Export-Package': 'com.diffplug.common.swt.*',
-			'Bundle-SymbolicName': 'com.diffplug.durian.swt',
-			'Bundle-RequiredExecutionEnvironment': 'JavaSE-1.8',
-			'Bundle-Vendor': 'DiffPlug',
-			'Bundle-DocURL': "https://github.com/diffplug/durian-swt",
-			'Bundle-License': "https://github.com/diffplug/durian-swt/blob/v${project.version}/LICENSE",
-			'-removeheaders': 'Bnd-LastModified,Bundle-Name,Created-By,Tool',
-			'-nodefaultversion': 'true'
-			)
 }
