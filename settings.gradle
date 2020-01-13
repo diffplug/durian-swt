@@ -19,7 +19,7 @@ plugins {
 	id 'com.jfrog.bintray' apply false
 }
 blowdryerSetup {
-	github 'diffplug/blowdryer-diffplug', 'tag', '3.0.0'
+	github 'diffplug/blowdryer-diffplug', 'tag', '3.1.0'
 	//devLocal '../blowdryer-diffplug'
 }
 
