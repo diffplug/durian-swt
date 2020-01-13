@@ -13,6 +13,7 @@ apply from: 干.file('spotless/freshmark.gradle')
 apply from: 干.file('helper/javadoc-markdown.gradle')
 
 subprojects { subProject ->
+	apply plugin: 'java-library'
 	apply from: 干.file('base/java8.gradle')
 	apply from: 干.file('spotless/java.gradle')
 
@@ -47,11 +48,11 @@ subprojects { subProject ->
 		String platformCode = project.name.substring('durian-swt.'.length())
 		eclipseMavenCentral {
 			release SWT_VERSION, {
-				implementation "org.eclipse.swt.$platformCode"
+				api "org.eclipse.swt.$platformCode"
 			}
 		}
 		dependencies {
-			implementation project(':durian-swt')
+			api project(':durian-swt')
 		}
 		configurations.all {
 			resolutionStrategy.eachDependency { DependencyResolveDetails details ->
