@@ -20,6 +20,8 @@ dependencies {
 	testImplementation "org.assertj:assertj-core:$VER_ASSERTJ"
 	testImplementation "com.diffplug.durian:durian-debug:$VER_DURIAN_DEBUG"
 }
+// in java-library mode, durian-swt.os remains as a folder of classes for gradle internally, which the osgi plugin does not like
+tasks.jar.dependsOn(':durian-swt.os:jar')
 
 /////////////////////////
 // INTERACTIVE TESTING //
