@@ -1,13 +1,13 @@
 apply plugin: 'com.diffplug.gradle.eclipse.mavencentral'
 eclipseMavenCentral { release SWT_VERSION, {
-	api 'org.eclipse.swt'
-	api 'org.eclipse.jface'
+	implementation 'org.eclipse.swt'
+	implementation 'org.eclipse.jface'
 	useNativesForRunningPlatform()
 } }
 dependencies {
-	api project(':durian-swt.os')
-	api "com.diffplug.durian:durian-rx:$VER_DURIAN_RX"
-	api "io.reactivex.rxjava2:rxjava:$VER_RXJAVA"
+	implementation project(':durian-swt.os')
+	implementation "com.diffplug.durian:durian-rx:$VER_DURIAN_RX"
+	implementation "io.reactivex.rxjava2:rxjava:$VER_RXJAVA"
 	implementation "com.diffplug.durian:durian-core:$VER_DURIAN"
 	implementation "com.diffplug.durian:durian-collect:$VER_DURIAN"
 	implementation "com.diffplug.durian:durian-concurrent:$VER_DURIAN"

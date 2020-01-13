@@ -13,7 +13,6 @@ apply from: 干.file('spotless/freshmark.gradle')
 
 subprojects { subProject ->
 	apply from: 干.file('base/java8.gradle')
-	apply plugin: 'java-library'
 
 	if (subProject.name == 'durian-swt') {
 		// configured there
@@ -31,7 +30,7 @@ subprojects { subProject ->
 			}
 		}
 		dependencies {
-			api project(':durian-swt')
+			implementation project(':durian-swt')
 		}
 		configurations.all {
 			resolutionStrategy.eachDependency { DependencyResolveDetails details ->
