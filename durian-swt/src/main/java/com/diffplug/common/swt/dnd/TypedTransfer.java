@@ -23,6 +23,11 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 
 /** A strongly-typed custom transfer type. */
 public abstract class TypedTransfer<T> extends ByteArrayTransfer {
+	/** The transfer id. */
+	public @Nullable String transferId() {
+		return null;
+	}
+
 	public abstract T getValue(DropTargetEvent e);
 
 	public abstract void setValue(DragSourceEvent e, T value);
