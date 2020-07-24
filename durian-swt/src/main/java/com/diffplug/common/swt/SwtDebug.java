@@ -33,6 +33,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Widget;
 
@@ -40,6 +43,118 @@ import org.eclipse.swt.widgets.Widget;
  * Helpful utilities for debugging SWT.
  */
 public class SwtDebug {
+	/** Dumps the given SWT event to System.out. */
+	public static void dumpEvent(String name, @Nullable DropTargetEvent e) {
+		dumpEvent(name, e, StringPrinter.systemOut());
+	}
+
+	/** Dumps the given SWT event to the given StringPrinter. */
+	public static void dumpEvent(String name, @Nullable DropTargetEvent e, StringPrinter to) {
+		if (e == null) {
+			to.println(name + ": null");
+			return;
+		}
+		to.println(name + " (x, y): " + e.x + ", " + e.y);
+		if (e.data != null) {
+			to.println("\tdata: " + e.data);
+		}
+		if (e.item != null) {
+			to.println("\titem: " + e.item);
+		}
+		if (e.currentDataType != null) {
+			to.println("\tcurrentDataType: " + e.currentDataType);
+		}
+		if (e.dataTypes != null) {
+			to.println("\tdataTypes: " + Arrays.asList(e.dataTypes));
+		}
+		to.println("\tdetail: " + Flag.toString(Detail.class, e.detail));
+		to.println("\toperations: " + Flag.toString(Detail.class, e.operations));
+		to.println("\tfeedback: " + Flag.toString(Feedback.class, e.feedback));
+	}
+
+	/** A DropTargetListener which dumps events. */
+	public static DropTargetListener dumpEventsDropListener() {
+		return new DropTargetListener() {
+			@Override
+			public void dragEnter(DropTargetEvent event) {
+				SwtDebug.dumpEvent("dragEnter", event);
+			}
+
+			@Override
+			public void dragLeave(DropTargetEvent event) {
+				SwtDebug.dumpEvent("dragLeave", event);
+			}
+
+			@Override
+			public void dragOperationChanged(DropTargetEvent event) {
+				SwtDebug.dumpEvent("dragOperationChanged", event);
+			}
+
+			@Override
+			public void dragOver(DropTargetEvent event) {
+				SwtDebug.dumpEvent("dragOver", event);
+			}
+
+			@Override
+			public void drop(DropTargetEvent event) {
+				SwtDebug.dumpEvent("drop", event);
+			}
+
+			@Override
+			public void dropAccept(DropTargetEvent event) {
+				SwtDebug.dumpEvent("dropAccept", event);
+			}
+		};
+	}
+
+	interface Flag<T extends Enum<T>> {
+		int flag();
+
+		static String toString(Class<? extends Enum<?>> clazz, int flag) {
+			Enum<?>[] flags = clazz.getEnumConstants();
+			if (flag == 0) {
+				return flags[0].name();
+			}
+			return Arrays.stream(flags).skip(1)
+					.filter(flagValue -> {
+						int flagBit = ((Flag<?>) flagValue).flag();
+						return (flagBit & flag) == flagBit;
+					})
+					.map(Enum::name)
+					.collect(Collectors.joining(" | "));
+		}
+	}
+
+	enum Detail implements Flag<Detail> {
+		DROP_NONE(DND.DROP_NONE), DROP_MOVE(DND.DROP_MOVE), DROP_COPY(DND.DROP_COPY), DROP_LINK(DND.DROP_LINK), DROP_TARGET_MOVE(DND.DROP_TARGET_MOVE), DROP_DEFAULT(DND.DROP_DEFAULT);
+
+		private final int flag;
+
+		Detail(int flag) {
+			this.flag = flag;
+		}
+
+		@Override
+		public int flag() {
+			return flag;
+		}
+	}
+
+	enum Feedback implements Flag<Feedback> {
+		FEEDBACK_NONE(DND.FEEDBACK_NONE), FEEDBACK_SELECT(DND.FEEDBACK_SELECT), FEEDBACK_INSERT_BEFORE(DND.FEEDBACK_INSERT_BEFORE), FEEDBACK_INSERT_AFTER(DND.FEEDBACK_INSERT_AFTER), FEEDBACK_SCROLL(DND.FEEDBACK_SCROLL), FEEDBACK_EXPAND(DND.FEEDBACK_EXPAND);
+
+		private final int flag;
+
+		Feedback(int flag) {
+			this.flag = flag;
+		}
+
+		@Override
+		public int flag() {
+			return flag;
+		}
+	}
+
 	/** Dumps the given SWT event to System.out. */
 	public static void dumpEvent(String name, @Nullable Event e) {
 		dumpEvent(name, e, StringPrinter.systemOut());
