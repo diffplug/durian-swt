@@ -54,4 +54,12 @@ public class LinkBtn extends ControlWrapper.AroundControl<Link> {
 	public void setEnabled(boolean enabled) {
 		wrapped.setEnabled(enabled);
 	}
+
+	/** Quick method to create a LinkBtn. */
+	public static LinkBtn create(Composite parent, String txt, Runnable action) {
+		LinkBtn btn = new LinkBtn(parent, SWT.PUSH);
+		btn.setText(txt);
+		btn.addListener(SWT.Selection, e -> action.run());
+		return btn;
+	}
 }
