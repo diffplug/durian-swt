@@ -21,7 +21,7 @@ import java.util.Locale;
 
 /** Enum representing an OS and its underlying CPU architecture. */
 public enum OS {
-	WIN_x64, WIN_x86, LINUX_x64, LINUX_x86, MAC_x64;
+	WIN_x64, WIN_x86, LINUX_x64, LINUX_x86, MAC_x64, MAC_silicon;
 
 	public boolean isWindows() {
 		return this == WIN_x64 || this == WIN_x86;
@@ -32,7 +32,7 @@ public enum OS {
 	}
 
 	public boolean isMac() {
-		return this == MAC_x64;
+		return this == MAC_x64 || this == MAC_silicon;
 	}
 
 	public boolean isMacOrLinux() {
@@ -62,6 +62,8 @@ public enum OS {
 		case WIN_x86:
 		case LINUX_x86:
 			return Arch.x86;
+		case MAC_silicon:
+			return Arch.arm64;
 		default:
 			throw unsupportedException(this);
 		}
@@ -74,7 +76,7 @@ public enum OS {
 
 	/** SWT-style x86/x86_64 */
 	public String arch() {
-		return getArch().x86x64("x86", "x86_64");
+		return getArch().x86x64arm64("x86", "x86_64", "aarch64");
 	}
 
 	/** os().arch() */
@@ -84,7 +86,7 @@ public enum OS {
 
 	/** windowing.os.arch */
 	public String toSwt() {
-		return winMacLinux("win32", "cocoa", "gtk") + "." + winMacLinux("win32", "macosx", "linux") + "." + getArch().x86x64("x86", "x86_64");
+		return winMacLinux("win32", "cocoa", "gtk") + "." + winMacLinux("win32", "macosx", "linux") + "." + getArch().x86x64arm64("x86", "x86_64", "aarch64");
 	}
 
 	/** Returns the native OS: 32-bit JVM on 64-bit Windows returns OS.WIN_64. */
@@ -135,7 +137,7 @@ public enum OS {
 		Arch runningArch = runningJvm();
 		return NATIVE_OS.winMacLinux(
 				runningArch.x86x64(OS.WIN_x86, OS.WIN_x64),
-				OS.MAC_x64,
+				runningArch.x64arm64(OS.MAC_x64, OS.MAC_silicon),
 				runningArch.x86x64(OS.LINUX_x86, OS.LINUX_x64));
 	}
 
