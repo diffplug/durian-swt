@@ -16,6 +16,11 @@
 package com.diffplug.common.swt.os;
 
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Locale;
 
@@ -107,9 +112,8 @@ public enum OS {
 		boolean isWin = os_name.contains("win");
 		boolean isMac = os_name.contains("mac");
 		boolean isLinux = Arrays.asList("nix", "nux", "aix").stream().anyMatch(os_name::contains);
-
 		if (isMac) {
-			return MAC_x64;
+			return exec("uname", "-a").contains("_ARM64_") ? MAC_silicon : MAC_x64;
 		} else if (isWin) {
 			boolean is64bit = System.getenv("ProgramFiles(x86)") != null;
 			return is64bit ? WIN_x64 : WIN_x86;
@@ -130,15 +134,37 @@ public enum OS {
 		}
 	}
 
+	private static String exec(String... cmd) {
+		try {
+			Process process = Runtime.getRuntime().exec(new String[]{"uname", "-a"});
+			ByteArrayOutputStream output = new ByteArrayOutputStream();
+			drain(process.getInputStream(), output);
+			return new String(output.toByteArray(), StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private static void drain(InputStream input, OutputStream output) throws IOException {
+		byte[] buf = new byte[1024];
+		int numRead;
+		while ((numRead = input.read(buf)) != -1) {
+			output.write(buf, 0, numRead);
+		}
+	}
+
 	private static final OS RUNNING_OS = calculateRunning();
 
 	/** Calculates the running OS. */
 	private static OS calculateRunning() {
 		Arch runningArch = runningJvm();
-		return NATIVE_OS.winMacLinux(
-				runningArch.x86x64(OS.WIN_x86, OS.WIN_x64),
-				runningArch.x64arm64(OS.MAC_x64, OS.MAC_silicon),
-				runningArch.x86x64(OS.LINUX_x86, OS.LINUX_x64));
+		OS runningOs = NATIVE_OS.winMacLinux(
+				runningArch.x86x64arm64(OS.WIN_x86, OS.WIN_x64, null),
+				runningArch.x86x64arm64(null, OS.MAC_x64, OS.MAC_silicon),
+				runningArch.x86x64arm64(OS.LINUX_x86, OS.LINUX_x64, null));
+		if (runningOs == null) {
+			throw new IllegalArgumentException("Unsupported OS/Arch combo: " + runningOs + " " + runningArch);
+		}
 	}
 
 	/** Returns the arch of the currently running JVM. */
@@ -148,14 +174,19 @@ public enum OS {
 		case "32":
 			return Arch.x86;
 		case "64":
-			return Arch.x64;
+			return "aarch64".equals(System.getProperty("os.arch")) ? Arch.arm64 : Arch.x64;
 		default:
-			throw new IllegalArgumentException(sunArchDataModel);
+			throw new IllegalArgumentException("Expcted 32 or 64, was " + sunArchDataModel);
 		}
 	}
 
 	/** Returns an UnsupportedOperationException for the given OS. */
 	public static UnsupportedOperationException unsupportedException(OS os) {
 		return new UnsupportedOperationException("Operating system '" + os + "' is not supported.");
+	}
+
+	public static void main(String[] args) {
+		System.out.println("native=" + OS.getNative());
+		System.out.println("running=" + OS.getRunning());
 	}
 }
