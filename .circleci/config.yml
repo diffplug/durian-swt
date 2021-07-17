@@ -28,6 +28,9 @@ jobs:
           name: gradlew spotlessCheck assemble testClasses
           command: ./gradlew spotlessCheck assemble testClasses --build-cache
       - run:
+          name: Xvfb :99 -screen 0 1280x1024x24
+          command: Xvfb :99 -screen 0 1280x1024x24
+      - run:
           name: gradlew check
           command: ./gradlew check --build-cache
       - store_test_results:
