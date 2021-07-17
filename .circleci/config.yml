@@ -2,7 +2,7 @@ version: 2.1
 anchors:
   env_gradle: &env_gradle
     docker:
-      - image: cimg/openjdk:11.0
+      - image: cimg/openjdk:11.0-browsers
 
   restore_cache_wrapper: &restore_cache_wrapper
     restore_cache:
