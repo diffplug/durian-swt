@@ -34,13 +34,17 @@ jobs:
           name: gradlew check
           command: ./gradlew check --build-cache
       - store_test_results:
-          paths:
-            - durian-swt/build/test-results/test
-            - durian-swt.os/build/test-results/test
-            - durian-swt.cocoa.macosx.aarch64/build/test-results/test
-            - durian-swt.cocoa.macosx.x86_64/build/test-results/test
-            - durian-swt.gtk.linux.x86_64/build/test-results/test
-            - durian-swt.win32.win32.x86_64/build/test-results/test
+          path: durian-swt/build/test-results/test
+      - store_test_results:
+          path: durian-swt.os/build/test-results/test
+      - store_test_results:
+          path: durian-swt.cocoa.macosx.aarch64/build/test-results/test
+      - store_test_results:
+          path: durian-swt.cocoa.macosx.x86_64/build/test-results/test
+      - store_test_results:
+          path: durian-swt.gtk.linux.x86_64/build/test-results/test
+      - store_test_results:
+          path: durian-swt.win32.win32.x86_64/build/test-results/test
       - save_cache:
           paths:
             - ~/.gradle/wrapper
