@@ -1,4 +1,4 @@
-apply plugin: 'com.diffplug.gradle.eclipse.mavencentral'
+apply plugin: 'com.diffplug.eclipse.mavencentral'
 eclipseMavenCentral {
 	release SWT_VERSION, {
 		api 'org.eclipse.swt'
