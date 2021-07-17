@@ -17,7 +17,7 @@ package com.diffplug.common.swt.os;
 
 /** Enum for handling different processor architectures supported by SWT. */
 public enum Arch {
-	x86, x64;
+	x86, x64, arm64;
 
 	/** Returns the appropriate value depending on the arch. */
 	public <T> T x86x64(T val86, T val64) {
@@ -26,6 +26,32 @@ public enum Arch {
 			return val86;
 		case x64:
 			return val64;
+		default:
+			throw unsupportedException(this);
+		}
+	}
+
+	/** Returns the appropriate value depending on the arch. */
+	public <T> T x64arm64(T val64, T arm64) {
+		switch (this) {
+		case x64:
+			return val64;
+		case arm64:
+			return arm64;
+		default:
+			throw unsupportedException(this);
+		}
+	}
+
+	/** Returns the appropriate value depending on the arch. */
+	public <T> T x86x64arm64(T val86, T val64, T arm64) {
+		switch (this) {
+		case x86:
+			return val86;
+		case x64:
+			return val64;
+		case arm64:
+			return arm64;
 		default:
 			throw unsupportedException(this);
 		}

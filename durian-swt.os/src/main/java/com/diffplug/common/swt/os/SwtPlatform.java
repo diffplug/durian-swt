@@ -129,7 +129,7 @@ public class SwtPlatform {
 	public static SwtPlatform fromOS(OS raw) {
 		String ws = raw.winMacLinux("win32", "cocoa", "gtk");
 		String os = raw.winMacLinux("win32", "macosx", "linux");
-		String arch = raw.getArch().x86x64("x86", "x86_64");
+		String arch = raw.getArch().x86x64arm64("x86", "x86_64", "aarch64");
 		return new SwtPlatform(ws, os, arch);
 	}
 

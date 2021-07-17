@@ -43,6 +43,10 @@ subprojects { subProject ->
 			compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
 			testImplementation "junit:junit:$VER_JUNIT"
 		}
+		tasks.register('osMain', JavaExec) {
+			classpath = sourceSets.main.runtimeClasspath
+			main = 'com.diffplug.common.swt.os.OS'
+		}
 	} else {
 		apply plugin: 'com.diffplug.gradle.eclipse.mavencentral'
 		String platformCode = project.name.substring('durian-swt.'.length())
