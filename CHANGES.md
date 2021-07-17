@@ -3,6 +3,8 @@
 ## [Unreleased]
 ### Added
 - Support for Apple Silicon in the `OS`, `Arch`, and `SwtPlatform` classes. ([#13](https://github.com/diffplug/durian-swt/pull/13))
+- Added `DropTargetEvent` support to `SwtDebug`.
+- Added `LinkBtn.create`.
 
 ## [3.3.1] - 2020-01-13
 ### Fixed
