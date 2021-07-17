@@ -1,6 +1,8 @@
 # DurianSwt releases
 
 ## [Unreleased]
+
+## [3.4.0] - 2021-07-17
 ### Added
 - Support for Apple Silicon in the `OS`, `Arch`, and `SwtPlatform` classes. ([#13](https://github.com/diffplug/durian-swt/pull/13))
 - Added `DropTargetEvent` support to `SwtDebug`.
