@@ -165,6 +165,7 @@ public enum OS {
 		if (runningOs == null) {
 			throw new IllegalArgumentException("Unsupported OS/Arch combo: " + runningOs + " " + runningArch);
 		}
+		return runningOs;
 	}
 
 	/** Returns the arch of the currently running JVM. */
