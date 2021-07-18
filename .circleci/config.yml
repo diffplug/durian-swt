@@ -62,7 +62,7 @@ jobs:
       - *set_git_origin_to_https
       - run:
           name: changelogPush
-          command: ./gradlew changelogPush --stacktrace --warning-mode all
+          command: ./gradlew changelogPush -Penable_publishing=true --stacktrace --warning-mode all
 
 workflows:
   version: 2

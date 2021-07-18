@@ -2,7 +2,7 @@ plugins {
 	id 'com.diffplug.blowdryer'
 	id 'com.diffplug.spotless-changelog'
 }
-
+group = 'com.diffplug.durian'
 spotlessChangelog {
 	changelogFile 'CHANGES.md'
 }
@@ -10,7 +10,7 @@ allprojects {
 	apply from: 干.file('base/changelog.gradle')
 }
 apply from: 干.file('spotless/freshmark.gradle')
-apply from: 干.file('helper/javadoc-markdown.gradle')
+apply from: 干.file('base/sonatype.gradle')
 
 subprojects { subProject ->
 	apply plugin: 'java-library'
