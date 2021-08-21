@@ -27,21 +27,23 @@ dependencies {
  }
  */
 // in java-library mode, durian-swt.os remains as a folder of classes for gradle internally, which the osgi plugin does not like
-tasks.jar.dependsOn(':durian-swt.os:jar')
+tasks.named('jar').configure {
+	dependsOn(':durian-swt.os:jar')
+}
 
 /////////////////////////
 // INTERACTIVE TESTING //
 /////////////////////////
 // standard `gradlew test` will autoclose after 500ms
+boolean isMac = System.getProperty("os.name").toLowerCase().contains("mac")
 test {
 	systemProperty 'com.diffplug.test.autoclose.milliseconds', '500'
 	useJUnit {
 		// there are some tests that can't pass without a user, so we'll exclude them
 		excludeCategories 'com.diffplug.common.swt.InteractiveTest$FailsWithoutUser'
 		// SWT tests don't work in gradle on OS X (https://github.com/ReadyTalk/swt-bling/issues/4)
-		boolean isMac = System.getProperty("os.name").toLowerCase().contains("mac");
 		if (isMac) {
-			excludeCategories 'com.diffplug.common.swt.InteractiveTest'
+			jvmArgs = ['-XstartOnFirstThread']
 		}
 	}
 	// log all test events
@@ -51,9 +53,12 @@ test {
 }
 
 // only run the interactive tests
-task interactiveTest(type: Test) {
+tasks.register('interactiveTest', Test) {
 	systemProperty 'com.diffplug.test.autoclose.milliseconds', null
 	useJUnit {
 		includeCategories 'com.diffplug.common.swt.InteractiveTest'
+		if (isMac) {
+			jvmArgs = ['-XstartOnFirstThread']
+		}
 	}
 }
