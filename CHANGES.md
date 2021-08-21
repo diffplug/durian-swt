@@ -1,6 +1,8 @@
 # DurianSwt releases
 
 ## [Unreleased]
+
+## [3.4.1] - 2021-08-21
 ### Fixed
 - Mac tables with a checkbox column now size the rest of their columns correctly. ([#14](https://github.com/diffplug/durian-swt/pull/14))
 
