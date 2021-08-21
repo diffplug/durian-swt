@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright (C) 2020-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package com.diffplug.common.swt;
 
 
+import com.diffplug.common.swt.os.OS;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -109,10 +110,41 @@ public class ColumnFormat {
 		// create the columns and layout
 		Function<ColumnBuilder, TableColumn> buildFunc = builder -> builder.build(control);
 		List<TableColumn> columns = columnBuilders.stream().map(buildFunc).collect(Collectors.toList());
-		buildLayout(control, new TableColumnLayout(), columns, columnBuilders);
+
+		boolean needsSpecialLayout = SwtMisc.flagIsSet(SWT.CHECK, style) && OS.getNative().isMac();
+		TableColumnLayout layout = needsSpecialLayout ? new MacCheckTableColumnLayout() : new TableColumnLayout();
+		buildLayout(control, layout, columns, columnBuilders);
 
 		// return the control
 		return control;
+	}
+
+	/** Adds a phantom column for the checkboxes so that the rest of the space is calculated correctly. */
+	private static class MacCheckTableColumnLayout extends TableColumnLayout {
+		private static final int CHECK_COLUMN_WIDTH = 15;
+
+		@Override
+		protected int getColumnCount(Scrollable tableTree) {
+			return super.getColumnCount(tableTree) + 1;
+		}
+
+		@Override
+		protected void setColumnWidths(Scrollable tableTree, int[] widths) {
+			TableColumn[] columns = ((Table) tableTree).getColumns();
+			for (int i = 0; i < columns.length; i++) {
+				columns[i].setWidth(widths[i]);
+			}
+		}
+
+		@Override
+		protected ColumnLayoutData getLayoutData(Scrollable tableTree, int columnIndex) {
+			Table table = (Table) tableTree;
+			if (columnIndex < table.getColumnCount()) {
+				return (ColumnLayoutData) table.getColumn(columnIndex).getData(LAYOUT_DATA);
+			} else {
+				return new ColumnPixelData(CHECK_COLUMN_WIDTH);
+			}
+		}
 	}
 
 	/** Builds a table with the given columns. */
