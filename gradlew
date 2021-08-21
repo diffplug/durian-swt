@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 #
 # Copyright 2015 the original author or authors.
@@ -172,12 +172,14 @@ if [ "$cygwin" = "true" -o "$msys" = "true" ] ; then
     esac
 fi
 
-ARGV=("$@")
-eval set -- $DEFAULT_JVM_OPTS
+# Escape application args
+save () {
+    for i do printf %s\\n "$i" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/' \\\\/" ; done
+    echo " "
+}
+APP_ARGS=`save "$@"`
 
-IFS=$'
-' read -rd '' -a JAVA_OPTS_ARR <<< "$(echo $JAVA_OPTS | xargs -n1)"
-IFS=$'
-' read -rd '' -a GRADLE_OPTS_ARR <<< "$(echo $GRADLE_OPTS | xargs -n1)"
+# Collect all arguments for the java command, following the shell quoting and substitution rules
+eval set -- $DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS "\"-Dorg.gradle.appname=$APP_BASE_NAME\"" -classpath "\"$CLASSPATH\"" org.gradle.wrapper.GradleWrapperMain "$APP_ARGS"
 
-exec "$JAVACMD" "$@" "${JAVA_OPTS_ARR[@]}" "${GRADLE_OPTS_ARR[@]}" "-Dorg.gradle.appname=$APP_BASE_NAME" -classpath "$CLASSPATH" org.gradle.wrapper.GradleWrapperMain "${ARGV[@]}"
+exec "$JAVACMD" "$@"
