@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright (C) 2020-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.function.Function;
 
 /** Enum representing an OS and its underlying CPU architecture. */
 public enum OS {
@@ -96,29 +97,45 @@ public enum OS {
 
 	/** Returns the native OS: 32-bit JVM on 64-bit Windows returns OS.WIN_64. */
 	public static OS getNative() {
+		detectPlatform();
 		return NATIVE_OS;
 	}
 
 	/** Returns the running OS: 32-bit JVM on 64-bit Windows returns OS.WIN_32. */
 	public static OS getRunning() {
+		detectPlatform();
 		return RUNNING_OS;
 	}
 
-	private static final OS NATIVE_OS = calculateNative();
+	/** Eagerly detects the native and running JVM properties. */
+	public static void detectPlatform(Function<String, String> systemProperty, Function<String, String> environmentVariable) {
+		if (NATIVE_OS == null) {
+			NATIVE_OS = calculateNative(systemProperty, environmentVariable);
+			RUNNING_OS = calculateRunning(systemProperty);
+		}
+	}
+
+	private static void detectPlatform() {
+		if (NATIVE_OS == null) {
+			detectPlatform(System::getProperty, System::getenv);
+		}
+	}
+
+	private static OS NATIVE_OS;
 
 	/** Calculates the native OS. */
-	private static OS calculateNative() {
-		String os_name = System.getProperty("os.name").toLowerCase(Locale.getDefault());
+	private static OS calculateNative(Function<String, String> systemProperty, Function<String, String> environmentVariable) {
+		String os_name = systemProperty.apply("os.name").toLowerCase(Locale.getDefault());
 		boolean isWin = os_name.contains("win");
 		boolean isMac = os_name.contains("mac");
 		boolean isLinux = Arrays.asList("nix", "nux", "aix").stream().anyMatch(os_name::contains);
 		if (isMac) {
 			return exec("uname", "-a").contains("_ARM64_") ? MAC_silicon : MAC_x64;
 		} else if (isWin) {
-			boolean is64bit = System.getenv("ProgramFiles(x86)") != null;
+			boolean is64bit = environmentVariable.apply("ProgramFiles(x86)") != null;
 			return is64bit ? WIN_x64 : WIN_x86;
 		} else if (isLinux) {
-			String os_arch = System.getProperty("os.arch");
+			String os_arch = systemProperty.apply("os.arch");
 			switch (os_arch) {
 			case "i386":
 			case "x86":
@@ -153,11 +170,11 @@ public enum OS {
 		}
 	}
 
-	private static final OS RUNNING_OS = calculateRunning();
+	private static OS RUNNING_OS;
 
 	/** Calculates the running OS. */
-	private static OS calculateRunning() {
-		Arch runningArch = runningJvm();
+	private static OS calculateRunning(Function<String, String> systemProperty) {
+		Arch runningArch = runningJvm(systemProperty);
 		OS runningOs = NATIVE_OS.winMacLinux(
 				runningArch.x86x64arm64(OS.WIN_x86, OS.WIN_x64, null),
 				runningArch.x86x64arm64(null, OS.MAC_x64, OS.MAC_silicon),
@@ -169,13 +186,13 @@ public enum OS {
 	}
 
 	/** Returns the arch of the currently running JVM. */
-	private static Arch runningJvm() {
-		String sunArchDataModel = System.getProperty("sun.arch.data.model");
+	private static Arch runningJvm(Function<String, String> systemProperty) {
+		String sunArchDataModel = systemProperty.apply("sun.arch.data.model");
 		switch (sunArchDataModel) {
 		case "32":
 			return Arch.x86;
 		case "64":
-			return "aarch64".equals(System.getProperty("os.arch")) ? Arch.arm64 : Arch.x64;
+			return "aarch64".equals(systemProperty.apply("os.arch")) ? Arch.arm64 : Arch.x64;
 		default:
 			throw new IllegalArgumentException("Expcted 32 or 64, was " + sunArchDataModel);
 		}
