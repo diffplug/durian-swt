@@ -1,6 +1,8 @@
 # DurianSwt releases
 
 ## [Unreleased]
+
+## [3.5.0] - 2021-09-03
 ### Added
 - Added `OS.detectPlatform(Function<String, String> systemProperty, Function<String, String> environmentVariable)`
 
