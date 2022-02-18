@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright (C) 2020-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package com.diffplug.common.swt.widgets;
 
 
+import com.diffplug.common.swt.SiliconFix;
 import java.util.function.DoubleConsumer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -58,6 +59,7 @@ abstract class AbstractSmoothTable extends Composite {
 		}
 		// the table can't have the BORDER
 		table = new Table(this, style & (~SWT.BORDER));
+		SiliconFix.fix(table);
 		this.setBackground(table.getBackground());
 		rowHeight = table.getItemHeight();
 		itemCount = table.getItemCount();

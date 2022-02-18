@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 DiffPlug
+ * Copyright (C) 2020-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,6 +104,7 @@ public class ColumnFormat {
 		SwtMisc.assertClean(parent);
 		// create the control
 		Table control = new Table(parent, style);
+		SiliconFix.fix(control);
 		control.setLinesVisible(linesVisible);
 		control.setHeaderVisible(headerVisible);
 
@@ -152,6 +153,7 @@ public class ColumnFormat {
 		SwtMisc.assertClean(parent);
 		// create the control
 		Tree control = new Tree(parent, style);
+		SiliconFix.fix(control);
 		control.setLinesVisible(linesVisible);
 		control.setHeaderVisible(headerVisible);
 
