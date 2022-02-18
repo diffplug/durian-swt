@@ -1,6 +1,8 @@
 # DurianSwt releases
 
 ## [Unreleased]
+
+## [3.6.1] - 2022-02-18
 ### Fixed
 - Oops, we weren't publishing the `aarch64` binaries, fixed now. ([#18](https://github.com/diffplug/durian-swt/pull/18))
 
