@@ -6,6 +6,7 @@ group = 'com.diffplug.durian'
 spotlessChangelog {
 	changelogFile 'CHANGES.md'
 }
+repositories { mavenCentral() }
 allprojects {
 	apply from: 干.file('base/changelog.gradle')
 }
