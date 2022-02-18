@@ -28,6 +28,7 @@ rootProject.name = 'durian-swt-root'
 
 include 'durian-swt'
 include 'durian-swt.os'
+include 'durian-swt.cocoa.macosx.aarch64'
 include 'durian-swt.cocoa.macosx.x86_64'
 include 'durian-swt.gtk.linux.x86_64'
 include 'durian-swt.gtk.linux.x86'

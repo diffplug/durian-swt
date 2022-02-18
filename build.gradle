@@ -51,8 +51,9 @@ subprojects { subProject ->
 	} else {
 		apply plugin: 'com.diffplug.eclipse.mavencentral'
 		String platformCode = project.name.substring('durian-swt.'.length())
+		String SWT_TO_USE = platformCode.endsWith("x86") ? SWT_VERSION_X86 : SWT_VERSION
 		eclipseMavenCentral {
-			release SWT_VERSION, {
+			release SWT_TO_USE, {
 				api "org.eclipse.swt.$platformCode"
 			}
 		}
