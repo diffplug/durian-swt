@@ -1,6 +1,12 @@
 # DurianSwt releases
 
 ## [Unreleased]
+### Added
+- On Mac Apple Silicon (but not x86_64), SWT Tables and Trees now have giant fat rows ([bugzilla](https://bugs.eclipse.org/bugs/show_bug.cgi?id=575696)). ([#17](https://github.com/diffplug/durian-swt/pull/17))
+  - But if you call `setFont(null)` on them, then they have rows the same size as before.
+  - We created a new class `SiliconFix` that does nothing on all platforms except Apple Silicon where it calls `setFont(null)`.
+  - Wherever a `Table` or `Tree` instantiated (`SmoothTable` and `ColumnFormat`), we use `SiliconFix`.
+  - This workaround is perfectly effective as of `4.21` and `4.22`, it may become obsolete in a future release.
 
 ## [3.5.0] - 2021-09-03
 ### Added
