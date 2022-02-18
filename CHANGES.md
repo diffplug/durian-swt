@@ -1,6 +1,8 @@
 # DurianSwt releases
 
 ## [Unreleased]
+
+## [3.6.0] - 2022-02-18
 ### Added
 - On Mac Apple Silicon (but not x86_64), SWT Tables and Trees now have giant fat rows ([bugzilla](https://bugs.eclipse.org/bugs/show_bug.cgi?id=575696)). ([#17](https://github.com/diffplug/durian-swt/pull/17))
   - But if you call `setFont(null)` on them, then they have rows the same size as before.
