@@ -1,3 +1,5 @@
+apply from: 干.file('base/kotlin.gradle')
+
 apply plugin: 'com.diffplug.eclipse.mavencentral'
 eclipseMavenCentral {
 	release SWT_VERSION, {
@@ -15,6 +17,7 @@ dependencies {
 	implementation "com.diffplug.durian:durian-concurrent:$VER_DURIAN"
 	compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
 	compileOnly 'com.google.code.findbugs:annotations:3.0.1'
+	compileOnly "org.jetbrains:annotations:23.0.0"
 
 	testImplementation "junit:junit:$VER_JUNIT"
 	testImplementation "org.assertj:assertj-core:$VER_ASSERTJ"
