@@ -35,8 +35,6 @@ subprojects { subProject ->
 		options.linksOffline 'https://help.eclipse.org/2019-12/topic/org.eclipse.platform.doc.isv/reference/api/', rootProject.file('gradle/javadoc-eclipse').absolutePath
 	}
 
-	apply from: 干.file('base/osgi.gradle')
-
 	if (subProject.name == 'durian-swt') {
 		// configured there
 	} else if (subProject.name == 'durian-swt.os') {
