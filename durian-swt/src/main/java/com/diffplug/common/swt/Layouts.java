@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright (C) 2020-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ package com.diffplug.common.swt;
 
 import com.diffplug.common.base.Preconditions;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -229,5 +231,59 @@ public class Layouts {
 	public static LayoutsRowData newRowPlaceholder(Composite parent) {
 		Label placeholder = new Label(parent, SWT.NONE);
 		return setRowData(placeholder);
+	}
+
+	////////////
+	// Single //
+	////////////
+	public static void setSingle(Composite composite) {
+		Single.child(composite);
+		composite.setLayout(standardMargin);
+	}
+
+	public static void setSingleNoMargin(Composite composite) {
+		Single.child(composite);
+		composite.setLayout(noMargin);
+	}
+
+	private static final Single noMargin = new Single();
+	private static final Single standardMargin = new Single();
+
+	private static class Single extends Layout {
+		private static Control child(Composite composite) {
+			Control[] children = composite.getChildren();
+			if (children.length == 1) {
+				return children[0];
+			} else {
+				throw new IllegalArgumentException("Must have 1 child, had " + children.length);
+			}
+		}
+
+		@Override
+		protected Point computeSize(Composite composite, int wHint, int hHint, boolean flushCache) {
+			Point child = child(composite).computeSize(wHint, hHint, flushCache);
+			if (this == noMargin) {
+				return child;
+			} else {
+				child.x += Layouts.defaultMargin() * 2;
+				child.y += Layouts.defaultMargin() * 2;
+				return child;
+			}
+		}
+
+		@Override
+		protected void layout(Composite composite, boolean flushCache) {
+			Control child = child(composite);
+			Rectangle area = composite.getClientArea();
+			if (this == standardMargin) {
+				area.x += Layouts.defaultMargin();
+				area.y += Layouts.defaultMargin();
+				area.width -= 2 * Layouts.defaultMargin();
+				area.height -= 2 * Layouts.defaultMargin();
+				area.width = Math.max(area.width, 1);
+				area.height = Math.max(area.height, 1);
+			}
+			child.setBounds(area);
+		}
 	}
 }
