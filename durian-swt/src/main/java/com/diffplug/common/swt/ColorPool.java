@@ -26,27 +26,13 @@ import org.eclipse.swt.widgets.Widget;
 
 /** Caches {@link Color}s, and automatically manages their disposal. */
 public class ColorPool {
-	private final HashMap<RGB, Color> colorTable = Maps.newHashMap();
-	private final Display display;
+	private final HashMap<RGB, Color> colorTable = new HashMap<>();
 
-	private ColorPool(Widget parent) {
-		display = parent.getDisplay();
-		parent.addListener(SWT.Dispose, e -> colorTable.values().forEach(Color::dispose));
-	}
+	private ColorPool() {}
 
 	/** Returns a Color for the given RGB value. */
 	public Color getColor(RGB rgb) {
-		Color color = colorTable.get(rgb);
-		if (color == null) {
-			color = new Color(display, rgb);
-			colorTable.put(rgb, color);
-		}
-		return color;
-	}
-
-	/** Returns a Color for the SWT.COLOR_xxx. */
-	public Color getSystemColor(int systemColor) {
-		return display.getSystemColor(systemColor);
+		return colorTable.computeIfAbsent(rgb, raw -> new Color(raw));
 	}
 
 	/** Returns a ColorPool for the given Widget, creating one if necessary. */
@@ -59,5 +45,5 @@ public class ColorPool {
 		return onePerWidget.forWidget(wrapper.getRootControl());
 	}
 
-	private static final OnePerWidget<Widget, ColorPool> onePerWidget = OnePerWidget.from(ColorPool::new);
+	private static final OnePerWidget<Widget, ColorPool> onePerWidget = OnePerWidget.from(unused -> new ColorPool());
 }
