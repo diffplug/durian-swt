@@ -1,6 +1,8 @@
 # DurianSwt releases
 
 ## [Unreleased]
+### Removed
+- **BREAKING** Removed `ColorPool.getSystemColor()`.
 
 ## [3.6.1] - 2022-02-18
 ### Fixed
