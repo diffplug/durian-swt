@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright (C) 2020-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,14 +30,14 @@ import org.eclipse.swt.widgets.Widget;
  * field.set(widget, model);
  * ```
  */
-public class TypedDataField<T, W extends Widget> {
+public class TypedDataField<W extends Widget, T> {
 	/** Creates a TypedDataField for `setData(String key, Object value)`. */
-	public static <T, W extends Widget> TypedDataField<T, W> create(String key) {
+	public static <T, W extends Widget> TypedDataField<W, T> create(String key) {
 		return new TypedDataField<>(key);
 	}
 
 	/** Creates a TypedDataField for `setData(Object value)`. */
-	public static <T, W extends Widget> TypedDataField<T, W> create() {
+	public static <T, W extends Widget> TypedDataField<W, T> create() {
 		return new TypedDataField<>(null);
 	}
 
@@ -48,13 +48,13 @@ public class TypedDataField<T, W extends Widget> {
 		this.key = key;
 	}
 
-	public T get(Widget widget) {
+	public T get(W widget) {
 		return Objects.requireNonNull(getNullable(widget));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Nullable
-	public T getNullable(Widget widget) {
+	public T getNullable(W widget) {
 		if (key == null) {
 			return (T) widget.getData();
 		} else {

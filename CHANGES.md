@@ -2,7 +2,8 @@
 
 ## [Unreleased]
 ### Removed
-- **BREAKING** Removed `ColorPool.getSystemColor()`.
+- **BREAKING** Removed `ColorPool.getSystemColor()` ([#8](https://github.com/diffplug/durian-swt/issues/8)).
+- **BREAKING** Switched type arguments of `TypedDataField` ([#3](https://github.com/diffplug/durian-swt/issues/3)).
 
 ## [3.6.1] - 2022-02-18
 ### Fixed
