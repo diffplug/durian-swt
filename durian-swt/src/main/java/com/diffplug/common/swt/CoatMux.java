@@ -82,6 +82,9 @@ public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 			return currentLayer.map(opt -> opt.isPresent() && opt.get() == this);
 		}
 
+		/** The control at the root of this layer. */
+		public Control getControl() { return control; }
+
 		/** The handle which was returned by the {@link Coat.Returning}. */
 		public T getHandle() {
 			return handle;
