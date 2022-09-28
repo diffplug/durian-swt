@@ -129,7 +129,9 @@ public class StructuredDndMappingTest {
 					den.set(d.denominator());
 				});
 
-				Observable<Fraction> rxFraction = Observable.combineLatest(num, den, Fraction::create);
+				RxBox<Fraction> rxFraction = RxBox.of(Fraction.create(num.get(), den.get()));
+				Rx.subscribe(num, n -> rxFraction.set(Fraction.create(n, den.get())));
+				Rx.subscribe(den, d -> rxFraction.set(Fraction.create(num.get(), d)));
 				Rx.subscribe(rxFraction, box::set);
 
 				drag.add(FractionTransfer.INSTANCE, e -> box.get());
