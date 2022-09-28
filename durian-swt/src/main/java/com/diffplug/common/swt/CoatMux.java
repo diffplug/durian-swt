@@ -83,7 +83,9 @@ public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 		}
 
 		/** The control at the root of this layer. */
-		public Control getControl() { return control; }
+		public Control getControl() {
+			return control;
+		}
 
 		/** The handle which was returned by the {@link Coat.Returning}. */
 		public T getHandle() {
