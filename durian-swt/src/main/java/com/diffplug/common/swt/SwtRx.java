@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright (C) 2020-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,13 @@ import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.common.primitives.Ints;
 import com.diffplug.common.rx.Chit;
+import com.diffplug.common.rx.Rx;
 import com.diffplug.common.rx.RxBox;
-import io.reactivex.Observable;
-import io.reactivex.subjects.PublishSubject;
 import java.util.Collection;
 import java.util.function.Function;
 import java.util.stream.Stream;
+import kotlinx.coroutines.flow.Flow;
+import kotlinx.coroutines.flow.MutableSharedFlow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
@@ -38,34 +39,42 @@ import org.eclipse.swt.widgets.Widget;
 
 /** Utilities that convert SWT events into Rx-friendly Observables. */
 public class SwtRx {
-	/** Subscribes to the given widget and pipes the events to an {@link Observable}<{@link Event}>. */
-	public static @SwtThread Observable<Event> addListener(Widget widget, int... events) {
+	/** Subscribes to the given widget and pipes the events to an {@link Flow}<{@link Event}>. */
+	public static @SwtThread Flow<Event> addListener(Widget widget, int... events) {
 		return addListener(widget, Ints.asList(events));
 	}
 
-	/** Subscribes to the given widget and pipes the events to an {@link Observable}<{@link Event}>. */
-	public static @SwtThread Observable<Event> addListener(Widget widget, Collection<Integer> events) {
+	/** Subscribes to the given widget and pipes the events to an {@link Flow}<{@link Event}>. */
+	public static @SwtThread Flow<Event> addListener(Widget widget, Collection<Integer> events) {
 		return addListener(widget, events.stream());
 	}
 
-	/** Subscribes to the given widget and pipes the events to an {@link Observable}<{@link Event}>. */
-	public static @SwtThread Observable<Event> addListener(Widget widget, Stream<Integer> events) {
-		PublishSubject<Event> subject = PublishSubject.create();
-		events.forEach(event -> widget.addListener(event, subject::onNext));
-		return subject;
+	/** Subscribes to the given widget and pipes the events to an {@link Flow}<{@link Event}>. */
+	public static @SwtThread Flow<Event> addListener(Widget widget, Stream<Integer> events) {
+		MutableSharedFlow<Event> observable = Rx.INSTANCE.createEmitFlow();
+		events.forEach(event -> widget.addListener(event, e -> {
+			Rx.INSTANCE.emit(observable, e);
+		}));
+		return observable;
 	}
 
-	/** Returns an {@link Observable}<{@link Point}> of the right-click mouse-up on the given control, in global coordinates. */
-	public static @SwtThread Observable<Point> rightClickGlobal(Control ctl) {
-		return rightClickLocal(ctl).map(ctl::toDisplay);
+	/** Returns an {@link Flow}<{@link Point}> of the right-click mouse-up on the given control, in global coordinates. */
+	public static @SwtThread Flow<Point> rightClickGlobal(Control ctl) {
+		MutableSharedFlow<Point> observable = Rx.INSTANCE.createEmitFlow();
+		ctl.addListener(MouseClick.RIGHT_CLICK_EVENT, e -> {
+			if (e.button == MouseClick.RIGHT.code()) {
+				Rx.INSTANCE.emit(observable, ctl.toDisplay(e.x, e.y));
+			}
+		});
+		return observable;
 	}
 
-	/** Returns an {@link Observable}<{@link Point}> of the right-click mouse-up on the given control, in local coordinates. */
-	public static @SwtThread Observable<Point> rightClickLocal(Control ctl) {
-		PublishSubject<Point> observable = PublishSubject.create();
-		ctl.addListener(SWT.MouseUp, e -> {
-			if (e.button == 3) {
-				observable.onNext(new Point(e.x, e.y));
+	/** Returns an {@link Flow}<{@link Point}> of the right-click mouse-up on the given control, in local coordinates. */
+	public static @SwtThread Flow<Point> rightClickLocal(Control ctl) {
+		MutableSharedFlow<Point> observable = Rx.INSTANCE.createEmitFlow();
+		ctl.addListener(MouseClick.RIGHT_CLICK_EVENT, e -> {
+			if (e.button == MouseClick.RIGHT.code()) {
+				Rx.INSTANCE.emit(observable, new Point(e.x, e.y));
 			}
 		});
 		return observable;
