@@ -1,6 +1,8 @@
 # DurianSwt releases
 
 ## [Unreleased]
+
+## [4.0.0] - 2022-09-29
 ### Added
 - `SwtExec` can now plays nicely with Kotlin coroutines.
 - `CoatMux.Layer` now exposes its root `Control` instance ([#12](https://github.com/diffplug/durian-swt/issues/12)).
