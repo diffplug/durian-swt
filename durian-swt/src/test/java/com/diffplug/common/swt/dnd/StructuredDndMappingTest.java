@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright (C) 2020-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import com.diffplug.common.swt.Layouts;
 import com.diffplug.common.swt.SwtMisc;
 import com.diffplug.common.swt.SwtRx;
 import com.diffplug.common.swt.widgets.ScaleCtl;
-import io.reactivex.Observable;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -129,7 +128,9 @@ public class StructuredDndMappingTest {
 					den.set(d.denominator());
 				});
 
-				Observable<Fraction> rxFraction = Observable.combineLatest(num, den, Fraction::create);
+				RxBox<Fraction> rxFraction = RxBox.of(Fraction.create(num.get(), den.get()));
+				Rx.subscribe(num, n -> rxFraction.set(Fraction.create(n, den.get())));
+				Rx.subscribe(den, d -> rxFraction.set(Fraction.create(num.get(), d)));
 				Rx.subscribe(rxFraction, box::set);
 
 				drag.add(FractionTransfer.INSTANCE, e -> box.get());

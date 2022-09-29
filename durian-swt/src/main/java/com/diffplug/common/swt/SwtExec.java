@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright (C) 2020-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,10 +53,14 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import kotlin.coroutines.CoroutineContext;
+import kotlinx.coroutines.CoroutineDispatcher;
+import kotlinx.coroutines.MainCoroutineDispatcher;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Widget;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * {@link Executor Executors} which execute on the SWT UI thread.
@@ -74,7 +78,7 @@ import org.eclipse.swt.widgets.Widget;
  * SwtExec.immediate().guardOn(myWidget).subscribe(someFuture, value -> myWidget.setContentsTo(value));
  * ```
  *
- * In the example above, if the widget is disposed before the future completes, that's fine!  No "widget is disposed" errors. 
+ * In the example above, if the widget is disposed before the future completes, that's fine!  No "widget is disposed" errors.
  *
  * {@link #blocking()} is similar to `async()` and `immediate()`, but it doesn't support `guard` - it's just a simple `Executor`.
  * It performs actions immediately if called from a UI thread, else delegates to the blocking {@link Display#syncExec}.  It also
@@ -328,7 +332,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	}
 
 	SwtExec() {
-		this(exec -> Rx.callbackOn(exec, new SwtScheduler(exec)));
+		this(exec -> Rx.callbackOn(exec, new SwtScheduler(exec), new SwtDispatcher(exec)));
 	}
 
 	SwtExec(Function<SwtExec, RxExecutor> rxExecutorCreator) {
@@ -687,6 +691,37 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 		}
 	}
 
+	static final class SwtDispatcher extends MainCoroutineDispatcher {
+		private final SwtExec exec;
+
+		public SwtDispatcher(SwtExec exec) {
+			this.exec = exec;
+		}
+
+		public boolean isDispatchNeeded(CoroutineContext context) {
+			if (exec == SwtExec.immediate && swtThread == Thread.currentThread()) {
+				return false;
+			} else {
+				return true;
+			}
+		}
+
+		@Override
+		public void dispatch(@NotNull CoroutineContext coroutineContext, @NotNull Runnable runnable) {
+			display.asyncExec(runnable);
+		}
+
+		@NotNull
+		@Override
+		public MainCoroutineDispatcher getImmediate() {
+			if (exec == SwtExec.immediate()) {
+				return this;
+			} else {
+				return (SwtDispatcher) SwtExec.immediate().rxExecutor.getDispatcher();
+			}
+		}
+	}
+
 	/** Scheduler that runs tasks on Swt's event dispatch thread. */
 	static final class SwtScheduler extends Scheduler {
 		final SwtExec exec;
@@ -902,7 +937,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	@SuppressFBWarnings(value = "LI_LAZY_INIT_STATIC", justification = "This race condition is fine, see comment in SwtExec.blocking()")
 	public static SwtExec swtOnly() {
 		if (swtOnly == null) {
-			swtOnly = new SwtExec(exec -> Rx.callbackOn(exec, new SwtOnlyScheduler())) {
+			swtOnly = new SwtExec(exec -> Rx.callbackOn(exec, new SwtOnlyScheduler(), new SwtOnlyDispatcher())) {
 				@Override
 				public void execute(Runnable runnable) {
 					requireNonNull(runnable);
@@ -915,6 +950,22 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 			};
 		}
 		return swtOnly;
+	}
+
+	static class SwtOnlyDispatcher extends CoroutineDispatcher {
+		@Override
+		public boolean isDispatchNeeded(CoroutineContext context) {
+			return false;
+		}
+
+		@Override
+		public void dispatch(@NotNull CoroutineContext coroutineContext, @NotNull Runnable runnable) {
+			if (Thread.currentThread() == swtThread) {
+				runnable.run();
+			} else {
+				SWT.error(SWT.ERROR_THREAD_INVALID_ACCESS);
+			}
+		}
 	}
 
 	/**
@@ -966,7 +1017,14 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 		}
 	}
 
-	private static final SwtExec sameThread = new SwtExec(exec -> Rx.callbackOn(MoreExecutors.directExecutor(), Schedulers.trampoline())) {
+	private static class SameThreadCoroutineDispatcher extends CoroutineDispatcher {
+		@Override
+		public void dispatch(@NotNull CoroutineContext coroutineContext, @NotNull Runnable runnable) {
+			runnable.run();
+		}
+	}
+
+	private static final SwtExec sameThread = new SwtExec(exec -> Rx.callbackOn(MoreExecutors.directExecutor(), Schedulers.trampoline(), new SameThreadCoroutineDispatcher())) {
 		@Override
 		public void execute(Runnable runnable) {
 			requireNonNull(runnable);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright (C) 2020-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,6 +82,11 @@ public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 			return currentLayer.map(opt -> opt.isPresent() && opt.get() == this);
 		}
 
+		/** The control at the root of this layer. */
+		public Control getControl() {
+			return control;
+		}
+
 		/** The handle which was returned by the {@link Coat.Returning}. */
 		public T getHandle() {
 			return handle;
@@ -107,7 +112,7 @@ public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 
 	/** Adds a persistent {@link Layer} which will be populated immediately by the given `Coat`, using `value` as the key. */
 	public <T> Layer<T> addCoat(Coat coat, @Nullable T value) {
-		return addCoat(Coat.Returning.fromNonReturning(coat, value));
+		return addCoat(Coat.Returning.Companion.fromNonReturning(coat, value));
 	}
 
 	/** Adds a persistent {@link Layer} which will be populated immediately by the given `Coat.Returning`, using the return value as the key. */
@@ -161,7 +166,7 @@ public class CoatMux extends ControlWrapper.AroundControl<Composite> {
 
 	/** Sets the current content of this `CoatMux`, gets disposed as soon as anything else becomes the top layer. */
 	public void setCoat(Coat coat) {
-		setCoatReturning(Coat.Returning.fromNonReturning(coat, null));
+		setCoatReturning(Coat.Returning.Companion.fromNonReturning(coat, null));
 	}
 
 	/** Sets the current content of this `CoatMux`, gets disposed as soon as anything else becomes the top layer. */
