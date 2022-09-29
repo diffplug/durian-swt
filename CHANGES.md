@@ -5,6 +5,8 @@
 - `SwtExec` can now plays nicely with Kotlin coroutines.
 - `CoatMux.Layer` now exposes its root `Control` instance ([#12](https://github.com/diffplug/durian-swt/issues/12)).
 - `VScrollCtl` and `VScrollBubble` for easier VScroll handling ([#10](https://github.com/diffplug/durian-swt/issues/10)).
+### Changed
+- **BREAKING** `SwtRx` is now based on Kotlin Flow rather than RxJava.
 ### Removed
 - **BREAKING** Removed `ColorPool.getSystemColor()` ([#8](https://github.com/diffplug/durian-swt/issues/8)).
 - **BREAKING** Switched type arguments of `TypedDataField` ([#3](https://github.com/diffplug/durian-swt/issues/3)).
