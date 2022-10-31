@@ -1,6 +1,8 @@
 # DurianSwt releases
 
 ## [Unreleased]
+### Added
+- `SiliconFix` now has a `public static boolean APPLY_FIX` field which users can set. The initial value is `OS.getRunning().isMac() && Arch.getRunning() == Arch.arm64`, but we have found that users might need to set a different value depending on how SWT is launched.
 
 ## [4.0.0] - 2022-09-29
 ### Added
