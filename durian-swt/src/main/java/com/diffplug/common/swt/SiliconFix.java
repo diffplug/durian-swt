@@ -28,7 +28,7 @@ import org.eclipse.swt.widgets.Tree;
  * https://bugs.eclipse.org/bugs/show_bug.cgi?id=575696
  */
 public class SiliconFix {
-	public static final boolean APPLY_FIX = OS.getRunning().isMac() && Arch.getRunning() == Arch.arm64;
+	public static boolean APPLY_FIX = OS.getRunning().isMac() && Arch.getRunning() == Arch.arm64;
 
 	public static void fix(Table table) {
 		if (APPLY_FIX) {

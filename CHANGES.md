@@ -1,6 +1,8 @@
 # DurianSwt releases
 
 ## [Unreleased]
+### Fixed
+- `SiliconFix.APPLY_FIX` is now mutable, which was the intention in `4.1.0`.
 
 ## [4.1.0] - 2022-10-31
 ### Added
