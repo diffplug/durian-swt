@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 DiffPlug
+ * Copyright (C) 2020-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -153,7 +153,7 @@ public enum OS {
 
 	private static String exec(String... cmd) {
 		try {
-			Process process = Runtime.getRuntime().exec(new String[]{"uname", "-a"});
+			Process process = Runtime.getRuntime().exec(cmd);
 			ByteArrayOutputStream output = new ByteArrayOutputStream();
 			drain(process.getInputStream(), output);
 			return new String(output.toByteArray(), StandardCharsets.UTF_8);
