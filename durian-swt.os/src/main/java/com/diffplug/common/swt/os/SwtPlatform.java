@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright (C) 2020-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package com.diffplug.common.swt.os;
-
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -129,7 +128,7 @@ public class SwtPlatform {
 	public static SwtPlatform fromOS(OS raw) {
 		String ws = raw.winMacLinux("win32", "cocoa", "gtk");
 		String os = raw.winMacLinux("win32", "macosx", "linux");
-		String arch = raw.getArch().x86x64arm64("x86", "x86_64", "aarch64");
+		String arch = raw.getArch().x86x64arm64unknown("x86", "x86_64", "aarch64", "unknown");
 		return new SwtPlatform(ws, os, arch);
 	}
 
