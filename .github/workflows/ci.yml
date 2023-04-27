@@ -30,6 +30,11 @@ jobs:
           gradle-home-cache-cleanup: true
       - name: git fetch origin main
         run: git fetch origin main
+      - if: runner.os == 'Linux'
+        run: |
+          sudo apt-get install xvfb
+          Xvfb :99 &
+          export DISPLAY=:99
       - name: gradlew build
         run: ./gradlew build
       - name: junit result
