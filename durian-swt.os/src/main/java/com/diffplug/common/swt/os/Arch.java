@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright (C) 2020-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ package com.diffplug.common.swt.os;
 
 /** Enum for handling different processor architectures supported by SWT. */
 public enum Arch {
-	x86, x64, arm64;
+	x86, x64, arm64, unknown;
 
 	/** Returns the appropriate value depending on the arch. */
 	public <T> T x86x64(T val86, T val64) {
@@ -52,6 +52,22 @@ public enum Arch {
 			return val64;
 		case arm64:
 			return arm64;
+		default:
+			throw unsupportedException(this);
+		}
+	}
+
+	/** Returns the appropriate value depending on the arch. */
+	public <T> T x86x64arm64unknown(T val86, T val64, T arm64, T unknown) {
+		switch (this) {
+		case x86:
+			return val86;
+		case x64:
+			return val64;
+		case arm64:
+			return arm64;
+		case unknown:
+			return unknown;
 		default:
 			throw unsupportedException(this);
 		}

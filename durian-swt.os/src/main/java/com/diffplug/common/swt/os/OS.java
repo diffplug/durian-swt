@@ -15,7 +15,6 @@
  */
 package com.diffplug.common.swt.os;
 
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,18 +26,18 @@ import java.util.function.Function;
 
 /** Enum representing an OS and its underlying CPU architecture. */
 public enum OS {
-	WIN_x64, WIN_x86, LINUX_x64, LINUX_x86, MAC_x64, MAC_silicon;
+	WIN_x64, WIN_x86, LINUX_x64, LINUX_x86, MAC_x64, MAC_silicon, WIN_unknown, LINUX_unknown, MAC_unknown;
 
 	public boolean isWindows() {
-		return this == WIN_x64 || this == WIN_x86;
+		return this == WIN_x64 || this == WIN_x86 || this == WIN_unknown;
 	}
 
 	public boolean isLinux() {
-		return this == LINUX_x64 || this == LINUX_x86;
+		return this == LINUX_x64 || this == LINUX_x86 || this == LINUX_unknown;
 	}
 
 	public boolean isMac() {
-		return this == MAC_x64 || this == MAC_silicon;
+		return this == MAC_x64 || this == MAC_silicon || this == MAC_unknown;
 	}
 
 	public boolean isMacOrLinux() {
@@ -70,6 +69,10 @@ public enum OS {
 			return Arch.x86;
 		case MAC_silicon:
 			return Arch.arm64;
+		case WIN_unknown:
+		case MAC_unknown:
+		case LINUX_unknown:
+			return Arch.unknown;
 		default:
 			throw unsupportedException(this);
 		}
@@ -82,7 +85,7 @@ public enum OS {
 
 	/** SWT-style x86/x86_64 */
 	public String arch() {
-		return getArch().x86x64arm64("x86", "x86_64", "aarch64");
+		return getArch().x86x64arm64unknown("x86", "x86_64", "aarch64", "unknown");
 	}
 
 	/** os().arch() */
@@ -92,7 +95,7 @@ public enum OS {
 
 	/** windowing.os.arch */
 	public String toSwt() {
-		return winMacLinux("win32", "cocoa", "gtk") + "." + winMacLinux("win32", "macosx", "linux") + "." + getArch().x86x64arm64("x86", "x86_64", "aarch64");
+		return SwtPlatform.fromOS(this).toString();
 	}
 
 	/** Returns the native OS: 32-bit JVM on 64-bit Windows returns OS.WIN_64. */
@@ -144,7 +147,7 @@ public enum OS {
 			case "amd64":
 				return LINUX_x64;
 			default:
-				throw new IllegalArgumentException("Unknown os.arch " + os_arch + "'.");
+				return LINUX_unknown;
 			}
 		} else {
 			throw new IllegalArgumentException("Unknown os.name '" + os_name + "'.");
@@ -175,14 +178,10 @@ public enum OS {
 	/** Calculates the running OS. */
 	private static OS calculateRunning(Function<String, String> systemProperty) {
 		Arch runningArch = runningJvm(systemProperty);
-		OS runningOs = NATIVE_OS.winMacLinux(
-				runningArch.x86x64arm64(OS.WIN_x86, OS.WIN_x64, null),
-				runningArch.x86x64arm64(null, OS.MAC_x64, OS.MAC_silicon),
-				runningArch.x86x64arm64(OS.LINUX_x86, OS.LINUX_x64, null));
-		if (runningOs == null) {
-			throw new IllegalArgumentException("Unsupported OS/Arch combo: " + runningOs + " " + runningArch);
-		}
-		return runningOs;
+		return NATIVE_OS.winMacLinux(
+				runningArch.x86x64arm64unknown(OS.WIN_x86, OS.WIN_x64, OS.WIN_unknown, OS.WIN_unknown),
+				runningArch.x86x64arm64unknown(OS.MAC_unknown, OS.MAC_x64, OS.MAC_silicon, OS.MAC_unknown),
+				runningArch.x86x64arm64unknown(OS.LINUX_x86, OS.LINUX_x64, OS.LINUX_unknown, OS.LINUX_unknown));
 	}
 
 	/** Returns the arch of the currently running JVM. */
@@ -194,7 +193,7 @@ public enum OS {
 		case "64":
 			return "aarch64".equals(systemProperty.apply("os.arch")) ? Arch.arm64 : Arch.x64;
 		default:
-			throw new IllegalArgumentException("Expcted 32 or 64, was " + sunArchDataModel);
+			return Arch.unknown;
 		}
 	}
 
