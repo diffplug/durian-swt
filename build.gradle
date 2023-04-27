@@ -15,7 +15,7 @@ apply from: 干.file('base/sonatype.gradle')
 
 subprojects { subProject ->
 	apply plugin: 'java-library'
-	apply from: 干.file('base/java8.gradle')
+	apply from: 干.file('base/java.gradle')
 	apply from: 干.file('spotless/java.gradle')
 
 	ext.maven_name = subProject.name
@@ -47,12 +47,16 @@ subprojects { subProject ->
 			main = 'com.diffplug.common.swt.os.OS'
 		}
 	} else {
-		apply plugin: 'com.diffplug.eclipse.mavencentral'
 		String platformCode = project.name.substring('durian-swt.'.length())
 		String SWT_TO_USE = platformCode.endsWith("x86") ? SWT_VERSION_X86 : SWT_VERSION
-		eclipseMavenCentral {
-			release SWT_TO_USE, {
-				api "org.eclipse.swt.$platformCode"
+		apply plugin: 'dev.equo.p2deps'
+		p2deps {
+			into 'api', {
+				p2repo "https://download.eclipse.org/eclipse/updates/$SWT_TO_USE/"
+				install "org.eclipse.swt.$platformCode"
+				addFilter 'no-platform-filter', {
+					it.platformAll()
+				}
 			}
 		}
 		dependencies {

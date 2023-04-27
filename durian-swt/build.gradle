@@ -1,11 +1,11 @@
 apply from: 干.file('base/kotlin.gradle')
 
-apply plugin: 'com.diffplug.eclipse.mavencentral'
-eclipseMavenCentral {
-	release SWT_VERSION, {
-		api 'org.eclipse.swt'
-		api 'org.eclipse.jface'
-		useNativesForRunningPlatform()
+apply plugin: 'dev.equo.p2deps'
+p2deps {
+	into 'api', {
+		p2repo "https://download.eclipse.org/eclipse/updates/$SWT_VERSION/"
+		install 'org.eclipse.swt'
+		install 'org.eclipse.jface'
 	}
 }
 dependencies {
@@ -23,12 +23,6 @@ dependencies {
 	testImplementation "org.assertj:assertj-core:$VER_ASSERTJ"
 	testImplementation "com.diffplug.durian:durian-debug:$VER_DURIAN_DEBUG"
 }
-/*
- apply plugin: 'com.diffplug.gradle.eclipse.projectdeps'
- eclipseProjectDeps {
- replaceWithProject('durian-rx')
- }
- */
 // in java-library mode, durian-swt.os remains as a folder of classes for gradle internally, which the osgi plugin does not like
 tasks.named('jar').configure {
 	dependsOn(':durian-swt.os:jar')
