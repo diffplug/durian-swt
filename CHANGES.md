@@ -1,6 +1,8 @@
 # DurianSwt releases
 
 ## [Unreleased]
+
+## [4.2.0] - 2023-04-27
 ### Added
 - When `OS.getNative` or `getRunning` is called on an OS which is unsupported by SWT, instead of throwing an exception, we now return `Arch.unknown`. You can't get platform-specific artifacts for it, but if you don't need them then you get to keep running instead of dying. ([#21](https://github.com/diffplug/durian-swt/pull/21))
 
