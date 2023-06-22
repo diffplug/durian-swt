@@ -10,6 +10,14 @@ p2deps {
 			it.platformNone()
 		}
 	}
+	into 'compileOnly', {
+		p2repo "https://download.eclipse.org/eclipse/updates/$SWT_VERSION/"
+		install 'org.eclipse.swt'
+	}
+	into 'testImplementation', {
+		p2repo "https://download.eclipse.org/eclipse/updates/$SWT_VERSION/"
+		install 'org.eclipse.swt'
+	}
 }
 dependencies {
 	api project(':durian-swt.os')
