@@ -1,6 +1,8 @@
 # DurianSwt releases
 
 ## [Unreleased]
+### Fixed
+- Remove the errant platform-specific SWT artifact which was added as a transitive dependency in the pom of `durian-swt:4.2.0`. ([#23](https://github.com/diffplug/durian-swt/pull/23))
 
 ## [4.2.0] - 2023-04-27
 ### Added
