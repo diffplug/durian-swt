@@ -6,6 +6,17 @@ p2deps {
 		p2repo "https://download.eclipse.org/eclipse/updates/$SWT_VERSION/"
 		install 'org.eclipse.swt'
 		install 'org.eclipse.jface'
+		addFilter 'no-platform', {
+			it.platformNone()
+		}
+	}
+	into 'compileOnly', {
+		p2repo "https://download.eclipse.org/eclipse/updates/$SWT_VERSION/"
+		install 'org.eclipse.swt'
+	}
+	into 'testImplementation', {
+		p2repo "https://download.eclipse.org/eclipse/updates/$SWT_VERSION/"
+		install 'org.eclipse.swt'
 	}
 }
 dependencies {
