@@ -55,7 +55,7 @@ subprojects { subProject ->
 				p2repo "https://download.eclipse.org/eclipse/updates/$SWT_TO_USE/"
 				install "org.eclipse.swt.$platformCode"
 				addFilter 'no-platform-filter', {
-					it.platformAll()
+					it.platform(com.diffplug.common.swt.os.SwtPlatform.parseWsOsArch(platformCode))
 				}
 			}
 		}
