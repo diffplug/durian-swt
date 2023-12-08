@@ -1,6 +1,8 @@
 # DurianSwt releases
 
 ## [Unreleased]
+### Added
+- `OS.detectPlatform` can now take a `Function<List<String>, String>` which lets you control process execution when detecting the OS. ([#26](https://github.com/diffplug/durian-swt/pull/26))
 
 ## [4.2.2] - 2023-10-26
 ### Fixed
