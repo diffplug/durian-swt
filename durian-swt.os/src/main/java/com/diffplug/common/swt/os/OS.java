@@ -150,7 +150,7 @@ public enum OS {
 		boolean isMac = os_name.contains("mac");
 		boolean isLinux = Arrays.asList("nix", "nux", "aix").stream().anyMatch(os_name::contains);
 		if (isMac) {
-			return executeCommand.apply(List.of("uname", "-a")).contains("_ARM64_") ? MAC_silicon : MAC_x64;
+			return executeCommand.apply(Arrays.asList("uname", "-a")).contains("_ARM64_") ? MAC_silicon : MAC_x64;
 		} else if (isWin) {
 			boolean is64bit = environmentVariable.apply("ProgramFiles(x86)") != null;
 			return is64bit ? WIN_x64 : WIN_x86;
