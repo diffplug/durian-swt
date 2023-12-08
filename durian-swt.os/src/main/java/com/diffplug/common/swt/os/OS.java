@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.function.Function;
 
@@ -112,9 +113,25 @@ public enum OS {
 
 	/** Eagerly detects the native and running JVM properties. */
 	public static void detectPlatform(Function<String, String> systemProperty, Function<String, String> environmentVariable) {
+		detectPlatform(systemProperty, environmentVariable, OS::exec);
+	}
+
+	/** Eagerly detects the native and running JVM properties. */
+	public static void detectPlatform(Function<String, String> systemProperty, Function<String, String> environmentVariable, Function<List<String>, String> executeCommand) {
 		if (NATIVE_OS == null) {
-			NATIVE_OS = calculateNative(systemProperty, environmentVariable);
+			NATIVE_OS = calculateNative(systemProperty, environmentVariable, executeCommand);
 			RUNNING_OS = calculateRunning(systemProperty);
+		}
+	}
+
+	private static String exec(List<String> cmd) {
+		try {
+			Process process = Runtime.getRuntime().exec(cmd.toArray(new String[0]));
+			ByteArrayOutputStream output = new ByteArrayOutputStream();
+			drain(process.getInputStream(), output);
+			return new String(output.toByteArray(), StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -127,13 +144,13 @@ public enum OS {
 	private static OS NATIVE_OS;
 
 	/** Calculates the native OS. */
-	private static OS calculateNative(Function<String, String> systemProperty, Function<String, String> environmentVariable) {
+	private static OS calculateNative(Function<String, String> systemProperty, Function<String, String> environmentVariable, Function<List<String>, String> executeCommand) {
 		String os_name = systemProperty.apply("os.name").toLowerCase(Locale.getDefault());
 		boolean isWin = os_name.contains("win");
 		boolean isMac = os_name.contains("mac");
 		boolean isLinux = Arrays.asList("nix", "nux", "aix").stream().anyMatch(os_name::contains);
 		if (isMac) {
-			return exec("uname", "-a").contains("_ARM64_") ? MAC_silicon : MAC_x64;
+			return executeCommand.apply(Arrays.asList("uname", "-a")).contains("_ARM64_") ? MAC_silicon : MAC_x64;
 		} else if (isWin) {
 			boolean is64bit = environmentVariable.apply("ProgramFiles(x86)") != null;
 			return is64bit ? WIN_x64 : WIN_x86;
@@ -151,17 +168,6 @@ public enum OS {
 			}
 		} else {
 			throw new IllegalArgumentException("Unknown os.name '" + os_name + "'.");
-		}
-	}
-
-	private static String exec(String... cmd) {
-		try {
-			Process process = Runtime.getRuntime().exec(cmd);
-			ByteArrayOutputStream output = new ByteArrayOutputStream();
-			drain(process.getInputStream(), output);
-			return new String(output.toByteArray(), StandardCharsets.UTF_8);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
 		}
 	}
 
