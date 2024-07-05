@@ -1,6 +1,8 @@
 # DurianSwt releases
 
 ## [Unreleased]
+
+## [4.3.1] - 2024-07-05
 ### Changed
 - Convert `ControlWrapper` and `Shells` to kotlin for better nullability. ([#27](https://github.com/diffplug/durian-swt/pull/27))
 
