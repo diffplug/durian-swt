@@ -1,6 +1,8 @@
 # DurianSwt releases
 
 ## [Unreleased]
+### Changed
+- Bump required java from 11 to 17.
 
 ## [4.3.1] - 2024-07-05
 ### Changed
