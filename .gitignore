@@ -5,6 +5,7 @@
 # gradle stuff
 .gradle/
 build/
+.kotlin/
 
 # IntelliJ
 .idea
