@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2022 DiffPlug
+ * Copyright (C) 2020-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,30 +27,19 @@ import com.diffplug.common.rx.RxSubscriber;
 import com.diffplug.common.util.concurrent.MoreExecutors;
 import com.diffplug.common.util.concurrent.Runnables;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import io.reactivex.Scheduler;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.disposables.Disposables;
-import io.reactivex.schedulers.Schedulers;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.RunnableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
-import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import kotlin.coroutines.CoroutineContext;
@@ -332,7 +321,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	}
 
 	SwtExec() {
-		this(exec -> Rx.callbackOn(exec, new SwtScheduler(exec), new SwtDispatcher(exec)));
+		this(exec -> Rx.callbackOn(exec, new SwtDispatcher(exec)));
 	}
 
 	SwtExec(Function<SwtExec, RxExecutor> rxExecutorCreator) {
@@ -722,206 +711,6 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 		}
 	}
 
-	/** Scheduler that runs tasks on Swt's event dispatch thread. */
-	static final class SwtScheduler extends Scheduler {
-		final SwtExec exec;
-
-		public SwtScheduler(SwtExec exec) {
-			this.exec = exec;
-		}
-
-		@Override
-		public Worker createWorker() {
-			return new SwtWorker(exec);
-		}
-
-		static final class SwtWorker extends Scheduler.Worker {
-			final SwtExec exec;
-
-			volatile boolean unsubscribed;
-
-			/** Set of active tasks, guarded by this. */
-			Set<SwtScheduledAction> tasks;
-
-			public SwtWorker(SwtExec exec) {
-				this.exec = exec;
-				this.tasks = new HashSet<>();
-			}
-
-			@Override
-			public void dispose() {
-				if (unsubscribed) {
-					return;
-				}
-				unsubscribed = true;
-
-				Set<SwtScheduledAction> set;
-				synchronized (this) {
-					set = tasks;
-					tasks = null;
-				}
-
-				if (set != null) {
-					for (SwtScheduledAction a : set) {
-						a.cancelFuture();
-					}
-				}
-			}
-
-			void remove(SwtScheduledAction a) {
-				if (unsubscribed) {
-					return;
-				}
-				synchronized (this) {
-					if (unsubscribed) {
-						return;
-					}
-
-					tasks.remove(a);
-				}
-			}
-
-			@Override
-			public boolean isDisposed() {
-				return unsubscribed;
-			}
-
-			@Override
-			public Disposable schedule(Runnable action) {
-				if (unsubscribed) {
-					return Disposables.disposed();
-				}
-
-				SwtScheduledAction a = new SwtScheduledAction(action, this);
-
-				synchronized (this) {
-					if (unsubscribed) {
-						return Disposables.disposed();
-					}
-
-					tasks.add(a);
-				}
-
-				exec.execute(a);
-
-				if (unsubscribed) {
-					a.cancel();
-					return Disposables.disposed();
-				}
-
-				return a;
-			}
-
-			@Override
-			public Disposable schedule(Runnable action, long delayTime, TimeUnit unit) {
-				if (unsubscribed) {
-					return Disposables.disposed();
-				}
-
-				SwtScheduledAction a = new SwtScheduledAction(action, this);
-
-				synchronized (this) {
-					if (unsubscribed) {
-						return Disposables.disposed();
-					}
-
-					tasks.add(a);
-				}
-
-				Future<?> f = exec.schedule(a, delayTime, unit);
-
-				if (unsubscribed) {
-					a.cancel();
-					f.cancel(true);
-					return Disposables.disposed();
-				}
-
-				a.setFuture(f);
-
-				return a;
-			}
-
-			/**
-			 * Represents a cancellable asynchronous Runnable that wraps an action
-			 * and manages the associated Worker lifecycle.
-			 */
-			static final class SwtScheduledAction implements Runnable, Disposable {
-				final Runnable action;
-
-				final SwtWorker parent;
-
-				volatile Future<?> future;
-				@SuppressWarnings("rawtypes")
-				static final AtomicReferenceFieldUpdater<SwtScheduledAction, Future> FUTURE = AtomicReferenceFieldUpdater.newUpdater(SwtScheduledAction.class, Future.class, "future");
-
-				static final Future<?> CANCELLED = new FutureTask<>(() -> {}, null);
-
-				static final Future<?> FINISHED = new FutureTask<>(() -> {}, null);
-
-				volatile int state;
-				static final AtomicIntegerFieldUpdater<SwtScheduledAction> STATE = AtomicIntegerFieldUpdater.newUpdater(SwtScheduledAction.class, "state");
-
-				static final int STATE_ACTIVE = 0;
-				static final int STATE_FINISHED = 1;
-				static final int STATE_CANCELLED = 2;
-
-				public SwtScheduledAction(Runnable action, SwtWorker parent) {
-					this.action = action;
-					this.parent = parent;
-				}
-
-				@Override
-				public void run() {
-					if (!parent.unsubscribed && state == STATE_ACTIVE) {
-						try {
-							action.run();
-						} finally {
-							FUTURE.lazySet(this, FINISHED);
-							if (STATE.compareAndSet(this, STATE_ACTIVE, STATE_FINISHED)) {
-								parent.remove(this);
-							}
-						}
-					}
-				}
-
-				@Override
-				public boolean isDisposed() {
-					return state != STATE_ACTIVE;
-				}
-
-				@Override
-				public void dispose() {
-					if (STATE.compareAndSet(this, STATE_ACTIVE, STATE_CANCELLED)) {
-						parent.remove(this);
-					}
-					cancelFuture();
-				}
-
-				void setFuture(Future<?> f) {
-					if (FUTURE.compareAndSet(this, null, f)) {
-						if (future != FINISHED) {
-							f.cancel(true);
-						}
-					}
-				}
-
-				void cancelFuture() {
-					Future<?> f = future;
-					if (f != CANCELLED && f != FINISHED) {
-						f = FUTURE.getAndSet(this, CANCELLED);
-						if (f != null && f != CANCELLED && f != FINISHED) {
-							f.cancel(true);
-						}
-					}
-				}
-
-				void cancel() {
-					state = STATE_CANCELLED;
-				}
-			}
-		}
-	}
-
 	/** Global executor for actions which should only execute immediately on the SWT thread. */
 	private static SwtExec swtOnly;
 
@@ -937,7 +726,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 	@SuppressFBWarnings(value = "LI_LAZY_INIT_STATIC", justification = "This race condition is fine, see comment in SwtExec.blocking()")
 	public static SwtExec swtOnly() {
 		if (swtOnly == null) {
-			swtOnly = new SwtExec(exec -> Rx.callbackOn(exec, new SwtOnlyScheduler(), new SwtOnlyDispatcher())) {
+			swtOnly = new SwtExec(exec -> Rx.callbackOn(exec, new SwtOnlyDispatcher())) {
 				@Override
 				public void execute(Runnable runnable) {
 					requireNonNull(runnable);
@@ -968,55 +757,6 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 		}
 	}
 
-	/**
-	 * Copied straight from rx.schedulers.ImmediateScheduler,
-	 * but checks for the SWT thread before running stuff,
-	 * and handles future-scheduling correctly.
-	 */
-	static final class SwtOnlyScheduler extends Scheduler {
-		@Override
-		public Worker createWorker() {
-			return new InnerImmediateScheduler();
-		}
-
-		private static final class InnerImmediateScheduler extends Scheduler.Worker {
-			final Disposable innerSubscription = Disposables.empty();
-
-			@Override
-			public Disposable schedule(Runnable action, long delayTime, TimeUnit unit) {
-				CompositeDisposable sub = new CompositeDisposable();
-				Future<?> future = SwtExec.async().schedule(() -> {
-					if (!sub.isDisposed()) {
-						action.run();
-						sub.dispose();
-					}
-				}, delayTime, unit);
-				sub.add(Disposables.fromFuture(future));
-				return sub;
-			}
-
-			@Override
-			public Disposable schedule(Runnable action) {
-				if (Thread.currentThread() == swtThread) {
-					action.run();
-				} else {
-					SWT.error(SWT.ERROR_THREAD_INVALID_ACCESS);
-				}
-				return Disposables.disposed();
-			}
-
-			@Override
-			public void dispose() {
-				innerSubscription.dispose();
-			}
-
-			@Override
-			public boolean isDisposed() {
-				return innerSubscription.isDisposed();
-			}
-		}
-	}
-
 	private static class SameThreadCoroutineDispatcher extends CoroutineDispatcher {
 		@Override
 		public void dispatch(@NotNull CoroutineContext coroutineContext, @NotNull Runnable runnable) {
@@ -1024,7 +764,7 @@ public class SwtExec extends AbstractExecutorService implements ScheduledExecuto
 		}
 	}
 
-	private static final SwtExec sameThread = new SwtExec(exec -> Rx.callbackOn(MoreExecutors.directExecutor(), Schedulers.trampoline(), new SameThreadCoroutineDispatcher())) {
+	private static final SwtExec sameThread = new SwtExec(exec -> Rx.callbackOn(MoreExecutors.directExecutor(), new SameThreadCoroutineDispatcher())) {
 		@Override
 		public void execute(Runnable runnable) {
 			requireNonNull(runnable);
