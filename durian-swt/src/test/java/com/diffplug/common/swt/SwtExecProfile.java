@@ -20,11 +20,11 @@ import static java.util.Objects.requireNonNull;
 import com.diffplug.common.debug.JuxtaProfiler;
 import com.diffplug.common.debug.LapTimer;
 import com.diffplug.common.rx.Rx;
-import io.reactivex.disposables.Disposable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.function.Consumer;
+import kotlinx.coroutines.Job;
 import kotlinx.coroutines.flow.MutableSharedFlow;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Widget;
@@ -137,7 +137,7 @@ public class SwtExecProfile {
 			toProfile.forEach((name, underTest) -> {
 				profiler.addTest(name, new JuxtaProfiler.InitTimedCleanup(LapTimer.createNanoWrap2Sec()) {
 					MutableSharedFlow<Integer> subject;
-					Disposable sub;
+					Job sub;
 
 					@Override
 					protected void init() throws Throwable {
@@ -152,7 +152,7 @@ public class SwtExecProfile {
 
 					@Override
 					protected void cleanup() throws Throwable {
-						sub.dispose();
+						sub.cancel(null);
 						subject = null;
 						sub = null;
 					}

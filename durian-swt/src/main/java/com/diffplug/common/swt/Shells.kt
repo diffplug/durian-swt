@@ -21,8 +21,7 @@ import com.diffplug.common.swt.os.WS
 import com.diffplug.common.tree.TreeIterable
 import com.diffplug.common.tree.TreeQuery
 import com.diffplug.common.tree.TreeStream
-import io.reactivex.disposables.Disposable
-import io.reactivex.disposables.Disposables
+import kotlinx.coroutines.Job
 import org.eclipse.swt.SWT
 import org.eclipse.swt.graphics.Image
 import org.eclipse.swt.graphics.Point
@@ -36,7 +35,7 @@ import java.util.*
 
 /** A fluent builder for creating SWT [Shell]s.  */
 class Shells private constructor(private val style: Int, private val coat: Coat) {
-    private var title: String = ""
+    private var title: String? = null
     private var image: Image? = null
     private var alpha = SWT.DEFAULT
     private val size = Point(SWT.DEFAULT, SWT.DEFAULT)
@@ -434,7 +433,7 @@ class Shells private constructor(private val style: Int, private val coat: Coat)
 
         /** Prevents the given shell from closing without prompting.  Returns a Subscription which can cancel this blocking.  */
         @JvmStatic
-        fun confirmClose(shell: Shell, title: String, question: String, runOnClose: Runnable): Disposable {
+        fun confirmClose(shell: Shell, title: String, question: String, runOnClose: Runnable): Job {
             val listener = Listener { e: Event ->
                 e.doit = SwtMisc.blockForQuestion(title, question, shell)
                 if (e.doit) {
@@ -442,9 +441,11 @@ class Shells private constructor(private val style: Int, private val coat: Coat)
                 }
             }
             shell.addListener(SWT.Close, listener)
-            return Disposables.fromRunnable {
-                SwtExec.immediate().guardOn(shell).execute {
-                    shell.removeListener(SWT.Close, listener)
+            return Job().apply {
+                invokeOnCompletion {
+                    SwtExec.immediate().guardOn(shell).execute {
+                        shell.removeListener(SWT.Close, listener)
+                    }
                 }
             }
         }
