@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright (C) 2020-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package com.diffplug.common.swt.widgets;
-
 
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.collect.BiMap;
@@ -84,7 +83,7 @@ public class RadioGroup<T> {
 
 		// when the selection is changed, set the button
 		Button firstBtn = Iterables.get(mapping.keySet(), 0);
-		SwtExec.immediate().guardOn(firstBtn).subscribe(selection.asObservable(), obj -> {
+		SwtExec.immediate().guardOn(firstBtn).subscribe(selection, obj -> {
 			Button selectedBtn = mapping.inverse().get(obj);
 			for (Button btn : mapping.keySet()) {
 				btn.setSelection(btn == selectedBtn);

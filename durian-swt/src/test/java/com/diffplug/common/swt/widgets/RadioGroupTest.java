@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright (C) 2020-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package com.diffplug.common.swt.widgets;
-
 
 import com.diffplug.common.rx.RxBox;
 import com.diffplug.common.swt.InteractiveTest;
@@ -65,7 +64,7 @@ public class RadioGroupTest {
 							readLbl.setText("Read selection: ");
 
 							Text readTxt = new Text(debugParent, SWT.BORDER | SWT.SINGLE | SWT.READ_ONLY);
-							SwtExec.immediate().guardOn(readTxt).subscribe(selection.asObservable(), option -> {
+							SwtExec.immediate().guardOn(readTxt).subscribe(selection, option -> {
 								readTxt.setText(option.name());
 							});
 
