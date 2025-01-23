@@ -22,7 +22,6 @@ p2deps {
 dependencies {
 	api project(':durian-swt.os')
 	api "com.diffplug.durian:durian-rx:$VER_DURIAN_RX"
-	api "io.reactivex.rxjava2:rxjava:$VER_RXJAVA"
 	implementation "com.diffplug.durian:durian-core:$VER_DURIAN"
 	implementation "com.diffplug.durian:durian-collect:$VER_DURIAN"
 	implementation "com.diffplug.durian:durian-concurrent:$VER_DURIAN"
