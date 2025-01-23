@@ -19,7 +19,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - run: git clone https://github.com/diffplug/durian-rx .../durian-rx
+      - run: git clone https://github.com/diffplug/durian-rx ../durian-rx
       - name: Install JDK ${{ matrix.jre }}
         uses: actions/setup-java@v4
         with:
