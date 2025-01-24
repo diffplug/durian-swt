@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright (C) 2020-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package com.diffplug.common.swt;
 
-
 import java.util.function.Consumer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -27,7 +26,7 @@ import org.junit.experimental.categories.Category;
 
 @Category(InteractiveTest.class)
 public class ShellsTest {
-	private static final int UNIT = SwtMisc.systemFontWidth() * 20;
+	private static final int UNIT = SwtMisc.systemFontWidthTimes(20);
 
 	@Test
 	public void testPack() {

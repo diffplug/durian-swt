@@ -38,7 +38,7 @@ public class NoBorderBtn extends ControlWrapper.AroundControl<Canvas> {
 	private Image img = null;
 	private Rectangle imgBounds;
 	private boolean enabled = true;
-	private MutableSharedFlow<NoBorderBtn> selection = Rx.INSTANCE.createEmitFlow();
+	private MutableSharedFlow<NoBorderBtn> selection = Rx.createEmitFlow();
 
 	public NoBorderBtn(Composite parent) {
 		super(new Canvas(parent, SWT.NONE));

@@ -131,7 +131,7 @@ public class SwtExecProfile {
 		public void run(Widget guard) {
 			JuxtaProfiler profiler = new JuxtaProfiler();
 			profiler.addTestNanoWrap2Sec("control", () -> {
-				MutableSharedFlow<Integer> subject = Rx.INSTANCE.createEmitFlow();
+				MutableSharedFlow<Integer> subject = Rx.createEmitFlow();
 				drain(subject);
 			});
 			toProfile.forEach((name, underTest) -> {
@@ -141,7 +141,7 @@ public class SwtExecProfile {
 
 					@Override
 					protected void init() throws Throwable {
-						subject = Rx.INSTANCE.createEmitFlow();
+						subject = Rx.createEmitFlow();
 						sub = underTest.guardOn(guard).subscribeDisposable(subject, val -> {});
 					}
 
