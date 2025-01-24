@@ -2,7 +2,9 @@
 
 ## [Unreleased]
 ### Changed
-- **BREAKING** remove RxJava completely in favor of Kotlin Flow 
+- **BREAKING** `SwtMisc.systemFontWidth` now returns `double` instead of `int`.
+  - added new methods `systemFontWidthTimes(int)` and `systemFontWidthTimes(String)` to make this easier to deal with
+- **BREAKING** remove RxJava completely in favor of Kotlin Flow.
 - Bump required java from 11 to 17.
 
 ## [4.3.1] - 2024-07-05

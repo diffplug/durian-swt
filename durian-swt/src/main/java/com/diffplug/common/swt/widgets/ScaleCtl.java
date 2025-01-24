@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright (C) 2020-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package com.diffplug.common.swt.widgets;
-
 
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.rx.RxBox;
@@ -136,7 +135,7 @@ public class ScaleCtl extends ControlWrapper.AroundControl<Composite> {
 		}
 
 		text = new Text(wrapped, SWT.BORDER | SWT.SINGLE);
-		Layouts.setGridData(text).grabHorizontal().widthHint(SwtMisc.systemFontWidth() * 4);
+		Layouts.setGridData(text).grabHorizontal().widthHint(SwtMisc.systemFontWidthTimes(4));
 
 		SwtExec.async().guardOn(text).execute(text::selectAll);
 		Listener selectAllListener = SwtMisc.asListener(SwtExec.async().guardOn(text).wrap(text::selectAll));
