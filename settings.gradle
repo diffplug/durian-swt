@@ -39,8 +39,6 @@ blowdryerSetup {
 
 rootProject.name = 'durian-swt-root'
 
-includeBuild '../durian-rx'
-
 include 'durian-swt'
 include 'durian-swt.os'
 include 'durian-swt.cocoa.macosx.aarch64'
