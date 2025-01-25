@@ -1,6 +1,8 @@
 # DurianSwt releases
 
 ## [Unreleased]
+
+## [5.0.0] - 2025-01-25
 ### Changed
 - **BREAKING** `SwtMisc.systemFontWidth` now returns `double` instead of `int`.
   - added new methods `systemFontWidthTimes(int)` and `systemFontWidthTimes(String)` to make this easier to deal with
