@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright (C) 2020-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package com.diffplug.common.swt;
 
-
+import com.diffplug.common.rx.IFlowable;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -35,7 +35,7 @@ import java.lang.annotation.Target;
  *
  * When annotated on a parameter or field, it
  * must be either an {@link rx.Observable},
- * {@link com.diffplug.common.rx.IObservable}, or a
+ * {@link IFlowable}, or a
  * {@link java.util.concurrent.CompletionStage}, and
  * it indicates that the given code should only be
  * set and listened to from SWT.

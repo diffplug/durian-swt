@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright (C) 2020-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package com.diffplug.common.swt;
-
 
 import com.diffplug.common.base.Box;
 import com.diffplug.common.base.Errors;
@@ -358,7 +357,7 @@ public class SwtMisc {
 	///////////////////
 	/** The cached height of the system font. */
 	static int systemFontHeight = 0;
-	static int systemFontWidth = 0;
+	static double systemFontWidth = 0;
 
 	/** Populates the height and width of the system font. */
 	private static void populateSystemFont() {
@@ -368,7 +367,7 @@ public class SwtMisc {
 
 		FontMetrics metrics = gc.getFontMetrics();
 		systemFontHeight = metrics.getHeight();
-		systemFontWidth = metrics.getAverageCharWidth();
+		systemFontWidth = metrics.getAverageCharacterWidth();
 		if (OS.getNative().isMac()) {
 			// add 20% width on Mac
 			systemFontWidth = (systemFontWidth * 12) / 10;
@@ -387,11 +386,19 @@ public class SwtMisc {
 	}
 
 	/** Returns the width of the system font. */
-	public static int systemFontWidth() {
+	public static double systemFontWidth() {
 		if (systemFontWidth == 0) {
 			populateSystemFont();
 		}
 		return systemFontWidth;
+	}
+
+	public static int systemFontWidthTimes(int numChars) {
+		return (int) Math.round(systemFontWidth() * numChars);
+	}
+
+	public static int systemFontWidthTimes(String str) {
+		return systemFontWidthTimes(str.length());
 	}
 
 	/** Returns a distance which is a snug fit for a line of text in the system font. */
@@ -401,12 +408,12 @@ public class SwtMisc {
 
 	/** Returns the default width of a button, scaled for the system font. */
 	public static int defaultButtonWidth() {
-		return systemFontWidth() * "   Cancel   ".length();
+		return systemFontWidthTimes("   Cancel   ");
 	}
 
 	/** Returns the default width of a dialog. */
 	public static int defaultDialogWidth() {
-		return 50 * systemFontWidth();
+		return systemFontWidthTimes(50);
 	}
 
 	/** Returns a size which is scaled by the system font's height. */
@@ -421,7 +428,7 @@ public class SwtMisc {
 
 	/** Returns a point that represents the size of a (cols x rows) grid of characters printed in the standard system font. */
 	public static Point scaleByFont(int cols, int rows) {
-		return new Point(cols * systemFontWidth(), rows * systemFontHeight());
+		return new Point(systemFontWidthTimes(cols), rows * systemFontHeight());
 	}
 
 	/** Returns a dimension which is guaranteed to be comfortable for the given string. */

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright (C) 2020-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package com.diffplug.common.swt.jface;
-
 
 import com.diffplug.common.base.Converter;
 import com.diffplug.common.base.Preconditions;
@@ -55,7 +54,7 @@ public class ViewerMisc {
 			box.set(Optional.ofNullable(selected));
 		});
 		// set the selection when the box changes
-		SwtExec.immediate().guardOn(viewer.getControl()).subscribe(box.asObservable(), optional -> {
+		SwtExec.immediate().guardOn(viewer.getControl()).subscribe(box, optional -> {
 			if (optional.isPresent()) {
 				viewer.setSelection(new StructuredSelection(optional.get()));
 			} else {

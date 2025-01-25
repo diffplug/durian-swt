@@ -25,7 +25,6 @@ subprojects { subProject ->
 		"https://javadoc.io/doc/com.diffplug.durian/durian-concurrent/${VER_DURIAN}",
 		"https://javadoc.io/doc/com.diffplug.durian/durian-debug/${VER_DURIAN_DEBUG}",
 		"https://javadoc.io/doc/com.diffplug.durian/durian-rx/${VER_DURIAN_RX}",
-		"https://javadoc.io/doc/io.reactivex.rxjava2/rxjava/${VER_RXJAVA}",
 		'https://docs.oracle.com/javase/8/docs/api/'
 	].join(' ')
 

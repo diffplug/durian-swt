@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright (C) 2020-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,10 @@
  */
 package com.diffplug.common.swt.widgets;
 
-
+import com.diffplug.common.rx.Rx;
 import com.diffplug.common.swt.ControlWrapper;
-import io.reactivex.Observable;
-import io.reactivex.subjects.PublishSubject;
+import kotlinx.coroutines.flow.Flow;
+import kotlinx.coroutines.flow.MutableSharedFlow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
@@ -38,7 +38,7 @@ public class NoBorderBtn extends ControlWrapper.AroundControl<Canvas> {
 	private Image img = null;
 	private Rectangle imgBounds;
 	private boolean enabled = true;
-	private PublishSubject<NoBorderBtn> selection = PublishSubject.create();
+	private MutableSharedFlow<NoBorderBtn> selection = Rx.createEmitFlow();
 
 	public NoBorderBtn(Composite parent) {
 		super(new Canvas(parent, SWT.NONE));
@@ -61,17 +61,13 @@ public class NoBorderBtn extends ControlWrapper.AroundControl<Canvas> {
 		// send a selection event on each click (if we aren't disabled)
 		wrapped.addListener(SWT.MouseDown, e -> {
 			if (enabled) {
-				selection.onNext(this);
+				Rx.emit(selection, this);
 			}
-		});
-		// send a "completed" event when we finish
-		wrapped.addListener(SWT.Dispose, e -> {
-			selection.onComplete();
 		});
 	}
 
 	/** Returns an Observable which responds to clicks. */
-	public Observable<NoBorderBtn> clicked() {
+	public Flow<NoBorderBtn> clicked() {
 		return selection;
 	}
 

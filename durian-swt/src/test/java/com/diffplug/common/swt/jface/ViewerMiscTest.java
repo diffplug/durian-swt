@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright (C) 2020-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package com.diffplug.common.swt.jface;
-
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StringPrinter;
@@ -175,7 +174,7 @@ public class ViewerMiscTest {
 					.setLabelProviderText(File::getName);
 			format.addColumn().setText("Last Modified")
 					.setLabelProviderText(file -> new Date(file.lastModified()).toString())
-					.setLayoutPixel(SwtMisc.systemFontWidth() * new Date().toString().length());
+					.setLayoutPixel(SwtMisc.systemFontWidthTimes(new Date().toString()));
 
 			// create the tree viewer
 			TreeViewer viewer = format.buildTree(cmp);
@@ -203,7 +202,7 @@ public class ViewerMiscTest {
 					.setLabelProviderText(path -> path.getFileName().toString());
 			format.addColumn().setText("Last Modified")
 					.setLabelProviderText(path -> Errors.suppress().getWithDefault(() -> Files.getLastModifiedTime(path).toString(), ""))
-					.setLayoutPixel(SwtMisc.systemFontWidth() * new Date().toString().length());
+					.setLayoutPixel(SwtMisc.systemFontWidthTimes(new Date().toString()));
 
 			// create the tree viewer
 			TreeViewer viewer = format.buildTree(cmp);

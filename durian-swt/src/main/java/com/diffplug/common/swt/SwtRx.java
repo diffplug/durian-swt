@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2022 DiffPlug
+ * Copyright (C) 2020-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package com.diffplug.common.swt;
-
 
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.collect.ImmutableList;
@@ -51,19 +50,19 @@ public class SwtRx {
 
 	/** Subscribes to the given widget and pipes the events to an {@link Flow}<{@link Event}>. */
 	public static @SwtThread Flow<Event> addListener(Widget widget, Stream<Integer> events) {
-		MutableSharedFlow<Event> observable = Rx.INSTANCE.createEmitFlow();
+		MutableSharedFlow<Event> observable = Rx.createEmitFlow();
 		events.forEach(event -> widget.addListener(event, e -> {
-			Rx.INSTANCE.emit(observable, e);
+			Rx.emit(observable, e);
 		}));
 		return observable;
 	}
 
 	/** Returns an {@link Flow}<{@link Point}> of the right-click mouse-up on the given control, in global coordinates. */
 	public static @SwtThread Flow<Point> rightClickGlobal(Control ctl) {
-		MutableSharedFlow<Point> observable = Rx.INSTANCE.createEmitFlow();
+		MutableSharedFlow<Point> observable = Rx.createEmitFlow();
 		ctl.addListener(MouseClick.RIGHT_CLICK_EVENT, e -> {
 			if (e.button == MouseClick.RIGHT.code()) {
-				Rx.INSTANCE.emit(observable, ctl.toDisplay(e.x, e.y));
+				Rx.emit(observable, ctl.toDisplay(e.x, e.y));
 			}
 		});
 		return observable;
@@ -71,10 +70,10 @@ public class SwtRx {
 
 	/** Returns an {@link Flow}<{@link Point}> of the right-click mouse-up on the given control, in local coordinates. */
 	public static @SwtThread Flow<Point> rightClickLocal(Control ctl) {
-		MutableSharedFlow<Point> observable = Rx.INSTANCE.createEmitFlow();
+		MutableSharedFlow<Point> observable = Rx.createEmitFlow();
 		ctl.addListener(MouseClick.RIGHT_CLICK_EVENT, e -> {
 			if (e.button == MouseClick.RIGHT.code()) {
-				Rx.INSTANCE.emit(observable, new Point(e.x, e.y));
+				Rx.emit(observable, new Point(e.x, e.y));
 			}
 		});
 		return observable;

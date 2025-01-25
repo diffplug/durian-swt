@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright (C) 2020-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,12 @@ import static java.util.Objects.requireNonNull;
 import com.diffplug.common.debug.JuxtaProfiler;
 import com.diffplug.common.debug.LapTimer;
 import com.diffplug.common.rx.Rx;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.subjects.PublishSubject;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.function.Consumer;
+import kotlinx.coroutines.Job;
+import kotlinx.coroutines.flow.MutableSharedFlow;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Widget;
 import org.junit.Test;
@@ -131,18 +131,17 @@ public class SwtExecProfile {
 		public void run(Widget guard) {
 			JuxtaProfiler profiler = new JuxtaProfiler();
 			profiler.addTestNanoWrap2Sec("control", () -> {
-				PublishSubject<Integer> subject = PublishSubject.create();
-				subject.subscribe(val -> {});
+				MutableSharedFlow<Integer> subject = Rx.createEmitFlow();
 				drain(subject);
 			});
 			toProfile.forEach((name, underTest) -> {
 				profiler.addTest(name, new JuxtaProfiler.InitTimedCleanup(LapTimer.createNanoWrap2Sec()) {
-					PublishSubject<Integer> subject;
-					Disposable sub;
+					MutableSharedFlow<Integer> subject;
+					Job sub;
 
 					@Override
 					protected void init() throws Throwable {
-						subject = PublishSubject.create();
+						subject = Rx.createEmitFlow();
 						sub = underTest.guardOn(guard).subscribeDisposable(subject, val -> {});
 					}
 
@@ -153,7 +152,7 @@ public class SwtExecProfile {
 
 					@Override
 					protected void cleanup() throws Throwable {
-						sub.dispose();
+						sub.cancel(null);
 						subject = null;
 						sub = null;
 					}
@@ -162,11 +161,10 @@ public class SwtExecProfile {
 			profiler.runRandomTrials(NUM_TRIALS);
 		}
 
-		private static void drain(PublishSubject<Integer> subject) {
+		private static void drain(MutableSharedFlow<Integer> subject) {
 			for (int i = 0; i < EVENTS_TO_PUSH; ++i) {
-				subject.onNext(0);
+				Rx.emit(subject, 0);
 			}
-			subject.onComplete();
 		}
 	}
 
