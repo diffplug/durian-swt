@@ -1,6 +1,8 @@
 # DurianSwt releases
 
 ## [Unreleased]
+
+## [5.0.1] - 2025-01-26
 ### Changed
 - Downgrade from Kotlin `2.1.0` to `2.0.21`
 
