@@ -17,6 +17,7 @@ p2deps {
 	into 'testImplementation', {
 		p2repo "https://download.eclipse.org/eclipse/updates/$SWT_VERSION/"
 		install 'org.eclipse.swt'
+		install 'org.eclipse.swt.svg'
 	}
 }
 dependencies {
