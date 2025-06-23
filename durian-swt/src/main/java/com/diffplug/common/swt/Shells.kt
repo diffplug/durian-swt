@@ -38,7 +38,7 @@ class Shells private constructor(private val style: Int, private val coat: Coat)
     private var title: String? = null
     private var image: Image? = null
     private var alpha = SWT.DEFAULT
-    private val size = Point(SWT.DEFAULT, SWT.DEFAULT)
+    private val size = SwtKt.Point(SWT.DEFAULT, SWT.DEFAULT)
     private var positionIncludesTrim = true
     private var location: Map.Entry<Corner, Point>? = null
     private var dontOpen = false
@@ -86,7 +86,7 @@ class Shells private constructor(private val style: Int, private val coat: Coat)
      * Calls [.setLocation] and [.setSize] in one line.
      */
     fun setRectangle(rect: Rectangle): Shells {
-        return setLocation(Point(rect.x, rect.y)).setSize(Point(rect.width, rect.height))
+        return setLocation(SwtKt.Point(rect.x, rect.y)).setSize(SwtKt.Point(rect.width, rect.height))
     }
 
     /**
@@ -290,12 +290,12 @@ class Shells private constructor(private val style: Int, private val coat: Coat)
                     }
                 }
                 val topLeft =
-                    location!!.key.topLeftRequiredFor(Rectangle(0, 0, computedSize.x, computedSize.y), location!!.value)
-                bounds = Rectangle(topLeft.x, topLeft.y, computedSize.x, computedSize.y)
+                    location!!.key.topLeftRequiredFor(SwtKt.Rectangle(0, 0, computedSize.x, computedSize.y), location!!.value)
+                bounds = SwtKt.Rectangle(topLeft.x, topLeft.y, computedSize.x, computedSize.y)
             } else {
                 val computedSize = shell.computeSize(size.x, size.y, true)
                 val topLeft =
-                    location!!.key.topLeftRequiredFor(Rectangle(0, 0, computedSize.x, computedSize.y), location!!.value)
+                    location!!.key.topLeftRequiredFor(SwtKt.Rectangle(0, 0, computedSize.x, computedSize.y), location!!.value)
                 bounds = shell.computeTrim(topLeft.x, topLeft.y, computedSize.x, computedSize.y)
             }
         }
