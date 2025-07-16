@@ -15,6 +15,7 @@
  */
 package com.diffplug.common.swt;
 
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -35,15 +36,14 @@ public class Issue_2228 {
 
 	private static void svg_and_png(Composite parent) {
 		// two-column grid
-		Layouts.setGrid(parent).numColumns(2);
+		GridLayoutFactory.swtDefaults().numColumns(2).applyTo(parent);
 
 		// “.svg” label + image
 		Label svgLabel = new Label(parent, SWT.NONE);
 		svgLabel.setText(".svg");
 
 		Label svgImage = new Label(parent, SWT.NONE);
-		ImageDescriptor svgDesc = ImageDescriptor.createFromFile(
-				Issue_2228.class, "/issue_2228/strikethrough.svg");
+		ImageDescriptor svgDesc = ImageDescriptor.createFromFile(Issue_2228.class, "/issue_2228/strikethrough.svg");
 		svgImage.setImage(svgDesc.createImage());
 
 		// “.png” label + image
@@ -51,10 +51,8 @@ public class Issue_2228 {
 		pngLabel.setText(".png");
 
 		Label pngImage = new Label(parent, SWT.NONE);
-		ImageDescriptor pngDesc = ImageDescriptor.createFromFile(
-				Issue_2228.class, "/issue_2228/strikethrough.png");
+		ImageDescriptor pngDesc = ImageDescriptor.createFromFile(Issue_2228.class, "/issue_2228/strikethrough.png");
 		pngImage.setImage(pngDesc.createImage());
-
 	}
 
 	public static void main(String[] args) {
