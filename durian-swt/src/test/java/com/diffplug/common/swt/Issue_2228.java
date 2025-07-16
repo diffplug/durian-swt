@@ -18,7 +18,9 @@ package com.diffplug.common.swt;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -28,28 +30,43 @@ public class Issue_2228 {
 	public void recreate() {
 		// testCoat probably takes a title and a lambda that receives the parent Composite
 		InteractiveTest.testCoat(
-				"Show the difference between `.svg` and `@x2.png` rendering",
-				(Composite parent) -> {
-					// two-column grid
-					Layouts.setGrid(parent).numColumns(2);
+				"Show the difference between `.svg` and `@x2.png` rendering", Issue_2228::svg_and_png);
+	}
 
-					// “.svg” label + image
-					Label svgLabel = new Label(parent, SWT.NONE);
-					svgLabel.setText(".svg");
+	private static void svg_and_png(Composite parent) {
+		// two-column grid
+		Layouts.setGrid(parent).numColumns(2);
 
-					Label svgImage = new Label(parent, SWT.NONE);
-					ImageDescriptor svgDesc = ImageDescriptor.createFromFile(
-							Issue_2228.class, "/issue_2228/strikethrough.svg");
-					svgImage.setImage(svgDesc.createImage());
+		// “.svg” label + image
+		Label svgLabel = new Label(parent, SWT.NONE);
+		svgLabel.setText(".svg");
 
-					// “.png” label + image
-					Label pngLabel = new Label(parent, SWT.NONE);
-					pngLabel.setText(".png");
+		Label svgImage = new Label(parent, SWT.NONE);
+		ImageDescriptor svgDesc = ImageDescriptor.createFromFile(
+				Issue_2228.class, "/issue_2228/strikethrough.svg");
+		svgImage.setImage(svgDesc.createImage());
 
-					Label pngImage = new Label(parent, SWT.NONE);
-					ImageDescriptor pngDesc = ImageDescriptor.createFromFile(
-							Issue_2228.class, "/issue_2228/strikethrough.png");
-					pngImage.setImage(pngDesc.createImage());
-				});
+		// “.png” label + image
+		Label pngLabel = new Label(parent, SWT.NONE);
+		pngLabel.setText(".png");
+
+		Label pngImage = new Label(parent, SWT.NONE);
+		ImageDescriptor pngDesc = ImageDescriptor.createFromFile(
+				Issue_2228.class, "/issue_2228/strikethrough.png");
+		pngImage.setImage(pngDesc.createImage());
+
+	}
+
+	public static void main(String[] args) {
+		Display display = Display.getDefault();
+		Shell shell = new Shell(display, SWT.SHELL_TRIM);
+		svg_and_png(shell);
+		shell.open();
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch()) {
+				display.sleep();
+			}
+		}
+		display.dispose();
 	}
 }
