@@ -37,6 +37,15 @@ subprojects { subProject ->
 	if (subProject.name == 'durian-swt') {
 		// configured there
 	} else if (subProject.name == 'durian-swt.os') {
+		// not sure why this spotless black for durian-swt.os is required
+		spotless {
+			groovyGradle {
+				clearSteps()
+			}
+			java {
+				clearSteps()
+			}
+		}
 		dependencies {
 			compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
 			testImplementation "junit:junit:$VER_JUNIT"
