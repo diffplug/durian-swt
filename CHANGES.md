@@ -1,6 +1,8 @@
 # DurianSwt releases
 
 ## [Unreleased]
+### Added
+- Add `META-INF/services` metadata to support Kotlin coroutines `Dispatchers.Main`.
 
 ## [5.0.1] - 2025-01-26
 ### Changed
