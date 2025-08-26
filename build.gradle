@@ -69,6 +69,7 @@ subprojects { subProject ->
 		}
 		dependencies {
 			api project(':durian-swt')
+			implementation "com.diffplug.durian:durian-core:$VER_DURIAN"
 		}
 		configurations.all {
 			resolutionStrategy.eachDependency { DependencyResolveDetails details ->
