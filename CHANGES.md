@@ -1,6 +1,8 @@
 # DurianSwt releases
 
 ## [Unreleased]
+### Added
+- `MacDeepLink` class and dylibs for supporting deep links on modern versions of macOS.
 
 ## [5.1.0] - 2025-08-21
 ### Added
