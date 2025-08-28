@@ -16,6 +16,7 @@
 package com.diffplug.common.swt.widgets;
 
 import com.diffplug.common.base.Preconditions;
+import com.diffplug.common.swt.SwtMisc;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -24,34 +25,40 @@ import org.jetbrains.annotations.Nullable;
 /**
  * - immediately on app startup, call `MacDeepLink.startCapturingBeforeSwt()`
  * - once SWT has initialized, call `MacDeepLink.swtHasInitializedBeginReceiving(Consumer<String>)`
+ *   - all urls which were captured before SWT initialized will be passed immediately (on the SWT thread)
  *
  * That's all! Don't do anything else.
  */
 public class MacDeepLink {
+	/**
+	 * state transitions are:
+	 * - `null` on startup
+	 * - `startCapturingBeforeSwt()` transitions to an `ArrayList<String>`, backlog urls get added to it
+	 * - `swtHasInitializedBeginReceiving()` transitions to a `Consumer<String>`, all new urls go there
+	 */
 	private static final AtomicReference<@Nullable Object> state = new AtomicReference<>();
 
-	static {
-		// Load the native library - try multiple strategies
+	public static void startCapturingBeforeSwt() {
 		String libPath = System.getProperty("durian-swt.library.path");
 		if (libPath != null) {
 			System.load(libPath + "/durian-swt-natives/DeepLinkBridge.dylib");
 		} else {
 			throw new IllegalArgumentException("You need to set 'durian-swt.library.path'");
 		}
-	}
 
-	public static void startCapturingBeforeSwt() {
 		var was = state.getAndSet(new ArrayList<>());
 		Preconditions.checkArgument(was == null, "`startCapturingBeforeSwt() should be called first`");
 		nativeBeforeSwt();
 	}
 
 	public static void swtHasInitializedBeginReceiving(Consumer<String> handler) {
+		SwtMisc.assertUI();
 		var was = state.getAndSet(handler);
 		Preconditions.checkArgument(was instanceof ArrayList<?>, "Call `applicationStartBeforeSwt()` first.");
 
 		var backlog = (ArrayList<String>) was;
 		backlog.forEach(handler);
+
 		nativeAfterSwt();
 	}
 
