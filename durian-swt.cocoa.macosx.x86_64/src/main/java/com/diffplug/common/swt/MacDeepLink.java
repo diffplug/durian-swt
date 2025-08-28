@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.common.swt.widgets;
+package com.diffplug.common.swt;
 
 import com.diffplug.common.base.Preconditions;
 import java.util.ArrayList;

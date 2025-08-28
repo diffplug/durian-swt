@@ -216,7 +216,7 @@ static void installEarlyAEHandler(void) {
 #pragma mark - JNI exports
 
 // Java calls this early, before SWT initialization
-JNIEXPORT void JNICALL Java_com_diffplug_common_swt_widgets_MacDeepLink_nativeBeforeSwt
+JNIEXPORT void JNICALL Java_com_diffplug_common_swt_MacDeepLink_nativeBeforeSwt
   (JNIEnv *env, jclass clazz) {
     
     os_log_info(getLog(), "nativeBeforeSwt called from Java");
@@ -240,7 +240,7 @@ JNIEXPORT void JNICALL Java_com_diffplug_common_swt_widgets_MacDeepLink_nativeBe
 }
 
 // Java calls this after SWT is initialized to install the delegate proxy
-JNIEXPORT void JNICALL Java_com_diffplug_common_swt_widgets_MacDeepLink_nativeAfterSwt
+JNIEXPORT void JNICALL Java_com_diffplug_common_swt_MacDeepLink_nativeAfterSwt
   (JNIEnv *env, jclass clazz) {
 
     os_log_info(getLog(), "nativeAfterSwt called from Java");
