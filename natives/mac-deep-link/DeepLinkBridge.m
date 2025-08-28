@@ -227,7 +227,7 @@ JNIEXPORT void JNICALL Java_com_diffplug_common_swt_MacDeepLink_nativeBeforeSwt
         os_log_debug(getLog(), "Cached Java class reference");
     }
     if (!gDeliverMID) {
-        gDeliverMID = (*env)->GetStaticMethodID(env, gHandlerClass, "deliverURL", "(Ljava/lang/String;)V");
+        gDeliverMID = (*env)->GetStaticMethodID(env, gHandlerClass, "__internal_deliverUrl", "(Ljava/lang/String;)V");
         if (!gDeliverMID) {
             os_log_error(getLog(), "Could not find deliverURL method");
             return;

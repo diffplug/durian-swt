@@ -72,7 +72,7 @@ public class MacDeepLink {
 	 * 
 	 * @param url The URL string received from the operating system
 	 */
-	public static void deliverURL(String url) {
+	public static void __internal_deliverUrl(String url) {
 		var was = state.get();
 		if (was instanceof Consumer) {
 			((Consumer<String>) was).accept(url);
