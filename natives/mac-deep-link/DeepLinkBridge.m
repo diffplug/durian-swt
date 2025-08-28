@@ -87,7 +87,7 @@ static JNIEnv* getEnv(BOOL *didAttach) {
 }
 
 static void deliverToJava(NSString *s) {
-    NSLog(@"[DeepLink] deliverToJava called with URL: %@", s);
+    NSLog(@"[DeepLink] deliverToJava called with URL");
     // These should never be null since we control registration timing
     if (!gHandlerClass || !gDeliverMID) {
         abortWithMessage(@"JNI handler not initialized - applicationStartBeforeSwt must be called first");
@@ -103,7 +103,7 @@ static void deliverToJava(NSString *s) {
     if (utf8) {
         jstring jstr = (*env)->NewStringUTF(env, utf8);
         if (jstr) {
-            NSLog(@"[DeepLink] Calling Java deliverURL with: %@", s);
+            NSLog(@"[DeepLink] Calling Java deliverURL");
             (*env)->CallStaticVoidMethod(env, gHandlerClass, gDeliverMID, jstr);
             if ((*env)->ExceptionCheck(env)) {
                 NSLog(@"[DeepLink] Java exception occurred!");
@@ -137,7 +137,7 @@ static void deliverToJava(NSString *s) {
 
 - (void)handleGetURL:(NSAppleEventDescriptor *)event withReply:(NSAppleEventDescriptor *)reply {
     NSString *urlString = [[event paramDescriptorForKeyword:keyDirectObject] stringValue];
-    NSLog(@"[DeepLink] Apple Event received URL: %@", urlString);
+    NSLog(@"[DeepLink] Apple Event received URL");
     if (urlString.length) {
         deliverToJava(urlString);
     }
@@ -200,7 +200,7 @@ static void installEarlyAEHandler(void) {
     for (NSURL *u in urls) {
         if (!u) continue;
         NSString *s = u.absoluteString;
-        NSLog(@"[DeepLink] DPDelegateProxy processing URL: %@", s);
+        NSLog(@"[DeepLink] DPDelegateProxy processing URL");
         if (s.length) deliverToJava(s);
     }
 }
