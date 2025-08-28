@@ -3,6 +3,7 @@
 #import <Cocoa/Cocoa.h>
 #import <objc/runtime.h>
 #import <jni.h>
+#import <os/log.h>
 
 @class DPDelegateProxy;  // Forward declaration
 
@@ -13,9 +14,17 @@ static DPDelegateProxy *gDelegateProxy = NULL;  // Strong ref to prevent dealloc
 
 #pragma mark - Helpers
 
+static os_log_t getLog(void) {
+    static os_log_t log = NULL;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        log = os_log_create("com.diffplug.deeplink", "DeepLinkBridge");
+    });
+    return log;
+}
+
 static void abortWithMessage(NSString *message) {
-    NSLog(@"[DeepLink] FATAL: %@", message);
-    fflush(stdout);  // Ensure message is printed before crash
+    os_log_fault(getLog(), "FATAL: %{public}@", message);
     
     // Most aggressive crash - direct null pointer dereference
     // This causes SIGSEGV which is very hard to catch
@@ -31,18 +40,18 @@ static void abortWithMessage(NSString *message) {
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
     gJVM = vm;
-    NSLog(@"[DeepLink] JNI_OnLoad: JavaVM stored");
+    os_log_info(getLog(), "JNI_OnLoad: JavaVM stored");
     return JNI_VERSION_1_6;
 }
 
 JNIEXPORT void JNICALL JNI_OnUnload(JavaVM *vm, void *reserved) {
-    NSLog(@"[DeepLink] JNI_OnUnload: Cleaning up");
+    os_log_info(getLog(), "JNI_OnUnload: Cleaning up");
     
     // Deregister Apple Event handler
     [[NSAppleEventManager sharedAppleEventManager]
         removeEventHandlerForEventClass:kInternetEventClass
         andEventID:kAEGetURL];
-    NSLog(@"[DeepLink] Removed Apple Event handler");
+    os_log_info(getLog(), "Removed Apple Event handler");
     
     // Restore original delegate before releasing proxy
     if (gDelegateProxy && NSApp) {
@@ -50,7 +59,7 @@ JNIEXPORT void JNICALL JNI_OnUnload(JavaVM *vm, void *reserved) {
         Ivar ivar = class_getInstanceVariable(object_getClass(gDelegateProxy), "_realDelegate");
         id originalDelegate = object_getIvar(gDelegateProxy, ivar);
         [NSApp setDelegate:originalDelegate];
-        NSLog(@"[DeepLink] Restored original delegate");
+        os_log_info(getLog(), "Restored original delegate");
     }
     
     // Clean up global reference
@@ -59,7 +68,7 @@ JNIEXPORT void JNICALL JNI_OnUnload(JavaVM *vm, void *reserved) {
         if ((*vm)->GetEnv(vm, (void **)&env, JNI_VERSION_1_6) == JNI_OK) {
             (*env)->DeleteGlobalRef(env, gHandlerClass);
             gHandlerClass = NULL;
-            NSLog(@"[DeepLink] Released global class reference");
+            os_log_info(getLog(), "Released global class reference");
         }
     }
     
@@ -87,7 +96,7 @@ static JNIEnv* getEnv(BOOL *didAttach) {
 }
 
 static void deliverToJava(NSString *s) {
-    NSLog(@"[DeepLink] deliverToJava called with URL");
+    os_log_debug(getLog(), "deliverToJava called");
     // These should never be null since we control registration timing
     if (!gHandlerClass || !gDeliverMID) {
         abortWithMessage(@"JNI handler not initialized - applicationStartBeforeSwt must be called first");
@@ -103,10 +112,10 @@ static void deliverToJava(NSString *s) {
     if (utf8) {
         jstring jstr = (*env)->NewStringUTF(env, utf8);
         if (jstr) {
-            NSLog(@"[DeepLink] Calling Java deliverURL");
+            os_log_debug(getLog(), "Calling Java deliverURL");
             (*env)->CallStaticVoidMethod(env, gHandlerClass, gDeliverMID, jstr);
             if ((*env)->ExceptionCheck(env)) {
-                NSLog(@"[DeepLink] Java exception occurred!");
+                os_log_error(getLog(), "Java exception occurred");
                 (*env)->ExceptionDescribe(env);
                 (*env)->ExceptionClear(env);
             }
@@ -137,7 +146,7 @@ static void deliverToJava(NSString *s) {
 
 - (void)handleGetURL:(NSAppleEventDescriptor *)event withReply:(NSAppleEventDescriptor *)reply {
     NSString *urlString = [[event paramDescriptorForKeyword:keyDirectObject] stringValue];
-    NSLog(@"[DeepLink] Apple Event received URL");
+    os_log_debug(getLog(), "Apple Event received");
     if (urlString.length) {
         deliverToJava(urlString);
     }
@@ -148,7 +157,7 @@ static void deliverToJava(NSString *s) {
 // Install Apple Event handler when Java is ready
 static void installEarlyAEHandler(void) {
     @autoreleasepool {
-        NSLog(@"[DeepLink] Installing Apple Event handler");
+        os_log_info(getLog(), "Installing Apple Event handler");
 
         // Register handler for kAEGetURL events
         [[NSAppleEventManager sharedAppleEventManager]
@@ -157,7 +166,7 @@ static void installEarlyAEHandler(void) {
             forEventClass:kInternetEventClass
             andEventID:kAEGetURL];
 
-        NSLog(@"[DeepLink] Apple Event handler installed");
+        os_log_info(getLog(), "Apple Event handler installed");
     }
 }
 
@@ -196,11 +205,11 @@ static void installEarlyAEHandler(void) {
 }
 
 - (void)application:(NSApplication *)app openURLs:(NSArray<NSURL *> *)urls {
-    NSLog(@"[DeepLink] DPDelegateProxy application:openURLs: received %lu URLs", (unsigned long)urls.count);
+    os_log_debug(getLog(), "DPDelegateProxy received %lu URL(s)", (unsigned long)urls.count);
     for (NSURL *u in urls) {
         if (!u) continue;
         NSString *s = u.absoluteString;
-        NSLog(@"[DeepLink] DPDelegateProxy processing URL");
+        os_log_debug(getLog(), "Processing URL");
         if (s.length) deliverToJava(s);
     }
 }
@@ -212,20 +221,20 @@ static void installEarlyAEHandler(void) {
 JNIEXPORT void JNICALL Java_com_diffplug_common_swt_widgets_MacDeepLink_nativeBeforeSwt
   (JNIEnv *env, jclass clazz) {
     
-    NSLog(@"[DeepLink] nativeBeforeSwt called from Java");
+    os_log_info(getLog(), "nativeBeforeSwt called from Java");
     
     // Cache class & method (global ref so it survives)
     if (!gHandlerClass) {
         gHandlerClass = (*env)->NewGlobalRef(env, clazz);
-        NSLog(@"[DeepLink] Cached Java class reference");
+        os_log_debug(getLog(), "Cached Java class reference");
     }
     if (!gDeliverMID) {
         gDeliverMID = (*env)->GetStaticMethodID(env, gHandlerClass, "deliverURL", "(Ljava/lang/String;)V");
         if (!gDeliverMID) {
-            NSLog(@"[DeepLink] ERROR: Could not find deliverURL method!");
+            os_log_error(getLog(), "Could not find deliverURL method");
             return;
         }
-        NSLog(@"[DeepLink] Cached deliverURL method ID");
+        os_log_debug(getLog(), "Cached deliverURL method ID");
     }
     
     // Now that JNI is ready, register with macOS for Apple Events
@@ -236,7 +245,7 @@ JNIEXPORT void JNICALL Java_com_diffplug_common_swt_widgets_MacDeepLink_nativeBe
 JNIEXPORT void JNICALL Java_com_diffplug_common_swt_widgets_MacDeepLink_nativeAfterSwt
   (JNIEnv *env, jclass clazz) {
 
-    NSLog(@"[DeepLink] nativeAfterSwt called from Java");
+    os_log_info(getLog(), "nativeAfterSwt called from Java");
 
     if (!NSApp) {
         abortWithMessage(@"NSApp is nil! Make sure SWT Display is created first");
@@ -244,10 +253,10 @@ JNIEXPORT void JNICALL Java_com_diffplug_common_swt_widgets_MacDeepLink_nativeAf
 
     // Wrap the existing delegate with our proxy
     id current = [NSApp delegate];
-    NSLog(@"[DeepLink] Current NSApp delegate: %@", current);
+    os_log_debug(getLog(), "Current NSApp delegate: %{public}@", NSStringFromClass([current class]));
 
     // Store proxy in static to prevent deallocation (NSApp.delegate is weak)
     gDelegateProxy = [[DPDelegateProxy alloc] initWithDelegate:current];
     [NSApp setDelegate:(id<NSApplicationDelegate>)gDelegateProxy];
-    NSLog(@"[DeepLink] Installed delegate proxy");
+    os_log_info(getLog(), "Installed delegate proxy");
 }
