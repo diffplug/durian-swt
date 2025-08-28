@@ -28,12 +28,10 @@ static void abortWithMessage(NSString *message) {
     
     // Most aggressive crash - direct null pointer dereference
     // This causes SIGSEGV which is very hard to catch
-    volatile int *p = NULL;
-    *p = 42;
-    
-    // Fallbacks in case the above somehow doesn't work
-    __builtin_trap();
-    abort();
+    [[NSNotificationCenter defaultCenter]
+            postNotificationName:@"DiffPlug diffplug:// protocol error"
+            object:nil
+            userInfo:@{@"error": message}];
 }
 
 #pragma mark - JNI bootstrap
