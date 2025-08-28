@@ -17,41 +17,48 @@ package com.diffplug.common.swt;
 
 import com.diffplug.common.base.Preconditions;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * - immediately on app startup, call `MacDeepLink.startCapturingBeforeSwt()`
+ * - once SWT has initialized, call `MacDeepLink.swtHasInitializedBeginReceiving(Consumer<String>)`
+ *   - all urls which were captured before SWT initialized will be passed immediately (on the SWT thread)
+ *
+ * That's all! Don't do anything else.
+ */
 public class MacDeepLink {
-	private static volatile @Nullable Consumer<String> urlHandler;
-	private static final AtomicReference<@Nullable List<String>> backlogUrls = new AtomicReference<>();
+	/**
+	 * state transitions are:
+	 * - `null` on startup
+	 * - `startCapturingBeforeSwt()` transitions to an `ArrayList<String>`, backlog urls get added to it
+	 * - `swtHasInitializedBeginReceiving()` transitions to a `Consumer<String>`, all new urls go there
+	 */
+	private static final AtomicReference<@Nullable Object> state = new AtomicReference<>();
 
-	static {
-		// Load the native library - try multiple strategies
+	public static void startCapturingBeforeSwt() {
 		String libPath = System.getProperty("durian-swt.library.path");
 		if (libPath != null) {
 			System.load(libPath + "/durian-swt-natives/DeepLinkBridge.dylib");
 		} else {
 			throw new IllegalArgumentException("You need to set 'durian-swt.library.path'");
 		}
-	}
 
-	public static void setURLHandler(Consumer<String> handler) {
-		Preconditions.checkArgument(urlHandler == null, "URL handler can only be set once");
-		urlHandler = handler;
-	}
-
-	public static void applicationStartBeforeSwt() {
-		Preconditions.checkArgument(urlHandler != null, "Call `setURLHandler()` first");
-		backlogUrls.set(new ArrayList<>());
+		var was = state.getAndSet(new ArrayList<>());
+		Preconditions.checkArgument(was == null, "`startCapturingBeforeSwt() should be called first`");
 		nativeBeforeSwt();
 	}
 
-	public static void applicationStartAfterSwt() {
-		Preconditions.checkArgument(backlogUrls.get() != null, "Call `applicationStartBeforeSwt()` first.");
+	public static void swtHasInitializedBeginReceiving(Consumer<String> handler) {
+		SwtMisc.assertUI();
+		var was = state.getAndSet(handler);
+		Preconditions.checkArgument(was instanceof ArrayList<?>, "Call `applicationStartBeforeSwt()` first.");
+
+		var backlog = (ArrayList<String>) was;
+		backlog.forEach(handler);
+
 		nativeAfterSwt();
-		var accumulatedBacklog = backlogUrls.getAndSet(null);
-		accumulatedBacklog.forEach(urlHandler);
 	}
 
 	// Native method declarations - implemented in DeepLinkBridge.m
@@ -65,12 +72,14 @@ public class MacDeepLink {
 	 *
 	 * @param url The URL string received from the operating system
 	 */
-	public static void deliverURL(String url) {
-		var backlog = backlogUrls.get();
-		if (backlog != null) {
-			backlog.add(url);
+	public static void __internal_deliverUrl(String url) {
+		var was = state.get();
+		if (was instanceof Consumer) {
+			((Consumer<String>) was).accept(url);
+		} else if (was instanceof ArrayList<?>) {
+			((ArrayList<String>) was).add(url);
 		} else {
-			urlHandler.accept(url);
+			throw new IllegalStateException("Expected Consumer or ArrayList, was " + was);
 		}
 	}
 }
