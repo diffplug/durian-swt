@@ -56,7 +56,7 @@ subprojects { subProject ->
 		}
 	} else {
 		String platformCode = project.name.substring('durian-swt.'.length())
-		String SWT_TO_USE = platformCode.endsWith("x86") ? SWT_VERSION_X86 : SWT_VERSION
+		String SWT_TO_USE = platformCode.endsWith("x86") ? VER_ECLIPSE_PLATFORM_X86 : VER_ECLIPSE_PLATFORM
 		apply plugin: 'dev.equo.p2deps'
 		p2deps {
 			into 'api', {
