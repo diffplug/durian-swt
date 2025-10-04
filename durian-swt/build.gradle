@@ -10,14 +10,34 @@ p2deps {
 			it.platformNone()
 		}
 	}
-	into 'compileOnly', {
-		p2repo "https://download.eclipse.org/eclipse/updates/$VER_ECLIPSE_PLATFORM/"
-		install 'org.eclipse.swt'
+	if (VER_SWT_EVOLVE.isEmpty()) {
+		into 'compileOnly', {
+			p2repo "https://download.eclipse.org/eclipse/updates/$VER_ECLIPSE_PLATFORM/"
+			install 'org.eclipse.swt'
+		}
+		into 'testImplementation', {
+			p2repo "https://download.eclipse.org/eclipse/updates/$VER_ECLIPSE_PLATFORM/"
+			install 'org.eclipse.swt'
+			install 'org.eclipse.swt.svg'
+		}
 	}
-	into 'testImplementation', {
-		p2repo "https://download.eclipse.org/eclipse/updates/$VER_ECLIPSE_PLATFORM/"
-		install 'org.eclipse.swt'
-		install 'org.eclipse.swt.svg'
+}
+if (!VER_SWT_EVOLVE.isEmpty()) {
+	def swtPlatform = com.diffplug.common.swt.os.SwtPlatform.getRunning()
+	String equoOs;
+	if ('win32' == swtPlatform.os) {
+		equoOs = 'windows'
+	} else if ('macosx' == swtPlatform.os) {
+		equoOs = 'macos'
+	} else if ('linux' == swtPlatform.os) {
+		equoOs = 'linux'
+	} else {
+		throw UnsupportedOperationException("Unknown os in " + swtPlatform)
+	}
+	String swtEvolve = "dev.equo:swt-evolve:${VER_SWT_EVOLVE}:${equoOs}-${swtPlatform.arch}"
+	dependencies {
+		compileOnly swtEvolve
+		testImplementation swtEvolve
 	}
 }
 dependencies {
