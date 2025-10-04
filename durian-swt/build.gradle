@@ -17,6 +17,7 @@ p2deps {
 	into 'testImplementation', {
 		p2repo "https://download.eclipse.org/eclipse/updates/$VER_ECLIPSE_PLATFORM/"
 		install 'org.eclipse.swt'
+		install 'org.eclipse.swt.svg'
 	}
 }
 dependencies {
@@ -61,11 +62,21 @@ test {
 
 // only run the interactive tests
 tasks.register('interactiveTest', Test) {
+	testClassesDirs = sourceSets.test.output.classesDirs
+	classpath = sourceSets.test.runtimeClasspath
 	systemProperty 'com.diffplug.test.autoclose.milliseconds', null
 	useJUnit {
 		includeCategories 'com.diffplug.common.swt.InteractiveTest'
 		if (isMac) {
 			jvmArgs = ['-XstartOnFirstThread']
 		}
+	}
+}
+
+tasks.register('runIssue2228', JavaExec) {
+	classpath = sourceSets.test.runtimeClasspath
+	mainClass = 'com.diffplug.common.swt.Issue_2228'
+	if (isMac) {
+		jvmArgs = ['-XstartOnFirstThread']
 	}
 }
