@@ -6,8 +6,19 @@ group = 'com.diffplug.durian'
 spotlessChangelog {
 	changelogFile 'CHANGES.md'
 }
-repositories { mavenCentral() }
+
 allprojects {
+	repositories {
+		mavenCentral()
+		if (!VER_SWT_EVOLVE.isEmpty()) {
+			maven {
+				url = 'https://gitlab.com/api/v4/projects/72079350/packages/maven'
+				content {
+					includeGroup 'dev.equo'
+				}
+			}
+		}
+	}
 	apply from: 干.file('base/changelog.gradle')
 }
 apply from: 干.file('spotless/freshmark.gradle')
@@ -50,34 +61,52 @@ subprojects { subProject ->
 			main = 'com.diffplug.common.swt.os.OS'
 		}
 	} else {
-		String platformCode = project.name.substring('durian-swt.'.length())
-		String SWT_TO_USE = platformCode.endsWith("x86") ? VER_ECLIPSE_PLATFORM_X86 : VER_ECLIPSE_PLATFORM
-		apply plugin: 'dev.equo.p2deps'
-		p2deps {
-			into 'api', {
-				p2repo "https://download.eclipse.org/eclipse/updates/$SWT_TO_USE/"
-				install "org.eclipse.swt.$platformCode"
-				addFilter 'no-platform-filter', {
-					it.platform(com.diffplug.common.swt.os.SwtPlatform.parseWsOsArch(platformCode))
-				}
-			}
-		}
 		dependencies {
 			api project(':durian-swt')
 			implementation "com.diffplug.durian:durian-core:$VER_DURIAN"
 		}
-		configurations.all {
-			resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-				if (details.requested.name.contains('${osgi.platform}')) {
-					details.useTarget('org.eclipse.platform:org.eclipse.swt:' + details.requested.version)
-				}
-			}
-		}
 		// the manifest should be a fragment
+		String platformCode = project.name.substring('durian-swt.'.length())
 		def swtPlatform = com.diffplug.common.swt.os.SwtPlatform.parseWsOsArch(platformCode)
 		jar.manifest.attributes (
 				'Fragment-Host': 'durian-swt',
 				'Eclipse-PlatformFilter': swtPlatform.platformFilter(),
 				)
+
+		if (VER_SWT_EVOLVE.isEmpty()) {
+			String SWT_TO_USE = platformCode.endsWith("x86") ? VER_ECLIPSE_PLATFORM_X86 : VER_ECLIPSE_PLATFORM
+			apply plugin: 'dev.equo.p2deps'
+			p2deps {
+				into 'api', {
+					p2repo "https://download.eclipse.org/eclipse/updates/$SWT_TO_USE/"
+					install "org.eclipse.swt.$platformCode"
+					addFilter 'no-platform-filter', {
+						it.platform(com.diffplug.common.swt.os.SwtPlatform.parseWsOsArch(platformCode))
+					}
+				}
+			}
+			configurations.all {
+				resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+					if (details.requested.name.contains('${osgi.platform}')) {
+						details.useTarget('org.eclipse.platform:org.eclipse.swt:' + details.requested.version)
+					}
+				}
+			}
+		} else {
+			// VER_SWT_EVOLVE version
+			String equoOs;
+			if ('win32' == swtPlatform.os) {
+				equoOs = 'windows'
+			} else if ('macosx' == swtPlatform.os) {
+				equoOs = 'macos'
+			} else if ('linux' == swtPlatform.os) {
+				equoOs = 'linux'
+			} else {
+				throw UnsupportedOperationException("Unknown os in " + swtPlatform)
+			}
+			dependencies {
+				api "dev.equo:swt-evolve:${VER_SWT_EVOLVE}:${equoOs}-${swtPlatform.arch}"
+			}
+		}
 	}
 }
