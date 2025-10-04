@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+## [5.2.0] - 2025-08-28
+### Added
+- `MacDeepLink` class and dylibs for supporting deep links on modern versions of macOS.
+
+## [5.1.0] - 2025-08-21
+### Added
+- Add `META-INF/services` metadata to support Kotlin coroutines `Dispatchers.Main`.
+
 ## [5.0.1] - 2025-01-26
 ### Changed
 - Downgrade from Kotlin `2.1.0` to `2.0.21`

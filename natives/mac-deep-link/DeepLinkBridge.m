@@ -1,0 +1,260 @@
+// DeepLinkBridge.m - Handle deep links on macOS without breaking SWT
+// Build as a small .dylib and load it early (see Java below).
+#import <Cocoa/Cocoa.h>
+#import <objc/runtime.h>
+#import <jni.h>
+#import <os/log.h>
+
+@class DPDelegateProxy;  // Forward declaration
+
+static JavaVM *gJVM = NULL;
+static jclass gHandlerClass = NULL;         // Global ref to MacDeepLink class
+static jmethodID gDeliverMID = NULL;        // Method ID for deliverURL(String)
+static DPDelegateProxy *gDelegateProxy = NULL;  // Strong ref to prevent deallocation
+
+#pragma mark - Helpers
+
+static os_log_t getLog(void) {
+    static os_log_t log = NULL;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        log = os_log_create("com.diffplug.deeplink", "DeepLinkBridge");
+    });
+    return log;
+}
+
+static void abortWithMessage(NSString *message) {
+    os_log_fault(getLog(), "FATAL: %{public}@", message);
+    
+    // Most aggressive crash - direct null pointer dereference
+    // This causes SIGSEGV which is very hard to catch
+    [[NSNotificationCenter defaultCenter]
+            postNotificationName:@"DiffPlug diffplug:// protocol error"
+            object:nil
+            userInfo:@{@"error": message}];
+}
+
+#pragma mark - JNI bootstrap
+
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
+    gJVM = vm;
+    os_log_info(getLog(), "JNI_OnLoad: JavaVM stored");
+    return JNI_VERSION_1_6;
+}
+
+JNIEXPORT void JNICALL JNI_OnUnload(JavaVM *vm, void *reserved) {
+    os_log_info(getLog(), "JNI_OnUnload: Cleaning up");
+    
+    // Deregister Apple Event handler
+    [[NSAppleEventManager sharedAppleEventManager]
+        removeEventHandlerForEventClass:kInternetEventClass
+        andEventID:kAEGetURL];
+    os_log_info(getLog(), "Removed Apple Event handler");
+    
+    // Restore original delegate before releasing proxy
+    if (gDelegateProxy && NSApp) {
+        // Access the original delegate directly via ivar
+        Ivar ivar = class_getInstanceVariable(object_getClass(gDelegateProxy), "_realDelegate");
+        id originalDelegate = object_getIvar(gDelegateProxy, ivar);
+        [NSApp setDelegate:originalDelegate];
+        os_log_info(getLog(), "Restored original delegate");
+    }
+    
+    // Clean up global reference
+    if (gHandlerClass) {
+        JNIEnv *env;
+        if ((*vm)->GetEnv(vm, (void **)&env, JNI_VERSION_1_6) == JNI_OK) {
+            (*env)->DeleteGlobalRef(env, gHandlerClass);
+            gHandlerClass = NULL;
+            os_log_info(getLog(), "Released global class reference");
+        }
+    }
+    
+    // Clear cached values
+    gDeliverMID = NULL;
+    gJVM = NULL;
+    gDelegateProxy = NULL;  // Now safe to release the proxy
+}
+
+static JNIEnv* getEnv(BOOL *didAttach) {
+    *didAttach = NO;
+    if (!gJVM) return NULL;
+    JNIEnv *env = NULL;
+    jint rs = (*gJVM)->GetEnv(gJVM, (void **)&env, JNI_VERSION_1_6);
+    if (rs == JNI_EDETACHED) {
+        // Use daemon attachment for system threads so they don't block JVM shutdown
+        if ((*gJVM)->AttachCurrentThreadAsDaemon(gJVM, (void **)&env, NULL) != 0) {
+            return NULL;
+        }
+        *didAttach = YES;
+    } else if (rs != JNI_OK) {
+        return NULL;
+    }
+    return env;
+}
+
+static void deliverToJava(NSString *s) {
+    os_log_debug(getLog(), "deliverToJava called");
+    // These should never be null since we control registration timing
+    if (!gHandlerClass || !gDeliverMID) {
+        abortWithMessage(@"JNI handler not initialized - applicationStartBeforeSwt must be called first");
+    }
+
+    BOOL didAttach = NO;
+    JNIEnv *env = getEnv(&didAttach);
+    if (!env) {
+        abortWithMessage(@"Cannot get JNI environment - JVM may be shutting down");
+    }
+
+    const char *utf8 = s.UTF8String;
+    if (utf8) {
+        jstring jstr = (*env)->NewStringUTF(env, utf8);
+        if (jstr) {
+            os_log_debug(getLog(), "Calling Java deliverURL");
+            (*env)->CallStaticVoidMethod(env, gHandlerClass, gDeliverMID, jstr);
+            if ((*env)->ExceptionCheck(env)) {
+                os_log_error(getLog(), "Java exception occurred");
+                (*env)->ExceptionDescribe(env);
+                (*env)->ExceptionClear(env);
+            }
+            (*env)->DeleteLocalRef(env, jstr);
+        }
+    }
+    if (didAttach) (*gJVM)->DetachCurrentThread(gJVM);
+}
+
+#pragma mark - Apple Event handler
+
+// Object to handle Apple Events
+@interface DeepLinkAppleEventHandler : NSObject
++ (instancetype)sharedHandler;
+- (void)handleGetURL:(NSAppleEventDescriptor *)event withReply:(NSAppleEventDescriptor *)reply;
+@end
+
+@implementation DeepLinkAppleEventHandler
+
++ (instancetype)sharedHandler {
+    static DeepLinkAppleEventHandler *handler = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        handler = [[DeepLinkAppleEventHandler alloc] init];
+    });
+    return handler;
+}
+
+- (void)handleGetURL:(NSAppleEventDescriptor *)event withReply:(NSAppleEventDescriptor *)reply {
+    NSString *urlString = [[event paramDescriptorForKeyword:keyDirectObject] stringValue];
+    os_log_debug(getLog(), "Apple Event received");
+    if (urlString.length) {
+        deliverToJava(urlString);
+    }
+}
+
+@end
+
+// Install Apple Event handler when Java is ready
+static void installEarlyAEHandler(void) {
+    @autoreleasepool {
+        os_log_info(getLog(), "Installing Apple Event handler");
+
+        // Register handler for kAEGetURL events
+        [[NSAppleEventManager sharedAppleEventManager]
+            setEventHandler:[DeepLinkAppleEventHandler sharedHandler]
+            andSelector:@selector(handleGetURL:withReply:)
+            forEventClass:kInternetEventClass
+            andEventID:kAEGetURL];
+
+        os_log_info(getLog(), "Apple Event handler installed");
+    }
+}
+
+#pragma mark - NSApplicationDelegate proxy
+
+// Dynamic proxy that intercepts application:openURLs: and forwards all other messages
+@interface DPDelegateProxy : NSProxy <NSApplicationDelegate> {
+    id _realDelegate;
+}
+- (instancetype)initWithDelegate:(id)delegate;
+- (id)realDelegate;  // Getter to access original delegate for restoration
+@end
+
+@implementation DPDelegateProxy
+
+- (instancetype)initWithDelegate:(id)delegate {
+    _realDelegate = delegate;
+    return self;
+}
+
+- (id)realDelegate {
+    return _realDelegate;
+}
+
+- (id)forwardingTargetForSelector:(SEL)sel {
+    // Fast-forward everything except our intercepted method
+    if (sel == @selector(application:openURLs:)) {
+        return nil;  // We'll handle this ourselves
+    }
+    return _realDelegate;
+}
+
+- (BOOL)respondsToSelector:(SEL)sel {
+    if (sel == @selector(application:openURLs:)) return YES;
+    return [_realDelegate respondsToSelector:sel];
+}
+
+- (void)application:(NSApplication *)app openURLs:(NSArray<NSURL *> *)urls {
+    os_log_debug(getLog(), "DPDelegateProxy received %lu URL(s)", (unsigned long)urls.count);
+    for (NSURL *u in urls) {
+        if (!u) continue;
+        NSString *s = u.absoluteString;
+        os_log_debug(getLog(), "Processing URL");
+        if (s.length) deliverToJava(s);
+    }
+}
+@end
+
+#pragma mark - JNI exports
+
+// Java calls this early, before SWT initialization
+JNIEXPORT void JNICALL Java_com_diffplug_common_swt_MacDeepLink_nativeBeforeSwt
+  (JNIEnv *env, jclass clazz) {
+    
+    os_log_info(getLog(), "nativeBeforeSwt called from Java");
+    
+    // Cache class & method (global ref so it survives)
+    if (!gHandlerClass) {
+        gHandlerClass = (*env)->NewGlobalRef(env, clazz);
+        os_log_debug(getLog(), "Cached Java class reference");
+    }
+    if (!gDeliverMID) {
+        gDeliverMID = (*env)->GetStaticMethodID(env, gHandlerClass, "__internal_deliverUrl", "(Ljava/lang/String;)V");
+        if (!gDeliverMID) {
+            os_log_error(getLog(), "Could not find deliverURL method");
+            return;
+        }
+        os_log_debug(getLog(), "Cached deliverURL method ID");
+    }
+    
+    // Now that JNI is ready, register with macOS for Apple Events
+    installEarlyAEHandler();
+}
+
+// Java calls this after SWT is initialized to install the delegate proxy
+JNIEXPORT void JNICALL Java_com_diffplug_common_swt_MacDeepLink_nativeAfterSwt
+  (JNIEnv *env, jclass clazz) {
+
+    os_log_info(getLog(), "nativeAfterSwt called from Java");
+
+    if (!NSApp) {
+        abortWithMessage(@"NSApp is nil! Make sure SWT Display is created first");
+    }
+
+    // Wrap the existing delegate with our proxy
+    id current = [NSApp delegate];
+    os_log_debug(getLog(), "Current NSApp delegate: %{public}@", NSStringFromClass([current class]));
+
+    // Store proxy in static to prevent deallocation (NSApp.delegate is weak)
+    gDelegateProxy = [[DPDelegateProxy alloc] initWithDelegate:current];
+    [NSApp setDelegate:(id<NSApplicationDelegate>)gDelegateProxy];
+    os_log_info(getLog(), "Installed delegate proxy");
+}

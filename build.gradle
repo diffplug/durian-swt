@@ -20,10 +20,8 @@ subprojects { subProject ->
 
 	ext.maven_name = subProject.name
 	ext.javadoc_links = [
-		"https://javadoc.io/doc/com.diffplug.durian/durian-core/${VER_DURIAN}",
 		"https://javadoc.io/doc/com.diffplug.durian/durian-collect/${VER_DURIAN}",
 		"https://javadoc.io/doc/com.diffplug.durian/durian-concurrent/${VER_DURIAN}",
-		"https://javadoc.io/doc/com.diffplug.durian/durian-debug/${VER_DURIAN_DEBUG}",
 		"https://javadoc.io/doc/com.diffplug.durian/durian-rx/${VER_DURIAN_RX}",
 		'https://docs.oracle.com/javase/8/docs/api/'
 	].join(' ')
@@ -37,6 +35,15 @@ subprojects { subProject ->
 	if (subProject.name == 'durian-swt') {
 		// configured there
 	} else if (subProject.name == 'durian-swt.os') {
+		// not sure why this spotless black for durian-swt.os is required
+		spotless {
+			groovyGradle {
+				clearSteps()
+			}
+			java {
+				clearSteps()
+			}
+		}
 		dependencies {
 			compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
 			testImplementation "junit:junit:$VER_JUNIT"
@@ -47,7 +54,7 @@ subprojects { subProject ->
 		}
 	} else {
 		String platformCode = project.name.substring('durian-swt.'.length())
-		String SWT_TO_USE = platformCode.endsWith("x86") ? SWT_VERSION_X86 : SWT_VERSION
+		String SWT_TO_USE = platformCode.endsWith("x86") ? VER_ECLIPSE_PLATFORM_X86 : VER_ECLIPSE_PLATFORM
 		apply plugin: 'dev.equo.p2deps'
 		p2deps {
 			into 'api', {
@@ -60,6 +67,7 @@ subprojects { subProject ->
 		}
 		dependencies {
 			api project(':durian-swt')
+			implementation "com.diffplug.durian:durian-core:$VER_DURIAN"
 		}
 		configurations.all {
 			resolutionStrategy.eachDependency { DependencyResolveDetails details ->
