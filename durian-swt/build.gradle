@@ -62,6 +62,8 @@ test {
 
 // only run the interactive tests
 tasks.register('interactiveTest', Test) {
+	testClassesDirs = sourceSets.test.output.classesDirs
+	classpath = sourceSets.test.runtimeClasspath
 	systemProperty 'com.diffplug.test.autoclose.milliseconds', null
 	useJUnit {
 		includeCategories 'com.diffplug.common.swt.InteractiveTest'
