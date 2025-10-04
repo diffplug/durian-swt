@@ -1,6 +1,8 @@
 # DurianSwt releases
 
 ## [Unreleased]
+### Added
+- `com.diffplug.common.swt.SwtKt` which is required to instantiate `Point` or `Rectangle` in Kotlin starting with Eclipse 4.36 ([]() responding to [swt#1711](https://github.com/eclipse-platform/eclipse.platform.swt/pull/1711#issuecomment-2715777755))
 
 ## [5.2.0] - 2025-08-28
 ### Added
