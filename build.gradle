@@ -20,9 +20,6 @@ subprojects { subProject ->
 
 	ext.maven_name = subProject.name
 	ext.javadoc_links = [
-		"https://javadoc.io/doc/com.diffplug.durian/durian-collect/${VER_DURIAN}",
-		"https://javadoc.io/doc/com.diffplug.durian/durian-concurrent/${VER_DURIAN}",
-		"https://javadoc.io/doc/com.diffplug.durian/durian-rx/${VER_DURIAN_RX}",
 		'https://docs.oracle.com/javase/8/docs/api/'
 	].join(' ')
 
